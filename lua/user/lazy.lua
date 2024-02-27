@@ -1,5 +1,6 @@
 -- Lazy install bootstrap snippet
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -10,10 +11,16 @@ if not vim.loop.fs_stat(lazypath) then
 		lazypath,
 	})
 end
+
 vim.opt.rtp:prepend(lazypath)
 
 local lazy = require("lazy")
 
 lazy.setup({
 	{ import = "plugins" },
+}, {
+	change_detection = {
+		enabled = true,
+		notify = false,
+	},
 })

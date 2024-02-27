@@ -68,11 +68,11 @@ return {
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "copilot" }, -- Copilot suggestions
 					{ name = "nvim_lsp" }, -- lsp
-					{ name = "luasnip", max_item_count = 3 }, -- snippets
 					{ name = "buffer", max_item_count = 5 }, -- text within current buffer
+					{ name = "copilot" }, -- Copilot suggestions
 					{ name = "path", max_item_count = 3 }, -- file system paths
+					{ name = "luasnip", max_item_count = 3 }, -- snippets
 				}),
 				-- Enable pictogram icons for lsp/autocompletion
 				formatting = {
@@ -81,10 +81,13 @@ return {
 						mode = "symbol_text",
 						maxwidth = 50,
 						ellipsis_char = "...",
+						symbol_map = {
+							Copilot = "",
+						},
 					}),
 				},
 				experimental = {
-					ghost_text = false,
+					ghost_text = true,
 				},
 			})
 		end,

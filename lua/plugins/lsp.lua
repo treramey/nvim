@@ -85,6 +85,7 @@ return {
 					},
 				},
 				marksman = {},
+				nil_ls = {},
 				ocamllsp = {},
 				prismals = {},
 				pyright = {},
@@ -100,10 +101,10 @@ return {
 						},
 					},
 					handlers = {
-						["textDocument/publishDiagnostics"] = vim.lsp.with(
-							tsserver_on_publish_diagnostics_override,
-							{}
-						),
+						--[[ ["textDocument/publishDiagnostics"] = vim.lsp.with(
+              tsserver_on_publish_diagnostics_override,
+              {}
+            ), ]]
 					},
 				},
 				yamlls = {},
@@ -164,7 +165,7 @@ return {
 				border = "rounded",
 				sources = {
 					-- formatting
-					formatting.prettier,
+					formatting.prettierd,
 					formatting.stylua,
 					formatting.ocamlformat,
 

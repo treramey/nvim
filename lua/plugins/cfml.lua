@@ -1,5 +1,0 @@
-return {
-  {
-    "wsdjeg/vim-cfml",
-  }
-}
