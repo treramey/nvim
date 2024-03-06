@@ -126,7 +126,7 @@ end)
 
 -- Goto previous diagnostic of any severity
 nnoremap("[d", function()
-	vim.diagnostic.goto_pev({})
+	vim.diagnostic.goto_prev({})
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
 
