@@ -126,6 +126,7 @@ return {
 			local formatters = {
 				prettierd = {},
 				stylua = {},
+				markdownlint = {},
 			}
 
 			local linters = {
@@ -192,6 +193,7 @@ return {
 				javascript = { { "eslint_d", "eslint" }, { "prettierd", "prettier" } },
 				typescript = { { "eslint_d", "eslint" }, { "prettierd", "prettier" } },
 				lua = { "stylua" },
+				markdown = { "markdownlint" },
 			},
 		},
 	},

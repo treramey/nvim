@@ -337,6 +337,13 @@ nnoremap("<leader>oc", function()
 	require("copilot.panel").open({})
 end, { desc = "[O]pen [C]opilot panel" })
 
+nnoremap("<leader>mm", ":CompilerOpen<CR>", { desc = "Open compiler" })
+nnoremap("<leader>mr", ":CompilerRedo<CR>", { desc = "Compiler redo" })
+nnoremap("<leader>mt", ":CompilerToggleResults<CR>", { desc = "compiler results" })
+nnoremap("<F6>", ":CompilerOpen<CR>", { desc = "Open compiler" })
+nnoremap("<S-F6>", ":CompilerRedo<CR>", { desc = "Compiler redo" })
+nnoremap("<S-F7>", ":CompilerToggleResults<CR>", { desc = "compiler resume" })
+
 -- nvim-ufo keybinds
 nnoremap("zR", require("ufo").openAllFolds)
 nnoremap("zM", require("ufo").closeAllFolds)
