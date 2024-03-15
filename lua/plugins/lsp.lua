@@ -14,6 +14,12 @@ return {
 
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
+
+			-- Install lsp autocompletions
+			"hrsh7th/cmp-nvim-lsp",
+
+			-- Progress/Status update for LSP
+			{ "j-hui/fidget.nvim", opts = {} },
 		},
 		config = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
@@ -59,11 +65,6 @@ return {
 			local on_attach = function(_client, buffer_number)
 				-- Pass the current buffer to map lsp keybinds
 				map_lsp_keybinds(buffer_number)
-
-				-- Create a command `:Format` local to the LSP buffer
-				--[[ vim.api.nvim_buf_create_user_command(buffer_number, "Format", function(_)
-          vim.lsp.buf.format()
-        end, { desc = "LSP: Format current buffer with LSP" }) ]]
 			end
 
 			-- LSP servers and clients are able to communicate to each other what features they support.
@@ -84,6 +85,8 @@ return {
 				-- LSP Servers
 				bashls = {},
 				cssls = {},
+				gleam = {},
+				eslint = {},
 				html = {},
 				jsonls = {},
 				lua_ls = {
@@ -126,16 +129,11 @@ return {
 			local formatters = {
 				prettierd = {},
 				stylua = {},
-				markdownlint = {},
 			}
 
-			local linters = {
-				eslint_d = {},
-			}
+			local manually_installed_servers = { "ocamllsp", "gleam" }
 
-			local manually_installed_servers = { "ocamllsp" }
-
-			local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters, linters))
+			local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters))
 
 			local ensure_installed = vim.tbl_filter(function(name)
 				return not vim.tbl_contains(manually_installed_servers, name)
@@ -182,18 +180,20 @@ return {
 	},
 	{
 		"stevearc/conform.nvim",
+		event = { "BufWritePre" },
+		cmd = { "ConformInfo" },
 		opts = {
 			notify_on_error = true,
-			format_after_save = {
+			format_on_save = {
 				async = true,
 				timeout_ms = 500,
 				lsp_fallback = true,
 			},
 			formatters_by_ft = {
-				javascript = { { "eslint_d", "eslint" }, { "prettierd", "prettier" } },
-				typescript = { { "eslint_d", "eslint" }, { "prettierd", "prettier" } },
+				javascript = { { "prettierd", "prettier" } },
+				typescript = { { "prettierd", "prettier" } },
+				typescriptreact = { { "prettierd", "prettier" } },
 				lua = { "stylua" },
-				markdown = { "markdownlint" },
 			},
 		},
 	},
