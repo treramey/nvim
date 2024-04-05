@@ -80,7 +80,12 @@ return {
 				bashls = {},
 				cssls = {},
 				gleam = {},
-				eslint = {},
+				eslint = {
+					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
+					settings = {
+						format = false,
+					},
+				},
 				html = {},
 				jsonls = {},
 				lua_ls = {
@@ -102,13 +107,23 @@ return {
 				},
 				marksman = {},
 				ocamllsp = {},
+				omnisharp = {
+					settings = {
+						capabilities = capabilities,
+						enable_roslyn_analysers = true,
+						enable_import_completion = true,
+						organize_imports_on_format = true,
+						enable_decompilation_support = true,
+						filetypes = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "props", "targets" },
+					},
+				},
 				nil_ls = {},
 				pyright = {},
 				sqlls = {},
 				tailwindcss = {},
 				tsserver = {
 					settings = {
-						maxTsServerMemory = 12000,
+						maxTsServerMemory = 12288,
 					},
 					handlers = {
 						["textDocument/publishDiagnostics"] = vim.lsp.with(
@@ -144,6 +159,7 @@ return {
 			-- Iterate over our servers and set them up
 			for name, config in pairs(servers) do
 				require("lspconfig")[name].setup({
+					cmd = config.cmd,
 					capabilities = capabilities,
 					filetypes = config.filetypes,
 					handlers = vim.tbl_deep_extend("force", {}, default_handlers, config.handlers or {}),
@@ -177,7 +193,7 @@ return {
 		event = { "BufWritePre" },
 		cmd = { "ConformInfo" },
 		opts = {
-			notify_on_error = true,
+			notify_on_error = false,
 			format_on_save = {
 				async = true,
 				timeout_ms = 500,
@@ -190,48 +206,5 @@ return {
 				lua = { "stylua" },
 			},
 		},
-	},
-	{
-		"pmizio/typescript-tools.nvim",
-		lazy = true,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"neovim/nvim-lspconfig",
-		},
-		opts = {},
-		config = function()
-			-- |> Fetch default LSP preferences from `langserver-prefs.nvim`.
-			local lsp_prefs = require("langserver-prefs")
-
-			-- |> TS LSP Setup              ( STATE: Seems Good )
-			-- NOTE: Didn't configure many of the server specific things yet. Possible TODO.
-			require("typescript-tools").setup({
-				autostart = lsp_prefs.lsp_default_autostart,
-				flags = lsp_prefs.lsp_default_flags,
-				handlers = lsp_prefs.lsp_default_handlers,
-				capabilities = lsp_prefs.lsp_default_capabilities,
-				on_attach = lsp_prefs.lsp_default_on_attach,
-				single_file_support = lsp_prefs.lsp_default_singlefile_support,
-
-				settings = {
-					-- Spawn additional tsserver instance to calculate diagnostics on it.
-					separate_diagnostic_server = true,
-					-- "change" | "insert_leave": Determine when the client asks the server about diagnostic.
-					publish_diagnostic_on = "insert_leave",
-
-					tsserver_file_preferences = {
-						includeInlayParameterNameHints = "all",
-						-- includeCompletionsForModuleExports = true,
-						-- quotePreference = "auto",
-					},
-
-					-- Specify a list of plugins to load by tsserver, e.g., for support `styled-components`
-					-- (see 💅 `styled-components` support section)
-					tsserver_plugins = {},
-					tsserver_format_options = {},
-					tsserver_file_preferences = {},
-				},
-			})
-		end,
 	},
 }

@@ -12,6 +12,29 @@ return {
 		},
 		config = function()
 			local actions = require("telescope.actions")
+			local colors = require("catppuccin.palettes").get_palette("macchiato")
+
+			local macchiato = "#24273a"
+
+			local TelescopeColor = {
+				TelescopeMatching = { fg = colors.flamingo },
+				TelescopeSelection = { fg = colors.text, bg = colors.surface0, bold = true },
+
+				TelescopePromptPrefix = { bg = colors.surface0 },
+				TelescopePromptNormal = { bg = colors.surface0 },
+				TelescopeResultsNormal = { bg = macchiato },
+				TelescopePreviewNormal = { bg = macchiato },
+				TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
+				TelescopeResultsBorder = { bg = macchiato, fg = colors.mauve },
+				TelescopePreviewBorder = { bg = macchiato, fg = macchiato },
+				TelescopePromptTitle = { bg = colors.surface0, fg = colors.surface0 },
+				TelescopeResultsTitle = { fg = colors.mauve },
+				TelescopePreviewTitle = { bg = colors.green, fg = macchiato },
+			}
+
+			for hl, col in pairs(TelescopeColor) do
+				vim.api.nvim_set_hl(0, hl, col)
+			end
 
 			require("telescope").setup({
 				defaults = {
