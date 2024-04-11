@@ -120,7 +120,20 @@ return {
 				nil_ls = {},
 				pyright = {},
 				sqlls = {},
-				tailwindcss = {},
+				tailwindcss = {
+					cmd = { "tailwindcss-language-server", "--stdio" },
+					filetypes = {
+						"html",
+						"css",
+						"scss",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+						"vue",
+					},
+					settings = {},
+				},
 				tsserver = {
 					settings = {
 						maxTsServerMemory = 12288,
