@@ -361,16 +361,15 @@ vnoremap("<space>", "<nop>")
 vnoremap("L", "$<left>")
 vnoremap("H", "^")
 
--- Paste without losing the contents of the registers
-xnoremap("<leader>p", '"_dP')
-
--- Reselect the last visual selection
-
--- Move selected text up/down in visual mode
+-- Paste without losing the contents of the register
 vnoremap("<A-j>", ":m '>+1<CR>gv=gv")
 vnoremap("<A-k>", ":m '<-2<CR>gv=gv")
 
+xnoremap("<leader>p", '"_dP')
+
+-- Reselect the last visual selection
 xnoremap("<<", function()
+	-- Move selected text up/down in visual mode
 	vim.cmd("normal! <<")
 	vim.cmd("normal! gv")
 end)

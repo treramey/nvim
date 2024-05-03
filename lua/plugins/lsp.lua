@@ -68,6 +68,8 @@ return {
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
+			local util = require("lspconfig/util")
+
 			-- LSP servers to install (see list here: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers )
 			--  Add any additional override configuration in the following tables. Available keys are:
 			--  - cmd (table): Override the default command used to start the server
@@ -88,6 +90,18 @@ return {
 				},
 				html = {},
 				jsonls = {},
+				gopls = {
+					cmd = { "gopls" },
+					filetypes = { "go", "gomod", "gowork", "gotmpl" },
+					root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+					settings = {
+						completeUnimported = true,
+						usePlaceholders = true,
+						analyses = {
+							unusedparams = true,
+						},
+					},
+				},
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -107,16 +121,6 @@ return {
 				},
 				marksman = {},
 				ocamllsp = {},
-				omnisharp = {
-					settings = {
-						capabilities = capabilities,
-						enable_roslyn_analysers = true,
-						enable_import_completion = true,
-						organize_imports_on_format = true,
-						enable_decompilation_support = true,
-						filetypes = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "props", "targets" },
-					},
-				},
 				nil_ls = {},
 				pyright = {},
 				sqlls = {},
@@ -151,6 +155,7 @@ return {
 			local formatters = {
 				prettierd = {},
 				stylua = {},
+				goimports = {},
 			}
 
 			local manually_installed_servers = { "ocamllsp", "gleam" }
@@ -178,6 +183,7 @@ return {
 					handlers = vim.tbl_deep_extend("force", {}, default_handlers, config.handlers or {}),
 					on_attach = on_attach,
 					settings = config.settings,
+					root_dir = config.root_dir,
 				})
 			end
 
@@ -217,6 +223,8 @@ return {
 				typescript = { { "prettierd", "prettier" } },
 				typescriptreact = { { "prettierd", "prettier" } },
 				lua = { "stylua" },
+				go = { "goimports" },
+				gohtml = { "goimports" },
 			},
 		},
 	},
