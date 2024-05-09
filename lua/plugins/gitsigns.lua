@@ -1,9 +1,11 @@
 return {
 	{
-		"lewis6991/gitsigns.nvim",
+		"braxtons12/blame_line.nvim",
 		event = "VeryLazy",
 		config = function()
-			require("gitsigns").setup()
+			require("blame_line").setup({
+				prefix = " ",
+			})
 		end,
 	},
 }

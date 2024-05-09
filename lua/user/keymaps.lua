@@ -240,7 +240,7 @@ nnoremap("<leader>5", function()
 end)
 
 -- Git keymaps --
-nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
+nnoremap("<leader>gb", ":BlameLineToggle<cr>")
 nnoremap("<leader>gf", function()
 	local cmd = {
 		"sort",
