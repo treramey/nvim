@@ -79,6 +79,7 @@ return {
 				cssls = {},
 				gleam = {},
 				eslint = {
+					autostart = false,
 					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
 					settings = {
 						format = false,
@@ -137,6 +138,30 @@ return {
 				tsserver = {
 					settings = {
 						maxTsServerMemory = 12288,
+						typescript = {
+							inlayHints = {
+								includeInlayEnumMemberValueHints = true,
+								includeInlayFunctionLikeReturnTypeHints = true,
+								includeInlayFunctionParameterTypeHints = true,
+								includeInlayParameterNameHints = "all",
+								includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+								includeInlayPropertyDeclarationTypeHints = true,
+								includeInlayVariableTypeHints = true,
+								includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+							},
+						},
+						javascript = {
+							inlayHints = {
+								includeInlayEnumMemberValueHints = true,
+								includeInlayFunctionLikeReturnTypeHints = true,
+								includeInlayFunctionParameterTypeHints = true,
+								includeInlayParameterNameHints = "all",
+								includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+								includeInlayPropertyDeclarationTypeHints = true,
+								includeInlayVariableTypeHints = true,
+								includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+							},
+						},
 					},
 					handlers = {
 						["textDocument/publishDiagnostics"] = vim.lsp.with(
@@ -173,6 +198,7 @@ return {
 			-- Iterate over our servers and set them up
 			for name, config in pairs(servers) do
 				require("lspconfig")[name].setup({
+					autostart = config.autostart,
 					cmd = config.cmd,
 					capabilities = capabilities,
 					filetypes = config.filetypes,

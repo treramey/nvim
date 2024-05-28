@@ -25,7 +25,7 @@ return {
 				TelescopeResultsNormal = { bg = macchiato },
 				TelescopePreviewNormal = { bg = macchiato },
 				TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
-				TelescopeResultsBorder = { bg = macchiato, fg = colors.mauve },
+				TelescopeResultsBorder = { bg = macchiato, fg = macchiato },
 				TelescopePreviewBorder = { bg = macchiato, fg = macchiato },
 				TelescopePromptTitle = { bg = colors.surface0, fg = colors.surface0 },
 				TelescopeResultsTitle = { fg = colors.mauve },

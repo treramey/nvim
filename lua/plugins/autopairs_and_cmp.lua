@@ -10,8 +10,7 @@ return {
 			"hrsh7th/cmp-path",
 			{
 				"L3MON4D3/LuaSnip",
-				version = "v2.2",
-				build = "make install_jsregexp",
+				version = "v2.3",
 			},
 			"saadparwaiz1/cmp_luasnip",
 			"rafamadriz/friendly-snippets",
@@ -64,7 +63,7 @@ return {
 							fallback()
 						end
 					end, { "i", "s" }),
-          ["<C-u>"] = cmp.mapping.scroll_docs(-4), -- scroll up preview
+					["<C-u>"] = cmp.mapping.scroll_docs(-4), -- scroll up preview
 					["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
 					["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
 					["<C-c>"] = cmp.mapping.abort(), -- close completion window

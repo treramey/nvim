@@ -155,6 +155,20 @@ nnoremap("[w", function()
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
 
+-- Moonlander diagnostic movements --
+
+-- Goto next error diagnostic
+nnoremap(")!", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto previous error diagnostic
+nnoremap("(|", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
 -- Open the diagnostic under the cursor in a float window
 nnoremap("<leader>d", function()
 	vim.diagnostic.open_float({
@@ -321,7 +335,7 @@ M.map_lsp_keybinds = function(buffer_number)
 	)
 
 	-- See `:help K` for why this keymap
-	nnoremap("K", vim.lsp.buf.hover, { desc = "LSP: Hover Documentation", buffer = buffer_number })
+	-- nnoremap("K", vim.lsp.buf.hover, { desc = "LSP: Hover Documentation", buffer = buffer_number })
 	nnoremap("<leader>k", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
 	inoremap("<C-k>", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
 
@@ -338,16 +352,21 @@ nnoremap("<leader>oc", function()
 	require("copilot.panel").open({})
 end, { desc = "[O]pen [C]opilot panel" })
 
-nnoremap("<leader>mm", ":CompilerOpen<CR>", { desc = "Open compiler" })
-nnoremap("<leader>mr", ":CompilerRedo<CR>", { desc = "Compiler redo" })
-nnoremap("<leader>mt", ":CompilerToggleResults<CR>", { desc = "compiler results" })
-nnoremap("<F6>", ":CompilerOpen<CR>", { desc = "Open compiler" })
-nnoremap("<S-F6>", ":CompilerRedo<CR>", { desc = "Compiler redo" })
-nnoremap("<S-F7>", ":CompilerToggleResults<CR>", { desc = "compiler resume" })
+-- nnoremap("<leader>mm", ":CompilerOpen<CR>", { desc = "Open compiler" })
+-- nnoremap("<leader>mr", ":CompilerRedo<CR>", { desc = "Compiler redo" })
+-- nnoremap("<leader>mt", ":CompilerToggleResults<CR>", { desc = "compiler results" })
+-- nnoremap("<F6>", ":CompilerOpen<CR>", { desc = "Open compiler" })
+-- nnoremap("<S-F6>", ":CompilerRedo<CR>", { desc = "Compiler redo" })
+-- nnoremap("<S-F7>", ":CompilerToggleResults<CR>", { desc = "compiler resume" })
 
 -- nvim-ufo keybinds
 nnoremap("zR", require("ufo").openAllFolds)
 nnoremap("zM", require("ufo").closeAllFolds)
+
+-- toggle inlay hints
+nnoremap("<leader>ih", function()
+	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
+end)
 
 -- Insert --
 -- Map jj to <esc>
