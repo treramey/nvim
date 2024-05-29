@@ -76,7 +76,16 @@ return {
 			local servers = {
 				-- LSP Servers
 				bashls = {},
-				cssls = {},
+				cssls = {
+					settings = {
+						css = {
+							validate = true,
+							lint = {
+								unknownAtRules = "ignore",
+							},
+						},
+					},
+				},
 				gleam = {},
 				eslint = {
 					autostart = false,
@@ -121,20 +130,7 @@ return {
 				nil_ls = {},
 				pyright = {},
 				sqlls = {},
-				tailwindcss = {
-					cmd = { "tailwindcss-language-server", "--stdio" },
-					filetypes = {
-						"html",
-						"css",
-						"scss",
-						"javascript",
-						"javascriptreact",
-						"typescript",
-						"typescriptreact",
-						"vue",
-					},
-					settings = {},
-				},
+				tailwindcss = {},
 				tsserver = {
 					settings = {
 						maxTsServerMemory = 12288,
