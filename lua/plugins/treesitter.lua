@@ -11,6 +11,7 @@ return {
 		},
 		config = function()
 			---@diagnostic disable: missing-fields
+
 			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
 					"bash",
@@ -42,9 +43,6 @@ return {
 					disable = { "ocaml", "ocaml_interface" },
 				},
 				autopairs = {
-					enable = true,
-				},
-				autotag = {
 					enable = true,
 				},
 				--[[ context_commentstring = {

@@ -25,6 +25,13 @@ return {
 			local lspkind = require("lspkind")
 
 			require("nvim-autopairs").setup()
+			require("nvim-ts-autotag").setup({
+				opts = {
+					enable_close = true, -- Auto close tags
+					enable_rename = true, -- Auto rename pairs of tags
+					enable_close_on_slash = false, -- Auto close on trailing </
+				},
+			})
 
 			-- Integrate nvim-autopairs with cmp
 			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
@@ -32,6 +39,7 @@ return {
 			-- Load snippets
 			require("luasnip.loaders.from_vscode").lazy_load()
 
+			--- @diagnostic disable: redundant-parameter
 			cmp.setup({
 				snippet = {
 					expand = function(args)
@@ -67,23 +75,24 @@ return {
 					["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
 					["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
 					["<C-c>"] = cmp.mapping.abort(), -- close completion window
-					["<CR>"] = cmp.mapping({
-						i = function(fallback)
-							if cmp.visible() and cmp.get_active_entry() then
-								cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-							else
-								fallback()
-							end
-						end,
-						s = cmp.mapping.confirm({ select = false }),
-						c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
-					}),
+					["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
+					-- ["<CR>"] = cmp.mapping({ -- works better if we are using copilot
+					-- 	i = function(fallback)
+					-- 		if cmp.visible() and cmp.get_active_entry() then
+					-- 			cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+					-- 		else
+					-- 			fallback()
+					-- 		end
+					-- 	end,
+					-- 	s = cmp.mapping.confirm({ select = false }),
+					-- 	c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+					-- }),
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" }, -- lsp
 					{ name = "buffer", max_item_count = 5 }, -- text within current buffer
-					{ name = "copilot" }, -- Copilot suggestions
+					-- { name = "copilot" }, -- Copilot suggestions
 					{ name = "path", max_item_count = 3 }, -- file system paths
 					{ name = "luasnip", max_item_count = 3 }, -- snippets
 				}),

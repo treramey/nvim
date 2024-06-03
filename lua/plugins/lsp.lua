@@ -76,6 +76,7 @@ return {
 			local servers = {
 				-- LSP Servers
 				bashls = {},
+				biome = {},
 				cssls = {
 					settings = {
 						css = {
