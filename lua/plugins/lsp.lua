@@ -173,6 +173,7 @@ return {
 			local formatters = {
 				prettierd = {},
 				stylua = {},
+				gofmt = {},
 				goimports = {},
 			}
 
