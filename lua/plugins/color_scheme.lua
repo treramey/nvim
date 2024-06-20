@@ -2,7 +2,7 @@ return {
 	{
 		"catppuccin/nvim",
 		config = function()
-			local transparent = true
+			local transparent = false
 
 			require("catppuccin").setup({
 				flavour = transparent and "mocha" or "macchiato",
@@ -64,13 +64,19 @@ return {
 						MiniIndentscopeSymbol = { fg = colors.overlay0 },
 
 						FloatBorder = {
-							fg = transparent and colors.blue or colors.mantle,
+							fg = colors.blue,
 							bg = transparent and colors.none or colors.mantle,
 						},
 
 						FloatTitle = {
-							fg = transparent and colors.lavender or colors.base,
-							bg = transparent and colors.none or colors.lavender,
+							fg = colors.lavender,
+							bg = (function()
+								if transparent then
+									return colors.none
+								else
+									return colors.mantle
+								end
+							end)(),
 						},
 					}
 				end,
