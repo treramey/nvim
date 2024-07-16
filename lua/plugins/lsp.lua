@@ -12,6 +12,7 @@ return {
 			-- Install lsp autocompletions
 			"hrsh7th/cmp-nvim-lsp",
 
+			"iabdelkareem/csharp.nvim",
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
 		},
@@ -126,6 +127,34 @@ return {
 						},
 					},
 				},
+				omnisharp = {
+					cmd = {
+						"omnisharp",
+						"--languageserver",
+						"--hostPID",
+						tostring(vim.fn.getpid()),
+					},
+					handlers = {
+						["textDocument/definition"] = function(...)
+							return require("omnisharp_extended").handler(...)
+						end,
+					},
+					keys = {
+						{
+							"gd",
+							function()
+								require("omnisharp_extended").telescope_lsp_definitions()
+							end,
+							desc = "Goto Definition",
+						},
+					},
+					analyze_open_documents_only = false,
+					enable_ms_build_load_projects_on_demand = false,
+					enable_roslyn_analyzers = false,
+					organize_imports_on_format = true,
+					enable_import_completion = true,
+					sdk_include_prereleases = true,
+				},
 				marksman = {},
 				ocamllsp = {},
 				nil_ls = {},
@@ -173,8 +202,8 @@ return {
 			local formatters = {
 				prettierd = {},
 				stylua = {},
-				gofmt = {},
 				goimports = {},
+				csharpier = {},
 			}
 
 			local manually_installed_servers = { "ocamllsp", "gleam" }
@@ -227,4 +256,21 @@ return {
 			})
 		end,
 	},
+	{
+		"iabdelkareem/csharp.nvim",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"mfussenegger/nvim-dap",
+			"Tastyep/structlog.nvim",
+		},
+		config = function()
+			require("mason").setup()
+			require("csharp").setup({
+				lsp = {
+					enable = false,
+				},
+			})
+		end,
+	},
+	{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
 }

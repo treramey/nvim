@@ -18,12 +18,20 @@ return {
 				lsp_fallback = true,
 			},
 			formatters_by_ft = {
+				cs = { "csharpier" },
+				yaml = { { "yamlfmt" } },
 				javascript = { { "prettierd", "prettier", "biome" } },
 				typescript = { { "prettierd", "prettier", "biome" } },
 				typescriptreact = { { "prettierd", "prettier", "biome" } },
 				lua = { "stylua" },
 				go = { "gofmt", "goimports" },
 				gohtml = { "goimports" },
+			},
+			formatters = {
+				csharpier = {
+					command = "dotnet-csharpier",
+					args = { "--write-stdout" },
+				},
 			},
 		},
 	},
