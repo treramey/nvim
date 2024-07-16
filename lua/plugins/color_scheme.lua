@@ -2,7 +2,7 @@ return {
 	{
 		"catppuccin/nvim",
 		config = function()
-			local transparent = true
+			local transparent = false
 
 			require("catppuccin").setup({
 				flavour = transparent and "mocha" or "macchiato",

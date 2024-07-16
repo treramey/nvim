@@ -330,6 +330,10 @@ M.map_lsp_keybinds = function(buffer_number)
 	nnoremap("td", vim.lsp.buf.type_definition, { desc = "LSP: [T]ype [D]efinition", buffer = buffer_number })
 end
 
+nnoremap("<leader>dcp", function()
+	require("csharp").debug_project()
+end, { desc = "Debug C# Project" })
+
 -- Symbol Outline keybind
 nnoremap("<leader>so", ":SymbolsOutline<cr>")
 

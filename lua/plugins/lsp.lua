@@ -264,7 +264,6 @@ return {
 			"Tastyep/structlog.nvim",
 		},
 		config = function()
-			require("mason").setup()
 			require("csharp").setup({
 				lsp = {
 					enable = false,
