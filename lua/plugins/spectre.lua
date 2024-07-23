@@ -29,6 +29,11 @@ return {
 					sed = {
 						cmd = "sed",
 					},
+					args = {
+						"-i",
+						"",
+						"-E",
+					},
 				},
 			})
 		end,

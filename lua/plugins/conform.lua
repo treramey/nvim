@@ -13,9 +13,9 @@ return {
 			formatters_by_ft = {
 				cs = { "csharpier" },
 				yaml = { { "yamlfmt" } },
-				javascript = { { "prettierd", "prettier", "biome" } },
-				typescript = { { "prettierd", "prettier", "biome" } },
-				typescriptreact = { { "prettierd", "prettier", "biome" } },
+				javascript = { { "biome", "prettierd", "prettier" } },
+				typescript = { { "biome", "prettierd", "prettier" } },
+				typescriptreact = { { "biome", "prettierd", "prettier" } },
 				lua = { "stylua" },
 				go = { "gofmt", "goimports" },
 				gohtml = { "goimports" },
