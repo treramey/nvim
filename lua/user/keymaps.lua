@@ -288,26 +288,47 @@ nnoremap("<leader>ss", function()
 	}))
 end, { desc = "[S]earch [S]pelling suggestions" })
 
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("LspKeymaps", {}),
+	callback = function(ev)
+		-- Enable completion triggered by <c-x><c-o>
+		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+		local opts = { buffer = ev.buf, noremap = true, silent = true }
+
+		opts.desc = "Hover Documentation"
+		vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+
+		-- Will be a default in new versions of Neovim.
+		opts.desc = "[C]ode [R]efactor [R]ename"
+		vim.keymap.set("n", "rn", vim.lsp.buf.rename, opts)
+
+		-- Will be a default in new versions of Neovim.
+		opts.desc = "[C]ode [R]efactor Action"
+		vim.keymap.set("n", "ca", vim.lsp.buf.code_action, opts)
+
+		-- Will be a default in new versions of Neovim.
+		opts.desc = "[G]oto [R]eferences"
+		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+
+		opts.desc = "[G]oto [D]efinition"
+		vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+
+		opts.desc = "[G]oto [D]eclaration"
+		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+
+		opts.desc = "[G]oto [I]mplementation"
+		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+
+		opts.desc = "[G]oto [T]ype [D]efinition"
+		vim.keymap.set("n", "td", vim.lsp.buf.type_definition, opts)
+
+		opts.desc = "Signature Documentation"
+		vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts)
+	end,
+})
 -- LSP Keybinds (exports a function to be used in ../../after/plugin/lsp.lua b/c we need a reference to the current buffer) --
 M.map_lsp_keybinds = function(buffer_number)
-	nnoremap("<leader>rn", vim.lsp.buf.rename, { desc = "LSP: [R]e[n]ame", buffer = buffer_number })
-	nnoremap("<leader>ca", vim.lsp.buf.code_action, { desc = "LSP: [C]ode [A]ction", buffer = buffer_number })
-
-	nnoremap("gd", vim.lsp.buf.definition, { desc = "LSP: [G]oto [D]efinition", buffer = buffer_number })
-
-	-- Telescope LSP keybinds --
-	nnoremap(
-		"gr",
-		require("telescope.builtin").lsp_references,
-		{ desc = "LSP: [G]oto [R]eferences", buffer = buffer_number }
-	)
-
-	nnoremap(
-		"gi",
-		require("telescope.builtin").lsp_implementations,
-		{ desc = "LSP: [G]oto [I]mplementation", buffer = buffer_number }
-	)
-
 	nnoremap(
 		"<leader>bs",
 		require("telescope.builtin").lsp_document_symbols,
@@ -319,20 +340,7 @@ M.map_lsp_keybinds = function(buffer_number)
 		require("telescope.builtin").lsp_workspace_symbols,
 		{ desc = "LSP: [P]roject [S]ymbols", buffer = buffer_number }
 	)
-
-	-- See `:help K` for why this keymap
-	-- nnoremap("K", vim.lsp.buf.hover, { desc = "LSP: Hover Documentation", buffer = buffer_number })
-	nnoremap("<leader>k", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
-	inoremap("<C-k>", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
-
-	-- Lesser used LSP functionality
-	nnoremap("gD", vim.lsp.buf.declaration, { desc = "LSP: [G]oto [D]eclaration", buffer = buffer_number })
-	nnoremap("td", vim.lsp.buf.type_definition, { desc = "LSP: [T]ype [D]efinition", buffer = buffer_number })
 end
-
-nnoremap("<leader>dcp", function()
-	require("csharp").debug_project()
-end, { desc = "Debug C# Project" })
 
 -- Symbol Outline keybind
 nnoremap("<leader>so", ":SymbolsOutline<cr>")
@@ -341,13 +349,6 @@ nnoremap("<leader>so", ":SymbolsOutline<cr>")
 nnoremap("<leader>oc", function()
 	require("copilot.panel").open({})
 end, { desc = "[O]pen [C]opilot panel" })
-
--- nnoremap("<leader>mm", ":CompilerOpen<CR>", { desc = "Open compiler" })
--- nnoremap("<leader>mr", ":CompilerRedo<CR>", { desc = "Compiler redo" })
--- nnoremap("<leader>mt", ":CompilerToggleResults<CR>", { desc = "compiler results" })
--- nnoremap("<F6>", ":CompilerOpen<CR>", { desc = "Open compiler" })
--- nnoremap("<S-F6>", ":CompilerRedo<CR>", { desc = "Compiler redo" })
--- nnoremap("<S-F7>", ":CompilerToggleResults<CR>", { desc = "compiler resume" })
 
 -- nvim-ufo keybinds
 nnoremap("zR", require("ufo").openAllFolds)
