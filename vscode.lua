@@ -70,19 +70,23 @@ nnoremap("<leader>q", "<cmd>call VSCodeCall('workbench.action.closeActiveEditor'
 nnoremap("<leader>w", "<cmd>call VSCodeCall('workbench.action.files.save')<CR>")
 nnoremap("<leader>f", "<cmd>call VSCodeCall('editor.action.formatDocument')<CR>")
 
+nnoremap("<leader>tt", "<cmd>call VSCodeCall('workbench.action.togglePanel')<CR>")
+nnoremap("<leader>tn", "<cmd>call VSCodeCall('workbench.action.terminal.new')<CR>")
+
 -- lets add some fancy search
 map("<leader>sf", "<cmd>call VSCodeCall('find-it-faster.findFiles')<CR>")
 map("<leader>sg", "<cmd>call VSCodeCall('find-it-faster.findWithinFiles')<CR>")
 map("<leader>ss", "<cmd>call VSCodeCall('searchEverywhere.search')<CR>")
 
 -- Map jj to <esc>
--- is in settings.json
+-- is in settings.jsonmultiCommand.commands
 
 -- Lsp mappings
 nnoremap("rn", "<cmd>call VSCodeCall('editor.action.rename')<CR>")
 nnoremap("ca", "<cmd>call VSCodeCall('editor.action.quickFix')<CR>")
 nnoremap("gr", "<cmd>call VSCodeCall('editor.action.goToReferences')<CR>")
 nnoremap("gi", "<cmd>call VSCodeCall('editor.action.goToImplementation')<CR>")
+nnoremap("gt", "<cmd>call VSCodeCall('editor.action.goToTypeDefinition')<CR>")
 
 -- DEBUGGING
 nnoremap("<leader>dd", "<cmd>call VSCodeCall('workbench.action.debug.start')<CR>")
