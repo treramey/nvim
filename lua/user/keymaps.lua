@@ -83,6 +83,7 @@ nnoremap("N", "Nzz")
 nnoremap("n", "nzz")
 nnoremap("G", "Gzz")
 nnoremap("gg", "ggzz")
+nnoremap("gd", "gdzz")
 nnoremap("<C-i>", "<C-i>zz")
 nnoremap("<C-o>", "<C-o>zz")
 nnoremap("%", "%zz")
@@ -185,7 +186,11 @@ nnoremap("<leader>=", "<C-w>=")
 
 -- Press leader f to format
 nnoremap("<leader>f", function()
-	conform.format({ async = true, lsp_fallback = true })
+	conform.format({
+		async = true,
+		timeout_ms = 500,
+		lsp_format = "fallback",
+	})
 end, { desc = "Format the current buffer" })
 
 -- Press leader rw to rotate open windows
@@ -351,8 +356,8 @@ nnoremap("<leader>oc", function()
 end, { desc = "[O]pen [C]opilot panel" })
 
 -- nvim-ufo keybinds
-nnoremap("zR", require("ufo").openAllFolds)
-nnoremap("zM", require("ufo").closeAllFolds)
+-- nnoremap("zR", require("ufo").openAllFolds)
+-- nnoremap("zM", require("ufo").closeAllFolds)
 
 -- toggle inlay hints
 nnoremap("<leader>ih", function()

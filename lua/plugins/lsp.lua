@@ -18,36 +18,21 @@ return {
 		config = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
 
-			-- Override tsserver diagnostics to filter out specific messages
-			local messages_to_filter = {
-				"This may be converted to an async function.",
-			}
-
-			local function tsserver_on_publish_diagnostics_override(_, result, ctx, config)
-				local filtered_diagnostics = {}
-
-				for _, diagnostic in ipairs(result.diagnostics) do
-					local found = false
-					for _, message in ipairs(messages_to_filter) do
-						if diagnostic.message == message then
-							found = true
-							break
-						end
-					end
-					if not found then
-						table.insert(filtered_diagnostics, diagnostic)
-					end
-				end
-
-				result.diagnostics = filtered_diagnostics
-
-				vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx, config)
-			end
-
 			-- Default handlers for LSP
 			local default_handlers = {
 				["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
 				["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
+			}
+
+			local tsserver_inlay_hints = {
+				includeInlayEnumMemberValueHints = true,
+				includeInlayFunctionLikeReturnTypeHints = true,
+				includeInlayFunctionParameterTypeHints = true,
+				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+				includeInlayPropertyDeclarationTypeHints = true,
+				includeInlayVariableTypeHints = true,
+				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
 			}
 
 			-- Function to run when neovim connects to a Lsp client
@@ -87,7 +72,11 @@ return {
 						},
 					},
 				},
-				gleam = {},
+				gleam = {
+					settings = {
+						inlayHints = true,
+					},
+				},
 				eslint = {
 					autostart = false,
 					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
@@ -159,35 +148,11 @@ return {
 					settings = {
 						maxTsServerMemory = 12288,
 						typescript = {
-							inlayHints = {
-								includeInlayEnumMemberValueHints = true,
-								includeInlayFunctionLikeReturnTypeHints = true,
-								includeInlayFunctionParameterTypeHints = true,
-								includeInlayParameterNameHints = "all",
-								includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-								includeInlayPropertyDeclarationTypeHints = true,
-								includeInlayVariableTypeHints = true,
-								includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-							},
+							inlayHints = tsserver_inlay_hints,
 						},
 						javascript = {
-							inlayHints = {
-								includeInlayEnumMemberValueHints = true,
-								includeInlayFunctionLikeReturnTypeHints = true,
-								includeInlayFunctionParameterTypeHints = true,
-								includeInlayParameterNameHints = "all",
-								includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-								includeInlayPropertyDeclarationTypeHints = true,
-								includeInlayVariableTypeHints = true,
-								includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-							},
+							inlayHints = tsserver_inlay_hints,
 						},
-					},
-					handlers = {
-						["textDocument/publishDiagnostics"] = vim.lsp.with(
-							tsserver_on_publish_diagnostics_override,
-							{}
-						),
 					},
 				},
 				yamlls = {},
@@ -250,20 +215,32 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"iabdelkareem/csharp.nvim",
-	-- 	dependencies = {
-	-- 		"williamboman/mason.nvim",
-	-- 		"mfussenegger/nvim-dap",
-	-- 		"Tastyep/structlog.nvim",
-	-- 	},
-	-- 	config = function()
-	-- 		require("csharp").setup({
-	-- 			lsp = {
-	-- 				enable = false,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
-	{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+	{
+		"iabdelkareem/csharp.nvim",
+		dependencies = {
+			"williamboman/mason.nvim", -- Required, automatically installs omnisharp
+			"mfussenegger/nvim-dap",
+			"Tastyep/structlog.nvim", -- Optional, but highly recommended for debugging
+			{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+		},
+		opts = {
+			lsp = {
+				on_attach = function(_, bufnr)
+					local omnisharp = require("omnisharp_extended")
+					vim.keymap.set("n", "gd", function()
+						omnisharp.telescope_lsp_definitions()
+					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [D]efinition" })
+					vim.keymap.set("n", "gi", function()
+						omnisharp.telescope_lsp_implementation()
+					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [I]mplementation" })
+					vim.keymap.set("n", "gr", function()
+						omnisharp.telescope_lsp_references()
+					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [R]eferences" })
+				end,
+				enable_roslyn_analyzers = true,
+				organize_imports_on_format = true,
+				enable_import_completion = true,
+			},
+		},
+	},
 }
