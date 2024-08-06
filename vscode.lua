@@ -90,7 +90,7 @@ nnoremap("gt", "<cmd>call VSCodeCall('editor.action.goToTypeDefinition')<CR>")
 
 -- DEBUGGING
 nnoremap("<leader>dd", "<cmd>call VSCodeCall('workbench.action.debug.start')<CR>")
-nnoremap("<leader>ds", "<cmd>call VSCodeCall('workbench.action.debug.stop')<CR>")
+nnoremap("<leader>dt", "<cmd>call VSCodeCall('workbench.action.debug.stop')<CR>")
 nnoremap("<leader>dc", "<cmd>call VSCodeCall('workbench.action.debug.continue')<CR>")
 nnoremap("<leader>dp", "<cmd>call VSCodeCall('workbench.action.debug.pause')<CR>")
 nnoremap("<leader>dr", "<cmd>call VSCodeCall('workbench.action.debug.run')<CR>")

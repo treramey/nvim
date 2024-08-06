@@ -14,6 +14,8 @@ return {
 
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
+
+			"Hoffs/omnisharp-extended-lsp.nvim",
 		},
 		config = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
@@ -118,27 +120,49 @@ return {
 				marksman = {},
 				ocamllsp = {},
 				omnisharp = {
-					handlers = {
-						["textDocument/definition"] = function(...)
-							return require("omnisharp_extended").handler(...)
-						end,
-					},
-					keys = {
-						{
-							"gd",
-							function()
-								require("omnisharp_extended").telescope_lsp_definitions()
-							end,
-							desc = "Goto Definition",
-						},
-					},
 					cmd = { vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp" },
-					analyze_open_documents_only = false,
+					handlers = {
+						["textDocument/definition"] = require("omnisharp_extended").handler,
+						["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
+						["textDocument/signatureHelp"] = vim.lsp.with(
+							vim.lsp.handlers.signature_help,
+							{ border = "double" }
+						),
+					},
+					enable_editorconfig_support = true,
 					enable_ms_build_load_projects_on_demand = false,
-					enable_roslyn_analyzers = false,
+					enable_roslyn_analyzers = true,
 					organize_imports_on_format = true,
 					enable_import_completion = true,
 					sdk_include_prereleases = true,
+					analyze_open_documents_only = true,
+					on_attach = function(_, bufnr)
+						local omnisharp = require("omnisharp_extended")
+						vim.keymap.set("n", "gd", function()
+							omnisharp.telescope_lsp_definitions()
+						end, {
+							buffer = bufnr,
+							noremap = true,
+							silent = true,
+							desc = "LSP: [G]oto [D]efinition",
+						})
+						vim.keymap.set("n", "gi", function()
+							omnisharp.telescope_lsp_implementation()
+						end, {
+							buffer = bufnr,
+							noremap = true,
+							silent = true,
+							desc = "LSP: [G]oto [I]mplementation",
+						})
+						vim.keymap.set("n", "gr", function()
+							omnisharp.telescope_lsp_references()
+						end, {
+							buffer = bufnr,
+							noremap = true,
+							silent = true,
+							desc = "LSP: [G]oto [R]eferences",
+						})
+					end,
 				},
 				nil_ls = {},
 				pyright = {},
@@ -214,33 +238,5 @@ return {
 				},
 			})
 		end,
-	},
-	{
-		"iabdelkareem/csharp.nvim",
-		dependencies = {
-			"williamboman/mason.nvim", -- Required, automatically installs omnisharp
-			"mfussenegger/nvim-dap",
-			"Tastyep/structlog.nvim", -- Optional, but highly recommended for debugging
-			{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
-		},
-		opts = {
-			lsp = {
-				on_attach = function(_, bufnr)
-					local omnisharp = require("omnisharp_extended")
-					vim.keymap.set("n", "gd", function()
-						omnisharp.telescope_lsp_definitions()
-					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [D]efinition" })
-					vim.keymap.set("n", "gi", function()
-						omnisharp.telescope_lsp_implementation()
-					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [I]mplementation" })
-					vim.keymap.set("n", "gr", function()
-						omnisharp.telescope_lsp_references()
-					end, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: [G]oto [R]eferences" })
-				end,
-				enable_roslyn_analyzers = true,
-				organize_imports_on_format = true,
-				enable_import_completion = true,
-			},
-		},
 	},
 }

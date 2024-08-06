@@ -90,6 +90,75 @@ nnoremap("%", "%zz")
 nnoremap("*", "*zz")
 nnoremap("#", "#zz")
 
+-- DAP (Debugger) keymaps
+nnoremap("<leader>dB", function()
+	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end, { desc = "Breakpoint Condition" })
+
+nnoremap("<leader>db", function()
+	require("dap").toggle_breakpoint()
+end, { desc = "Toggle Breakpoint" })
+
+nnoremap("<leader>dc", function()
+	require("dap").continue()
+end, { desc = "Continue" })
+
+nnoremap("<leader>da", function()
+	require("dap").continue({ before = get_args })
+end, { desc = "Run with Args" })
+
+nnoremap("<leader>dC", function()
+	require("dap").run_to_cursor()
+end, { desc = "Run to Cursor" })
+
+nnoremap("<leader>dg", function()
+	require("dap").goto_()
+end, { desc = "Go to Line (No Execute)" })
+
+nnoremap("<leader>di", function()
+	require("dap").step_into()
+end, { desc = "Step Into" })
+
+nnoremap("<leader>dj", function()
+	require("dap").down()
+end, { desc = "Down" })
+
+nnoremap("<leader>dk", function()
+	require("dap").up()
+end, { desc = "Up" })
+
+nnoremap("<leader>dl", function()
+	require("dap").run_last()
+end, { desc = "Run Last" })
+
+nnoremap("<leader>do", function()
+	require("dap").step_out()
+end, { desc = "Step Out" })
+
+nnoremap("<leader>dO", function()
+	require("dap").step_over()
+end, { desc = "Step Over" })
+
+nnoremap("<leader>dp", function()
+	require("dap").pause()
+end, { desc = "Pause" })
+
+nnoremap("<leader>dr", function()
+	require("dap").repl.toggle()
+end, { desc = "Toggle REPL" })
+
+nnoremap("<leader>ds", function()
+	require("dap").session()
+end, { desc = "Session" })
+
+nnoremap("<leader>dt", function()
+	require("dap").terminate()
+end, { desc = "Terminate" })
+
+nnoremap("<leader>dw", function()
+	require("dap.ui.widgets").hover()
+end, { desc = "Widgets" })
+
 -- Press 'S' for quick find/replace for the word under the cursor
 nnoremap("S", function()
 	local cmd = ":%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>"
