@@ -17,10 +17,22 @@ local prompts = {
 	Concise = "Please rewrite the following text to make it more concise.",
 }
 
+---@param kind string
+function pick(kind)
+	return function()
+		local actions = require("CopilotChat.actions")
+		local items = actions[kind .. "_actions"]()
+		if not items then
+			vim.notify("No " .. kind .. " found on the current line", vim.log.levels.WARN)
+			return
+		end
+		require("CopilotChat.integrations.telescope").pick(items)
+	end
+end
+
 return {
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		branch = "canary",
 		event = "VeryLazy",
 		cmd = "CopilotChat",
 		dependencies = {
@@ -31,56 +43,55 @@ return {
 			local user = vim.env.USER or "User"
 			user = user:sub(1, 1):upper() .. user:sub(2)
 			return {
-				model = "gpt-4",
-				auto_insert_mode = true,
+				model = "gpt-4o",
+				auto_insert_mode = false,
+				show_folds = false,
 				show_help = true,
-				question_header = "  " .. user .. " ",
-				answer_header = "  Copilot ",
-				separator = "---",
+				question_header = "   " .. user .. " ",
+				answer_header = "   Copilot ",
+				window = { width = 0.45 },
 				prompts = prompts,
-				window = {
-					width = 0.4,
-				},
 				selection = function(source)
 					local select = require("CopilotChat.select")
 					return select.visual(source) or select.buffer(source)
 				end,
+				mappings = {
+					reset = {
+						normal = "<C-e>",
+						insert = "<C-e>",
+					},
+					submit_prompt = {
+						normal = "<CR>",
+						insert = "<C-CR>",
+					},
+				},
 			}
 		end,
 		keys = {
+			{ "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
 			{
-				"<leader>aa",
-				function()
-					return require("CopilotChat").toggle()
-				end,
-				desc = "Toggle (CopilotChat)",
+				"<leader>ai",
+				"<cmd>CopilotChatToggle<cr>",
+				desc = "Toggle Chat",
 				mode = { "n", "v" },
 			},
 			{
 				"<leader>ax",
-				function()
-					return require("CopilotChat").reset()
-				end,
-				desc = "Clear (CopilotChat)",
+				"<cmd>CopilotChatReset<cr>",
+				desc = "Clear Chat",
 				mode = { "n", "v" },
 			},
+			-- Quick chat with Copilot
 			{
 				"<leader>aq",
 				function()
 					local input = vim.fn.input("Quick Chat: ")
 					if input ~= "" then
-						require("CopilotChat").ask(input)
+						vim.cmd("CopilotChatBuffer " .. input)
 					end
 				end,
-				desc = "Quick Chat (CopilotChat)",
-				mode = { "n", "v" },
+				desc = "Quick chat",
 			},
-			-- Code related commands
-			{ "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
-			{ "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
-			{ "<leader>ar", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
-			{ "<leader>aR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
-			{ "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
 			-- Generate commit message based on the git diff
 			{
 				"<leader>am",
@@ -92,12 +103,27 @@ return {
 				"<cmd>CopilotChatCommitStaged<cr>",
 				desc = "CopilotChat - Generate commit message for staged changes",
 			},
+			-- Code related commands
+			{ "<leader>ae", "<cmd>CopilotChatExplain<cr>", mode = { "v" }, desc = "CopilotChat - Explain code" },
+			{ "<leader>at", "<cmd>CopilotChatTests<cr>", mode = { "v" }, desc = "CopilotChat - Generate tests" },
+			{ "<leader>ar", "<cmd>CopilotChatReview<cr>", mode = { "v" }, desc = "CopilotChat - Review code" },
+			{ "<leader>aR", "<cmd>CopilotChatRefactor<cr>", mode = { "v" }, desc = "CopilotChat - Refactor code" },
+			{
+				"<leader>an",
+				"<cmd>CopilotChatBetterNamings<cr>",
+				mode = { "v" },
+				desc = "CopilotChat - Better Naming",
+			},
+			{ "<leader>ad", "<cmd>CopilotChatDebugInfo<cr>", desc = "CopilotChat - Debug Info" },
+			-- Fix the issue with diagnostic
+			{ "<leader>af", "<cmd>CopilotChatFixDiagnostic<cr>", desc = "CopilotChat - Fix Diagnostic" },
+
+			{ "<leader>ad", pick("help"), desc = "Diagnostic Help", mode = { "n", "v" } },
+			{ "<leader>ap", pick("prompt"), desc = "Prompt Actions", mode = { "n", "v" } },
 		},
 		config = function(_, opts)
 			local chat = require("CopilotChat")
 			local select = require("CopilotChat.select")
-
-			local ns = vim.api.nvim_create_namespace("copilot-chat-text-hl")
 
 			-- Override the git prompts message
 			opts.prompts.Commit = {
@@ -111,56 +137,47 @@ return {
 				end,
 			}
 
+			chat.setup(opts)
+			-- Setup the CMP integration
+			require("CopilotChat.integrations.cmp").setup()
+
+			vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
+				chat.ask(args.args, { selection = select.visual })
+			end, { nargs = "*", range = true })
+
+			-- Inline chat with Copilot
+			vim.api.nvim_create_user_command("CopilotChatInline", function(args)
+				chat.ask(args.args, {
+					selection = select.visual,
+					window = {
+						layout = "float",
+						relative = "cursor",
+						width = 1,
+						height = 0.3,
+						row = 1,
+					},
+				})
+			end, { nargs = "*", range = true })
+
+			-- Restore CopilotChatBuffer
+			vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
+				chat.ask(args.args, { selection = select.buffer })
+			end, { nargs = "*", range = true })
+
+			-- Custom buffer for CopilotChat
 			vim.api.nvim_create_autocmd("BufEnter", {
-				pattern = "copilot-chat",
-				callback = function(ev)
+				pattern = "copilot-*",
+				callback = function()
 					vim.opt_local.relativenumber = false
 					vim.opt_local.number = false
+					vim.opt_local.colorcolumn = ""
 
-					vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
-						group = vim.api.nvim_create_augroup("copilot-chat-text-" .. ev.buf, { clear = true }),
-						buffer = ev.buf,
-						callback = function()
-							vim.api.nvim_buf_clear_namespace(ev.buf, ns, 0, -1)
-							local lines = vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false)
-							for l, line in ipairs(lines) do
-								if line:match(opts.separator .. "$") then
-									local sep = vim.fn.strwidth(line) - vim.fn.strwidth(opts.separator)
-									if sep > 0 then
-										vim.api.nvim_buf_set_extmark(ev.buf, ns, l - 1, sep, {
-											virt_text_win_col = sep,
-											virt_text = {
-												{ string.rep("─", vim.go.columns), "@punctuation.special.markdown" },
-											},
-											priority = 100,
-										})
-										vim.api.nvim_buf_set_extmark(ev.buf, ns, l - 1, 0, {
-											end_col = sep + 1,
-											hl_group = "@markup.heading.2.markdown",
-											priority = 100,
-										})
-									end
-								end
-							end
-						end,
-					})
+					-- -- Get current filetype and set it to markdown if the current filetype is copilot-chat
+					-- local ft = vim.bo.filetype
+					-- if ft == "copilot-chat" then
+					-- 	vim.bo.filetype = "markdown"
+					-- end
 				end,
-			})
-
-			chat.setup(opts)
-		end,
-	},
-
-	-- Edgy integration
-	{
-		"folke/edgy.nvim",
-		optional = true,
-		opts = function(_, opts)
-			opts.right = opts.right or {}
-			table.insert(opts.right, {
-				ft = "copilot-chat",
-				title = "Copilot Chat",
-				size = { width = 50 },
 			})
 		end,
 	},

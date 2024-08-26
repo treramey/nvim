@@ -17,6 +17,8 @@ return {
 					"notify",
 					"oil",
 					"Oil",
+					"dashboard",
+					"copilot-chat",
 				},
 				callback = function()
 					vim.b.miniindentscope_disable = true

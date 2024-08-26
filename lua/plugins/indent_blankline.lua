@@ -15,6 +15,7 @@ return {
 					"mason",
 					"notify",
 					"oil",
+					"dashboard",
 				},
 			},
 		},

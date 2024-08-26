@@ -21,6 +21,7 @@ return {
 				yaml = { "yamlfmt" },
 				javascript = { "biome", "prettierd", "prettier" },
 				typescript = { "biome", "prettierd", "prettier" },
+				svelte = { "prettierd", "prettier" },
 				typescriptreact = { "biome", "prettierd", "prettier" },
 				lua = { "stylua" },
 				go = { "gofmt", "goimports" },

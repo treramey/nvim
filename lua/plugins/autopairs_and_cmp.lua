@@ -76,18 +76,18 @@ return {
 					["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
 					["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
 					["<C-c>"] = cmp.mapping.abort(), -- close completion window
-					["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
-					-- ["<CR>"] = cmp.mapping({ -- works better if we are using copilot
-					-- 	i = function(fallback)
-					-- 		if cmp.visible() and cmp.get_active_entry() then
-					-- 			cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-					-- 		else
-					-- 			fallback()
-					-- 		end
-					-- 	end,
-					-- 	s = cmp.mapping.confirm({ select = false }),
-					-- 	c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
-					-- }),
+					-- ["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
+					["<CR>"] = cmp.mapping({ -- works better if we are using copilot
+						i = function(fallback)
+							if cmp.visible() and cmp.get_active_entry() then
+								cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+							else
+								fallback()
+							end
+						end,
+						s = cmp.mapping.confirm({ select = false }),
+						c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+					}),
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({

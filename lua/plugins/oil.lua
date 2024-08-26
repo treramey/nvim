@@ -33,6 +33,9 @@ return {
 				},
 				view_options = {
 					show_hidden = true,
+					filters = {
+						[".DS_Store"] = true,
+					},
 				},
 			})
 		end,

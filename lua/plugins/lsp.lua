@@ -14,8 +14,7 @@ return {
 
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
-
-			"Hoffs/omnisharp-extended-lsp.nvim",
+			{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
 		},
 		config = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
@@ -167,6 +166,7 @@ return {
 				nil_ls = {},
 				pyright = {},
 				sqlls = {},
+				svelte = {},
 				tailwindcss = {},
 				tsserver = {
 					settings = {

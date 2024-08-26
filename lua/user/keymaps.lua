@@ -57,6 +57,9 @@ nnoremap("<C-h>", function()
 	end
 end)
 
+-- Select all and yank with Ctrl-a
+nnoremap("<C-a>", "ggVGy", { desc = "Select all and yank" })
+
 -- Swap between last two buffers
 nnoremap("<leader>'", "<C-^>", { desc = "Switch to last buffer" })
 
@@ -102,10 +105,6 @@ end, { desc = "Toggle Breakpoint" })
 nnoremap("<leader>dc", function()
 	require("dap").continue()
 end, { desc = "Continue" })
-
-nnoremap("<leader>da", function()
-	require("dap").continue({ before = get_args })
-end, { desc = "Run with Args" })
 
 nnoremap("<leader>dC", function()
 	require("dap").run_to_cursor()
