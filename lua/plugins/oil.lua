@@ -33,9 +33,12 @@ return {
 				},
 				view_options = {
 					show_hidden = true,
-					filters = {
-						[".DS_Store"] = true,
-					},
+					is_always_hidden = function(name, _)
+						-- .DS_Store are always considered hidden
+						if name == ".DS_Store" then
+							return true
+						end
+					end,
 				},
 			})
 		end,
