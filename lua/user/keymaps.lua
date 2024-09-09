@@ -6,56 +6,36 @@ local xnoremap = require("user.keymap_utils").xnoremap
 local harpoon_ui = require("harpoon.ui")
 local harpoon_mark = require("harpoon.mark")
 local conform = require("conform")
-local utils = require("user.utils")
+local terminal = require("user.terminal")
+local smart_splits = require("smart-splits")
+local dap = require("dap")
 
 local M = {}
-
-local TERM = os.getenv("TERM")
 
 -- Normal --
 -- Disable Space bar since it'll be used as the leader key
 nnoremap("<space>", "<nop>")
 
--- Window +  better kitty navigation
+-- Window +  better navigation
+nnoremap("<C-h>", function()
+	smart_splits.move_cursor_left()
+end)
+
 nnoremap("<C-j>", function()
-	if vim.fn.exists(":KittyNavigateDown") ~= 0 and TERM == "xterm-kitty" then
-		vim.cmd.KittyNavigateDown()
-	elseif vim.fn.exists(":NvimTmuxNavigateDown") ~= 0 then
-		vim.cmd.NvimTmuxNavigateDown()
-	else
-		vim.cmd.wincmd("j")
-	end
+	smart_splits.move_cursor_down()
 end)
 
 nnoremap("<C-k>", function()
-	if vim.fn.exists(":KittyNavigateUp") ~= 0 and TERM == "xterm-kitty" then
-		vim.cmd.KittyNavigateUp()
-	elseif vim.fn.exists(":NvimTmuxNavigateUp") ~= 0 then
-		vim.cmd.NvimTmuxNavigateUp()
-	else
-		vim.cmd.wincmd("k")
-	end
+	smart_splits.move_cursor_up()
 end)
 
 nnoremap("<C-l>", function()
-	if vim.fn.exists(":KittyNavigateRight") ~= 0 and TERM == "xterm-kitty" then
-		vim.cmd.KittyNavigateRight()
-	elseif vim.fn.exists(":NvimTmuxNavigateRight") ~= 0 then
-		vim.cmd.NvimTmuxNavigateRight()
-	else
-		vim.cmd.wincmd("l")
-	end
+	smart_splits.move_cursor_right()
 end)
 
-nnoremap("<C-h>", function()
-	if vim.fn.exists(":KittyNavigateLeft") ~= 0 and TERM == "xterm-kitty" then
-		vim.cmd.KittyNavigateLeft()
-	elseif vim.fn.exists(":NvimTmuxNavigateLeft") ~= 0 then
-		vim.cmd.NvimTmuxNavigateLeft()
-	else
-		vim.cmd.wincmd("h")
-	end
-end)
+nnoremap("<leader>gg", function()
+	terminal({ "lazygit" }, {})
+end, { desc = "Lazygit" })
 
 -- Select all and yank with Ctrl-a
 nnoremap("<C-a>", "ggVGy", { desc = "Select all and yank" })
@@ -77,6 +57,9 @@ nnoremap("<leader>e", function()
 	require("oil").toggle_float()
 end)
 
+-- Map Undotree to <leader>
+nnoremap("<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle [U]ndo[T]ree " })
+
 -- Center buffer while navigating
 nnoremap("<C-u>", "<C-u>zz")
 nnoremap("<C-d>", "<C-d>zz")
@@ -95,63 +78,63 @@ nnoremap("#", "#zz")
 
 -- DAP (Debugger) keymaps
 nnoremap("<leader>dB", function()
-	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end, { desc = "Breakpoint Condition" })
 
 nnoremap("<leader>db", function()
-	require("dap").toggle_breakpoint()
+	dap.toggle_breakpoint()
 end, { desc = "Toggle Breakpoint" })
 
 nnoremap("<leader>dc", function()
-	require("dap").continue()
+	dap.continue()
 end, { desc = "Continue" })
 
 nnoremap("<leader>dC", function()
-	require("dap").run_to_cursor()
+	dap.run_to_cursor()
 end, { desc = "Run to Cursor" })
 
 nnoremap("<leader>dg", function()
-	require("dap").goto_()
+	dap.goto_()
 end, { desc = "Go to Line (No Execute)" })
 
 nnoremap("<leader>di", function()
-	require("dap").step_into()
+	dap.step_into()
 end, { desc = "Step Into" })
 
 nnoremap("<leader>dj", function()
-	require("dap").down()
+	dap.down()
 end, { desc = "Down" })
 
 nnoremap("<leader>dk", function()
-	require("dap").up()
+	dap.up()
 end, { desc = "Up" })
 
 nnoremap("<leader>dl", function()
-	require("dap").run_last()
+	dap.run_last()
 end, { desc = "Run Last" })
 
 nnoremap("<leader>do", function()
-	require("dap").step_out()
+	dap.step_out()
 end, { desc = "Step Out" })
 
 nnoremap("<leader>dO", function()
-	require("dap").step_over()
+	dap.step_over()
 end, { desc = "Step Over" })
 
 nnoremap("<leader>dp", function()
-	require("dap").pause()
+	dap.pause()
 end, { desc = "Pause" })
 
 nnoremap("<leader>dr", function()
-	require("dap").repl.toggle()
+	dap.repl.toggle()
 end, { desc = "Toggle REPL" })
 
 nnoremap("<leader>ds", function()
-	require("dap").session()
+	dap.session()
 end, { desc = "Session" })
 
 nnoremap("<leader>dt", function()
-	require("dap").terminate()
+	dap.terminate()
 end, { desc = "Terminate" })
 
 nnoremap("<leader>dw", function()
@@ -313,7 +296,20 @@ nnoremap("<leader>5", function()
 end)
 
 -- Git keymaps --
-nnoremap("<leader>gb", ":BlameLineToggle<cr>")
+nnoremap("<leader>gs", function()
+	require("neogit").open()
+end, { silent = true })
+
+nnoremap("<leader>gc", ":Neogit commit<CR>", { silent = true })
+
+nnoremap("<leader>gp", ":Neogit pull<CR>", { silent = true })
+
+nnoremap("<leader>gP", ":Neogit push<CR>", { silent = true })
+
+nnoremap("<leader>gb", ":Telescope git_branches<CR>", { silent = true })
+
+nnoremap("<leader>gB", ":BlameLineToggle<CR>", { silent = true })
+
 nnoremap("<leader>gf", function()
 	local cmd = {
 		"sort",
@@ -361,58 +357,23 @@ nnoremap("<leader>ss", function()
 	}))
 end, { desc = "[S]earch [S]pelling suggestions" })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("LspKeymaps", {}),
-	callback = function(ev)
-		-- Enable completion triggered by <c-x><c-o>
-		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-		local opts = { buffer = ev.buf, noremap = true, silent = true }
-
-		opts.desc = "Hover Documentation"
-		vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-		-- Will be a default in new versions of Neovim.
-		opts.desc = "[C]ode [R]efactor [R]ename"
-		vim.keymap.set("n", "rn", vim.lsp.buf.rename, opts)
-
-		-- Will be a default in new versions of Neovim.
-		opts.desc = "[C]ode [R]efactor Action"
-		vim.keymap.set("n", "ca", vim.lsp.buf.code_action, opts)
-
-		-- Will be a default in new versions of Neovim.
-		opts.desc = "[G]oto [R]eferences"
-		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-
-		opts.desc = "[G]oto [D]efinition"
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-
-		opts.desc = "[G]oto [D]eclaration"
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-
-		opts.desc = "[G]oto [I]mplementation"
-		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-
-		opts.desc = "[G]oto [T]ype [D]efinition"
-		vim.keymap.set("n", "td", vim.lsp.buf.type_definition, opts)
-
-		opts.desc = "Signature Documentation"
-		vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts)
-	end,
-})
 -- LSP Keybinds (exports a function to be used in ../../after/plugin/lsp.lua b/c we need a reference to the current buffer) --
 M.map_lsp_keybinds = function(buffer_number)
-	nnoremap(
-		"<leader>bs",
-		require("telescope.builtin").lsp_document_symbols,
-		{ desc = "LSP: [B]uffer [S]ymbols", buffer = buffer_number }
-	)
+	local opts = function(desc)
+		return { buffer = buffer_number, desc = desc }
+	end
 
-	nnoremap(
-		"<leader>ps",
-		require("telescope.builtin").lsp_workspace_symbols,
-		{ desc = "LSP: [P]roject [S]ymbols", buffer = buffer_number }
-	)
+	nnoremap("K", vim.lsp.buf.hover, opts("Hover Documentation"))
+	nnoremap("gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
+	nnoremap("gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
+	nnoremap("gi", vim.lsp.buf.implementation, opts("LSP: [G]oto [I]mplementation"))
+	nnoremap("td", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
+	nnoremap("gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
+	nnoremap("<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
+	nnoremap("<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
+	nnoremap("<leader>k", vim.lsp.buf.signature_help, opts("LSP: Signature Documentation"))
+	nnoremap("<leader>bs", require("telescope.builtin").lsp_document_symbols, opts("LSP: [B]uffer [S]ymbols"))
+	nnoremap("<leader>ps", require("telescope.builtin").lsp_workspace_symbols, opts("LSP: [P]roject [S]ymbols"))
 end
 
 -- Symbol Outline keybind

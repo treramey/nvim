@@ -14,6 +14,7 @@ return {
 
 			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
+					"astro",
 					"bash",
 					"c",
 					"css",
@@ -95,6 +96,8 @@ return {
 					},
 				},
 			})
+
+			-- vim.treesitter.language.register("markdown", "mdx")
 		end,
 	},
 }

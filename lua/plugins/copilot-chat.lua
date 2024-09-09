@@ -44,7 +44,8 @@ return {
 			user = user:sub(1, 1):upper() .. user:sub(2)
 			return {
 				model = "gpt-4o",
-				auto_insert_mode = false,
+				auto_insert_mode = true,
+				auto_follow_cursor = false,
 				show_folds = false,
 				show_help = true,
 				question_header = "   " .. user .. " ",

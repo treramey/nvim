@@ -2,6 +2,7 @@ return {
 	{
 		"catppuccin/nvim",
 		priority = 10000,
+		lazy = false,
 		config = function()
 			local transparent = false
 

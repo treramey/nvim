@@ -4,27 +4,28 @@ return {
 		dependencies = {
 			"Cliffback/netcoredbg-macOS-arm64.nvim",
 			"rcarriga/nvim-dap-ui",
-			"theHamsta/nvim-dap-virtual-text",
 		},
 		config = function()
-			local dap = require("dap")
+			local status, dap = pcall(require, "dap")
 
-			local function get_netcoredbg_path()
-				local base_dir = vim.fn.stdpath("data") .. "/lazy/"
-				local netcoredbg_dir = "netcoredbg-macOS-arm64.nvim"
-				return base_dir .. netcoredbg_dir .. "/netcoredbg/netcoredbg"
+			if not status then
+				print("dap not loaded")
+				return
 			end
 
-			local netcoredbg_path = get_netcoredbg_path()
+			-- local function get_netcoredbg_path()
+			-- 	local base_dir = vim.fn.stdpath("data") .. "/lazy/"
+			-- 	local netcoredbg_dir = "netcoredbg-macOS-arm64.nvim"
+			-- 	return base_dir .. netcoredbg_dir .. "/netcoredbg/netcoredbg"
+			-- end
+			--
+			-- local netcoredbg_path = get_netcoredbg_path()
 
 			dap.adapters.coreclr = {
 				type = "executable",
-				command = netcoredbg_path,
+				command = vim.fn.stdpath("data") .. "/mason/bin/netcoredbg",
 				args = { "--interpreter=vscode" },
 			}
-
-			-- Neotest Test runner looks at this table
-			dap.adapters.netcoredbg = dap.adapters.coreclr
 
 			-- useful for debugging issues with dap
 			-- Logs are written to :lua print(vim.fn.stdpath('cache'))
@@ -38,14 +39,14 @@ return {
 					-- console = "integratedTerminal",
 					justMyCode = false,
 					program = function()
-						return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/API/bin/Debug/net8.0/API.dll", "file")
+						return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/src/WebApi/bin/Debug", "file")
 					end,
 					cwd = function()
-						return vim.fn.input("Workspace folder: ", vim.fn.getcwd() .. "/API", "file")
+						return vim.fn.input("Workspace folder: ", vim.fn.getcwd() .. "/src/WebApi", "file")
 					end,
 					env = {
 						ASPNETCORE_ENVIRONMENT = function()
-							return vim.fn.input("ASPNETCORE_ENVIRONMENT: ", "Developmac")
+							return vim.fn.input("ASPNETCORE_ENVIRONMENT: ", "Development")
 						end,
 						ASPNETCORE_URLS = "https://localhost:5050",
 					},
@@ -53,17 +54,17 @@ return {
 			}
 		end,
 	},
-	-- {
-	-- 	"jay-babu/mason-nvim-dap.nvim",
-	-- 	event = "VeryLazy",
-	-- 	dependencies = {
-	-- 		"williamboman/mason.nvim",
-	-- 		"mfussenegger/nvim-dap",
-	-- 	},
-	-- 	opts = {
-	-- 		handlers = {},
-	-- 	},
-	-- },
+	{
+		"jay-babu/mason-nvim-dap.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"mfussenegger/nvim-dap",
+		},
+		opts = {
+			handlers = {},
+		},
+	},
 	{
 		"rcarriga/nvim-dap-ui",
 		event = "VeryLazy",

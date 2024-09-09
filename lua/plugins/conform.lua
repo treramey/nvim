@@ -18,14 +18,15 @@ return {
 			},
 			formatters_by_ft = {
 				cs = { "csharpier" },
-				yaml = { "yamlfmt" },
-				javascript = { "biome", "prettierd", "prettier" },
-				typescript = { "biome", "prettierd", "prettier" },
-				svelte = { "prettierd", "prettier" },
-				typescriptreact = { "biome", "prettierd", "prettier" },
-				lua = { "stylua" },
 				go = { "gofmt", "goimports" },
 				gohtml = { "goimports" },
+				javascript = { "biome", "prettierd", "prettier" },
+				lua = { "stylua" },
+				markdown = { "prettierd", "prettier" },
+				svelte = { "prettierd", "prettier" },
+				typescript = { "biome", "prettierd", "prettier" },
+				typescriptreact = { "biome", "prettierd", "prettier" },
+				yaml = { "yamlfmt" },
 			},
 			formatters = {
 				csharpier = {

@@ -61,6 +61,7 @@ return {
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
 				-- LSP Servers
+				astro = {},
 				bashls = {},
 				biome = {},
 				cssls = {
@@ -168,7 +169,7 @@ return {
 				sqlls = {},
 				svelte = {},
 				tailwindcss = {},
-				tsserver = {
+				ts_ls = {
 					settings = {
 						maxTsServerMemory = 12288,
 						typescript = {

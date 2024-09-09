@@ -4,38 +4,7 @@ return {
 		branch = "0.1.x",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			{
-				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-				cond = vim.fn.executable("cmake") == 1,
-			},
-		},
-		keys = {
-			-- Show help actions with telescope
-			{
-				"<leader>ad",
-				function()
-					local actions = require("CopilotChat.actions")
-					local help = actions.help_actions()
-					if not help then
-						vim.notify("No diagnostics found on the current line", "warn", { title = "Copilot Chat" })
-						return
-					end
-					require("CopilotChat.integrations.telescope").pick(help)
-				end,
-				desc = "Diagnostic Help (CopilotChat)",
-				mode = { "n", "v" },
-			},
-			-- Show prompts actions with telescope
-			{
-				"<leader>ap",
-				function()
-					local actions = require("CopilotChat.actions")
-					require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-				end,
-				desc = "Prompt Actions (CopilotChat)",
-				mode = { "n", "v" },
-			},
+			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 		},
 
 		config = function()
