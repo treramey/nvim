@@ -15,6 +15,11 @@ return {
 						color = "#ffaff3",
 						name = "Gleam",
 					},
+					prettier = {
+						icon = "",
+						color = "#ffaff3",
+						name = "preitter",
+					},
 				},
 			})
 		end,

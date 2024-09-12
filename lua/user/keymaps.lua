@@ -6,9 +6,9 @@ local xnoremap = require("user.keymap_utils").xnoremap
 local harpoon_ui = require("harpoon.ui")
 local harpoon_mark = require("harpoon.mark")
 local conform = require("conform")
-local terminal = require("user.terminal")
 local smart_splits = require("smart-splits")
 local dap = require("dap")
+local utils = require("user.utils")
 
 local M = {}
 
@@ -32,10 +32,6 @@ end)
 nnoremap("<C-l>", function()
 	smart_splits.move_cursor_right()
 end)
-
-nnoremap("<leader>gg", function()
-	terminal({ "lazygit" }, {})
-end, { desc = "Lazygit" })
 
 -- Select all and yank with Ctrl-a
 nnoremap("<C-a>", "ggVGy", { desc = "Select all and yank" })
@@ -338,6 +334,7 @@ nnoremap("<leader>sf", function()
 end, { desc = "[S]earch [F]iles" })
 nnoremap("<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
 nnoremap("<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
+nnoremap("<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
 
 nnoremap("<leader>sc", function()
 	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
@@ -356,6 +353,8 @@ nnoremap("<leader>ss", function()
 		previewer = false,
 	}))
 end, { desc = "[S]earch [S]pelling suggestions" })
+
+nnoremap("<leader>fl", ":TodoQuickFix<CR>", { desc = "[F]ind [L]ines with TODOs" })
 
 -- LSP Keybinds (exports a function to be used in ../../after/plugin/lsp.lua b/c we need a reference to the current buffer) --
 M.map_lsp_keybinds = function(buffer_number)
