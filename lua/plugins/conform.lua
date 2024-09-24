@@ -17,10 +17,12 @@ return {
 				stop_after_first = true,
 			},
 			formatters_by_ft = {
+				astro = { "prettierd", "prettier" },
 				cs = { "csharpier" },
 				go = { "gofmt", "goimports" },
 				gohtml = { "goimports" },
 				javascript = { "biome", "prettierd", "prettier" },
+				css = { "prettierd", "prettier" },
 				lua = { "stylua" },
 				markdown = { "prettierd", "prettier" },
 				svelte = { "prettierd", "prettier" },

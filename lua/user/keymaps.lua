@@ -166,7 +166,6 @@ nnoremap("U", "<C-r>")
 nnoremap("<leader>no", "<cmd>noh<cr>")
 
 -- Diagnostics
-
 -- Goto next diagnostic of any severity
 nnoremap("]d", function()
 	vim.diagnostic.goto_next({})
