@@ -9,6 +9,7 @@ local conform = require("conform")
 local smart_splits = require("smart-splits")
 local dap = require("dap")
 local utils = require("user.utils")
+local terminal = require("user.terminal")
 
 local M = {}
 
@@ -291,19 +292,14 @@ nnoremap("<leader>5", function()
 end)
 
 -- Git keymaps --
-nnoremap("<leader>gs", function()
-	require("neogit").open()
-end, { silent = true })
+--
+nnoremap("<leader>gg", function()
+	terminal({ "lazygit" })
+end, { desc = "Lazygit" })
 
-nnoremap("<leader>gc", ":Neogit commit<CR>", { silent = true })
-
-nnoremap("<leader>gp", ":Neogit pull<CR>", { silent = true })
-
-nnoremap("<leader>gP", ":Neogit push<CR>", { silent = true })
-
-nnoremap("<leader>gb", ":Telescope git_branches<CR>", { silent = true })
-
-nnoremap("<leader>gB", ":BlameLineToggle<CR>", { silent = true })
+--
+-- nnoremap("<leader>gb", ":Telescope git_branches<CR>", { silent = true })
+nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
 
 nnoremap("<leader>gf", function()
 	local cmd = {
@@ -423,8 +419,7 @@ end)
 
 -- Terminal --
 -- Enter normal mode while in a terminal
-tnoremap("<esc>", [[<C-\><C-n>]])
-tnoremap("jj", [[<C-\><C-n>]])
+tnoremap("<esc><esc>", [[<C-\><C-n>]])
 
 -- Window navigation from terminal
 tnoremap("<C-h>", [[<Cmd>wincmd h<CR>]])
