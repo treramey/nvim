@@ -240,4 +240,12 @@ return {
 			})
 		end,
 	},
+	{
+		"hannaeckert/cfmlsp.nvim",
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			"hrsh7th/cmp-nvim-lsp",
+		},
+		opts = {},
+	},
 }
