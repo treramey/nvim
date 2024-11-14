@@ -240,8 +240,9 @@ return {
 			})
 		end,
 	},
-	{
-		"hannaeckert/cfmlsp.nvim",
+	{ --ohhh the pain
+		"treramey/cfmlsp.nvim",
+		event = { "BufReadPost" },
 		dependencies = {
 			"neovim/nvim-lspconfig",
 			"hrsh7th/cmp-nvim-lsp",

@@ -390,6 +390,7 @@ end)
 -- Insert --
 -- Map jj to <esc>
 inoremap("jj", "<esc>")
+inoremap("JJ", "<esc>")
 
 -- Visual --
 -- Disable Space bar since it'll be used as the leader key
