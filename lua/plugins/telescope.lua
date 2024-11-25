@@ -11,7 +11,7 @@ return {
 			local actions = require("telescope.actions")
 			local macchiato = require("catppuccin.palettes").get_palette("macchiato")
 
-			local background = "#24273a"
+			local background = macchiato.base
 
 			local TelescopeColor = {
 				TelescopeMatching = { fg = macchiato.flamingo },
