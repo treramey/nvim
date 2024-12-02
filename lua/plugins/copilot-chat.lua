@@ -33,6 +33,7 @@ end
 return {
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
+		branch = "main",
 		event = "VeryLazy",
 		cmd = "CopilotChat",
 		dependencies = {
