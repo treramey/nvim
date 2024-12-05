@@ -293,33 +293,9 @@ end)
 
 -- Git keymaps --
 --
-nnoremap("<leader>gg", function()
-	terminal({ "lazygit" })
-end, { desc = "Lazygit" })
-
---
--- nnoremap("<leader>gb", ":Telescope git_branches<CR>", { silent = true })
-nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
-
-nnoremap("<leader>gf", function()
-	local cmd = {
-		"sort",
-		"-u",
-		"<(git diff --name-only --cached)",
-		"<(git diff --name-only)",
-		"<(git diff --name-only --diff-filter=U)",
-	}
-
-	if not utils.is_git_directory() then
-		vim.notify(
-			"Current project is not a git directory",
-			vim.log.levels.WARN,
-			{ title = "Telescope Git Files", git_command = cmd }
-		)
-	else
-		require("telescope.builtin").git_files()
-	end
-end, { desc = "Search [G]it [F]iles" })
+-- nnoremap("<leader>gG", function()
+-- 	terminal({ "lazygit" })
+-- end, { desc = "Lazygit" })
 
 -- Telescope keybinds --
 nnoremap("<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
