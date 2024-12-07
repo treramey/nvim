@@ -9,7 +9,6 @@ local conform = require("conform")
 local smart_splits = require("smart-splits")
 local dap = require("dap")
 local utils = require("user.utils")
-local terminal = require("user.terminal")
 
 local M = {}
 
@@ -290,12 +289,6 @@ end)
 nnoremap("<leader>5", function()
 	harpoon_ui.nav_file(5)
 end)
-
--- Git keymaps --
---
--- nnoremap("<leader>gG", function()
--- 	terminal({ "lazygit" })
--- end, { desc = "Lazygit" })
 
 -- Telescope keybinds --
 nnoremap("<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
