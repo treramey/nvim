@@ -209,6 +209,59 @@ nnoremap("<leader>d", function()
 	})
 end)
 
+-- Snacks keybinds
+-- Notification management
+nnoremap("<leader>un", function()
+	Snacks.notifier.hide()
+end, { desc = "Dismiss All Notifications" })
+
+-- Buffer management
+nnoremap("<leader>bd", function()
+	Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
+
+-- Git related keymaps
+nnoremap("<leader>gg", function()
+	Snacks.lazygit()
+end, { desc = "Lazygit" })
+
+nnoremap("<leader>gb", function()
+	Snacks.git.blame_line()
+end, { desc = "Git Blame Line" })
+
+nnoremap("<leader>gB", function()
+	Snacks.gitbrowse()
+end, { desc = "Git Browse" })
+
+nnoremap("<leader>gf", function()
+	Snacks.lazygit.log_file()
+end, { desc = "Lazygit Current File History" })
+
+nnoremap("<leader>gl", function()
+	Snacks.lazygit.log()
+end, { desc = "Lazygit Log (cwd)" })
+
+-- File operations
+nnoremap("<leader>cR", function()
+	Snacks.rename()
+end, { desc = "Rename File" })
+
+-- Neovim news
+nnoremap("<leader>N", function()
+	Snacks.win({
+		file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
+		width = 0.6,
+		height = 0.6,
+		wo = {
+			spell = false,
+			wrap = false,
+			signcolumn = "yes",
+			statuscolumn = " ",
+			conceallevel = 3,
+		},
+	})
+end, { desc = "Neovim News" })
+
 -- Place all dignostics into a qflist
 nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 

@@ -36,6 +36,31 @@ return {
 				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
 			}
 
+			local msbuild = {
+				msbuild = {
+					enabled = true,
+					EnablePackageAutoRestore = true,
+					loadProjectsOnDemand = false,
+				},
+				Sdk = {
+					IncludePrereleases = true,
+				},
+				cake = {
+					enabled = true,
+					bakeryPath = nil,
+				},
+				FormattingOptions = {
+					EnableEditorConfigSupport = true,
+					OrganizeImports = true,
+				},
+				RoslynExtensionsOptions = {
+					AnalyzeOpenDocumentsOnly = false,
+					enableDecompilationSupport = true,
+					enableImportCompletion = true,
+					enableAnalyzersSupport = false,
+				},
+			}
+
 			-- Function to run when neovim connects to a Lsp client
 			---@diagnostic disable-next-line: unused-local
 			local on_attach = function(_client, buffer_number)
@@ -120,49 +145,52 @@ return {
 				marksman = {},
 				ocamllsp = {},
 				omnisharp = {
+					settings = msbuild,
 					cmd = { vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp" },
-					handlers = {
-						["textDocument/definition"] = require("omnisharp_extended").handler,
-						["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
-						["textDocument/signatureHelp"] = vim.lsp.with(
-							vim.lsp.handlers.signature_help,
-							{ border = "double" }
-						),
-					},
-					enable_editorconfig_support = true,
-					enable_ms_build_load_projects_on_demand = false,
-					enable_roslyn_analyzers = true,
-					organize_imports_on_format = true,
-					enable_import_completion = true,
-					sdk_include_prereleases = true,
-					analyze_open_documents_only = true,
-					on_attach = function(_, bufnr)
-						local omnisharp = require("omnisharp_extended")
-						vim.keymap.set("n", "gd", function()
-							omnisharp.telescope_lsp_definitions()
-						end, {
-							buffer = bufnr,
-							noremap = true,
-							silent = true,
-							desc = "LSP: [G]oto [D]efinition",
-						})
-						vim.keymap.set("n", "gi", function()
-							omnisharp.telescope_lsp_implementation()
-						end, {
-							buffer = bufnr,
-							noremap = true,
-							silent = true,
-							desc = "LSP: [G]oto [I]mplementation",
-						})
-						vim.keymap.set("n", "gr", function()
-							omnisharp.telescope_lsp_references()
-						end, {
-							buffer = bufnr,
-							noremap = true,
-							silent = true,
-							desc = "LSP: [G]oto [R]eferences",
-						})
-					end,
+					-- cmd = { "dotnet", os.getenv('HOME') .. "/.local/lib/omnisharp/OmniSharp.dll" },
+					filetypes = { "cs", "vb" },
+					-- handlers = {
+					-- 	["textDocument/definition"] = require("omnisharp_extended").handler,
+					-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
+					-- 	["textDocument/signatureHelp"] = vim.lsp.with(
+					-- 		vim.lsp.handlers.signature_help,
+					-- 		{ border = "double" }
+					-- 	),
+					-- },
+					-- enable_editorconfig_support = true,
+					-- enable_ms_build_load_projects_on_demand = false,
+					-- enable_roslyn_analyzers = true,
+					-- organize_imports_on_format = true,
+					-- enable_import_completion = true,
+					-- sdk_include_prereleases = true,
+					-- analyze_open_documents_only = true,
+					-- on_attach = function(_, bufnr)
+					-- 	local omnisharp = require("omnisharp_extended")
+					-- 	vim.keymap.set("n", "gd", function()
+					-- 		omnisharp.telescope_lsp_definitions()
+					-- 	end, {
+					-- 		buffer = bufnr,
+					-- 		noremap = true,
+					-- 		silent = true,
+					-- 		desc = "LSP: [G]oto [D]efinition",
+					-- 	})
+					-- 	vim.keymap.set("n", "gi", function()
+					-- 		omnisharp.telescope_lsp_implementation()
+					-- 	end, {
+					-- 		buffer = bufnr,
+					-- 		noremap = true,
+					-- 		silent = true,
+					-- 		desc = "LSP: [G]oto [I]mplementation",
+					-- 	})
+					-- 	vim.keymap.set("n", "gr", function()
+					-- 		omnisharp.telescope_lsp_references()
+					-- 	end, {
+					-- 		buffer = bufnr,
+					-- 		noremap = true,
+					-- 		silent = true,
+					-- 		desc = "LSP: [G]oto [R]eferences",
+					-- 	})
+					-- end,
 				},
 				nil_ls = {},
 				pyright = {},
