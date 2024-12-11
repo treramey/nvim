@@ -21,37 +21,55 @@ return {
 			--
 			-- local netcoredbg_path = get_netcoredbg_path()
 
-			dap.adapters.coreclr = {
-				type = "executable",
-				command = vim.fn.stdpath("data") .. "/mason/bin/netcoredbg",
-				args = { "--interpreter=vscode" },
-			}
+			-- dap.adapters.netcoredbg = {
+			-- 	type = "executable",
+			-- 	command = require("mason-registry").get_package("netcoredbg"):get_install_path() .. "/netcoredbg",
+			-- 	args = { "--interpreter=vscode" },
+			-- 	options = {
+			-- 		detached = false,
+			-- 	},
+			-- }
+			-- for _, lang in ipairs({ "cs", "fsharp", "vb" }) do
+			-- 	if not dap.configurations[lang] then
+			-- 		dap.configurations[lang] = {
+			-- 			{
+			-- 				type = "netcoredbg",
+			-- 				name = "Launch file",
+			-- 				request = "launch",
+			-- 				program = function()
+			-- 					return vim.fn.input("Path to dll: ", vim.fn.getcwd() .. "/", "file")
+			-- 				end,
+			-- 				cwd = "${workspaceFolder}",
+			-- 			},
+			-- 		}
+			-- 	end
+			-- end
 
 			-- useful for debugging issues with dap
 			-- Logs are written to :lua print(vim.fn.stdpath('cache'))
 			-- dap.set_log_level("DEBUG") -- or `TRACE` for more logs
 
-			dap.configurations.cs = {
-				{
-					type = "coreclr",
-					name = "launch - API",
-					request = "launch",
-					-- console = "integratedTerminal",
-					justMyCode = false,
-					program = function()
-						return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/src/WebApi/bin/Debug", "file")
-					end,
-					cwd = function()
-						return vim.fn.input("Workspace folder: ", vim.fn.getcwd() .. "/src/WebApi", "file")
-					end,
-					env = {
-						ASPNETCORE_ENVIRONMENT = function()
-							return vim.fn.input("ASPNETCORE_ENVIRONMENT: ", "Development")
-						end,
-						ASPNETCORE_URLS = "https://localhost:5050",
-					},
-				},
-			}
+			-- dap.configurations.cs = {
+			-- 	{
+			-- 		type = "coreclr",
+			-- 		name = "launch - API",
+			-- 		request = "launch",
+			-- 		-- console = "integratedTerminal",
+			-- 		justMyCode = false,
+			-- 		program = function()
+			-- 			return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/src/WebApi/bin/Debug", "file")
+			-- 		end,
+			-- 		cwd = function()
+			-- 			return vim.fn.input("Workspace folder: ", vim.fn.getcwd() .. "/src/WebApi", "file")
+			-- 		end,
+			-- 		env = {
+			-- 			ASPNETCORE_ENVIRONMENT = function()
+			-- 				return vim.fn.input("ASPNETCORE_ENVIRONMENT: ", "Development")
+			-- 			end,
+			-- 			ASPNETCORE_URLS = "https://localhost:5050",
+			-- 		},
+			-- 	},
+			-- }
 		end,
 	},
 	{

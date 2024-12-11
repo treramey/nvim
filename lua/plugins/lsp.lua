@@ -149,14 +149,14 @@ return {
 					cmd = { vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp" },
 					-- cmd = { "dotnet", os.getenv('HOME') .. "/.local/lib/omnisharp/OmniSharp.dll" },
 					filetypes = { "cs", "vb" },
-					-- handlers = {
-					-- 	["textDocument/definition"] = require("omnisharp_extended").handler,
-					-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
-					-- 	["textDocument/signatureHelp"] = vim.lsp.with(
-					-- 		vim.lsp.handlers.signature_help,
-					-- 		{ border = "double" }
-					-- 	),
-					-- },
+					handlers = {
+						["textDocument/definition"] = require("omnisharp_extended").handler,
+						-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
+						-- 	["textDocument/signatureHelp"] = vim.lsp.with(
+						-- 		vim.lsp.handlers.signature_help,
+						-- 		{ border = "double" }
+						-- 	),
+					},
 					-- enable_editorconfig_support = true,
 					-- enable_ms_build_load_projects_on_demand = false,
 					-- enable_roslyn_analyzers = true,
