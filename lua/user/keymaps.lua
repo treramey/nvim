@@ -45,9 +45,6 @@ nnoremap("<leader>w", "<cmd>w<cr>", { silent = false })
 -- Quit with leader key
 nnoremap("<leader>q", "<cmd>q<cr>", { silent = false })
 
--- Save and Quit with leader key
-nnoremap("<leader>z", "<cmd>wq<cr>", { silent = false })
-
 -- Map Oil to <leader>e
 nnoremap("<leader>e", function()
 	require("oil").toggle_float()
@@ -220,14 +217,13 @@ nnoremap("<leader>bd", function()
 	Snacks.bufdelete()
 end, { desc = "Delete Buffer" })
 
--- Git related keymaps
+-- show Lazygit
 nnoremap("<leader>gg", function()
 	Snacks.lazygit()
 end, { desc = "Lazygit" })
 
-nnoremap("<leader>gb", function()
-	Snacks.git.blame_line()
-end, { desc = "Git Blame Line" })
+-- Show git blame on current line
+nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
 
 nnoremap("<leader>gB", function()
 	Snacks.gitbrowse()
