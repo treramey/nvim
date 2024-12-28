@@ -8,7 +8,6 @@ local harpoon_mark = require("harpoon.mark")
 local conform = require("conform")
 local smart_splits = require("smart-splits")
 local dap = require("dap")
-local utils = require("user.utils")
 
 local M = {}
 
@@ -40,7 +39,6 @@ nnoremap("<C-a>", "ggVGy", { desc = "Select all and yank" })
 nnoremap("<leader>'", "<C-^>", { desc = "Switch to last buffer" })
 
 -- Save with leader key
-nnoremap("<leader>w", "<cmd>w<cr>", { silent = false })
 
 -- Quit with leader key
 nnoremap("<leader>q", "<cmd>q<cr>", { silent = false })
@@ -162,6 +160,10 @@ nnoremap("U", "<C-r>")
 -- Turn off highlighted results
 nnoremap("<leader>no", "<cmd>noh<cr>")
 
+nnoremap("<leader>tw", function()
+	Snacks.toggle.option("wrap")
+end, { desc = "[T]oggle [Wrap]" })
+
 -- Diagnostics
 -- Goto next diagnostic of any severity
 nnoremap("]d", function()
@@ -205,58 +207,6 @@ nnoremap("<leader>d", function()
 		border = "rounded",
 	})
 end)
-
--- Snacks keybinds
--- Notification management
-nnoremap("<leader>un", function()
-	Snacks.notifier.hide()
-end, { desc = "Dismiss All Notifications" })
-
--- Buffer management
-nnoremap("<leader>bd", function()
-	Snacks.bufdelete()
-end, { desc = "Delete Buffer" })
-
--- show Lazygit
-nnoremap("<leader>gg", function()
-	Snacks.lazygit()
-end, { desc = "Lazygit" })
-
--- Show git blame on current line
-nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
-
-nnoremap("<leader>gB", function()
-	Snacks.gitbrowse()
-end, { desc = "Git Browse" })
-
-nnoremap("<leader>gf", function()
-	Snacks.lazygit.log_file()
-end, { desc = "Lazygit Current File History" })
-
-nnoremap("<leader>gl", function()
-	Snacks.lazygit.log()
-end, { desc = "Lazygit Log (cwd)" })
-
--- File operations
-nnoremap("<leader>cR", function()
-	Snacks.rename()
-end, { desc = "Rename File" })
-
--- Neovim news
-nnoremap("<leader>N", function()
-	Snacks.win({
-		file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
-		width = 0.6,
-		height = 0.6,
-		wo = {
-			spell = false,
-			wrap = false,
-			signcolumn = "yes",
-			statuscolumn = " ",
-			conceallevel = 3,
-		},
-	})
-end, { desc = "Neovim News" })
 
 -- Place all dignostics into a qflist
 nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })

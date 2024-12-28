@@ -1,4 +1,6 @@
 local macchiato = require("catppuccin.palettes").get_palette("macchiato")
+local filtered_message = { "No information available" }
+
 vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = macchiato.mauve })
 
 return {
@@ -9,6 +11,7 @@ return {
 		---@type snacks.Config
 		opts = {
 			bigfile = { enabled = true },
+			dim = { enabled = true },
 			git = { enabled = true },
 			gitbrowse = { enabled = true },
 			lazygit = {
@@ -16,11 +19,31 @@ return {
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
 			},
 			indent = { enabled = true },
-			notifier = { enabled = true },
+			notifier = {
+				enabled = true,
+				timeout = 3000,
+			},
 			quickfile = { enabled = true },
 			statuscolumn = { enabled = true },
 			words = { enabled = true },
+			zen = { enabled = true },
 		},
+		init = function()
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "VeryLazy",
+				callback = function()
+					local notify = Snacks.notifier.notify
+					Snacks.notifier.notify = function(message, level, opts)
+						for _, msg in ipairs(filtered_message) do
+							if message == msg then
+								return nil
+							end
+						end
+						return notify(message, level, opts)
+					end
+				end,
+			})
+		end,
 		keys = {
 			{
 				"<leader>.",
@@ -44,6 +67,20 @@ return {
 				desc = "[B]uffer [D]elete",
 			},
 			{
+				"<leader>gb",
+				function()
+					Snacks.git.blame_line()
+				end,
+				desc = "[G]it [B]lame Line",
+			},
+			{
+				"<leader>gg",
+				function()
+					Snacks.lazygit()
+				end,
+				desc = "Lazygit",
+			},
+			{
 				"<leader>og",
 				function()
 					Snacks.gitbrowse()
@@ -51,15 +88,55 @@ return {
 				desc = "[O]pen [G]it",
 				mode = { "n", "v" },
 			},
-		},
-		init = function()
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "VeryLazy",
-				callback = function()
-					-- Create some toggle mappings
-					Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>ul")
+			{
+				"<leader>nh",
+				function()
+					Snacks.notifier.show_history()
 				end,
-			})
-		end,
+				desc = "Notification History",
+			},
+			{
+				"<leader>dn",
+				function()
+					Snacks.notifier.hide()
+				end,
+				desc = "[D]ismiss All [N]otifications",
+			},
+			{
+				"<leader>nh",
+				function()
+					Snacks.notifier.show_history()
+				end,
+				desc = "[N]otification [H]istory",
+			},
+			{
+				"<leader>z",
+				function()
+					Snacks.toggle.dim():toggle()
+				end,
+				desc = "Toggle [Z]en Mode",
+			},
+			{
+				"<leader>ln",
+				function()
+					Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle()
+				end,
+				desc = "Toggle Relative [L]ine [N]umbers",
+			},
+			{
+				"<leader>cl",
+				function()
+					Snacks.toggle.option("cursorline", { name = "Cursor Line" }):toggle()
+				end,
+				desc = "Toggle [C]ursor [L]ine",
+			},
+			{
+				"<leader>td",
+				function()
+					Snacks.toggle.diagnostics():toggle()
+				end,
+				desc = "[T]oggle [D]iagnostics",
+			},
+		},
 	},
 }
