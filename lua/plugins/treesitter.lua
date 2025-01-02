@@ -5,10 +5,6 @@ return {
 			require("nvim-treesitter.install").update({ with_sync = true })
 		end,
 		event = { "BufEnter" },
-		dependencies = {
-			-- Additional text objects for treesitter
-			"nvim-treesitter/nvim-treesitter-textobjects",
-		},
 		config = function()
 			---@diagnostic disable: missing-fields
 
@@ -132,8 +128,23 @@ return {
 					},
 				},
 			})
-
-			-- vim.treesitter.language.register("markdown", "mdx")
+		end,
+	},
+	{
+		-- Additional text objects for treesitter
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		config = function()
+			local tsc = require("treesitter-context")
+			tsc.setup({
+				enable = false,
+				max_lines = 1,
+				trim_scope = "inner",
+			})
 		end,
 	},
 }
