@@ -7,7 +7,6 @@ local harpoon_ui = require("harpoon.ui")
 local harpoon_mark = require("harpoon.mark")
 local conform = require("conform")
 local smart_splits = require("smart-splits")
-local dap = require("dap")
 
 local M = {}
 
@@ -67,71 +66,6 @@ nnoremap("<C-o>", "<C-o>zz")
 nnoremap("%", "%zz")
 nnoremap("*", "*zz")
 nnoremap("#", "#zz")
-
--- DAP (Debugger) keymaps
-nnoremap("<leader>dB", function()
-	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-end, { desc = "Breakpoint Condition" })
-
-nnoremap("<leader>db", function()
-	dap.toggle_breakpoint()
-end, { desc = "Toggle Breakpoint" })
-
-nnoremap("<leader>dc", function()
-	dap.continue()
-end, { desc = "Continue" })
-
-nnoremap("<leader>dC", function()
-	dap.run_to_cursor()
-end, { desc = "Run to Cursor" })
-
-nnoremap("<leader>dg", function()
-	dap.goto_()
-end, { desc = "Go to Line (No Execute)" })
-
-nnoremap("<leader>di", function()
-	dap.step_into()
-end, { desc = "Step Into" })
-
-nnoremap("<leader>dj", function()
-	dap.down()
-end, { desc = "Down" })
-
-nnoremap("<leader>dk", function()
-	dap.up()
-end, { desc = "Up" })
-
-nnoremap("<leader>dl", function()
-	dap.run_last()
-end, { desc = "Run Last" })
-
-nnoremap("<leader>do", function()
-	dap.step_out()
-end, { desc = "Step Out" })
-
-nnoremap("<leader>dO", function()
-	dap.step_over()
-end, { desc = "Step Over" })
-
-nnoremap("<leader>dp", function()
-	dap.pause()
-end, { desc = "Pause" })
-
-nnoremap("<leader>dr", function()
-	dap.repl.toggle()
-end, { desc = "Toggle REPL" })
-
-nnoremap("<leader>ds", function()
-	dap.session()
-end, { desc = "Session" })
-
-nnoremap("<leader>dt", function()
-	dap.terminate()
-end, { desc = "Terminate" })
-
-nnoremap("<leader>dw", function()
-	require("dap.ui.widgets").hover()
-end, { desc = "Widgets" })
 
 -- Press 'S' for quick find/replace for the word under the cursor
 nnoremap("S", function()
@@ -208,9 +142,6 @@ nnoremap("<leader>d", function()
 		border = "rounded",
 	})
 end)
-
--- Place all dignostics into a qflist
-nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 
 -- Navigate to next qflist item
 nnoremap("<leader>cn", ":cnext<cr>zz")
@@ -330,13 +261,12 @@ M.map_lsp_keybinds = function(buffer_number)
 	nnoremap("gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
 	nnoremap("gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
 	nnoremap("gi", vim.lsp.buf.implementation, opts("LSP: [G]oto [I]mplementation"))
-	nnoremap("td", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
+	nnoremap("gt", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
 	nnoremap("gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
 	nnoremap("<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
 	nnoremap("<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
 	nnoremap("<leader>k", vim.lsp.buf.signature_help, opts("LSP: Signature Documentation"))
 	nnoremap("<leader>bs", require("telescope.builtin").lsp_document_symbols, opts("LSP: [B]uffer [S]ymbols"))
-	nnoremap("<leader>ps", require("telescope.builtin").lsp_workspace_symbols, opts("LSP: [P]roject [S]ymbols"))
 end
 
 -- Symbol Outline keybind
@@ -348,8 +278,8 @@ nnoremap("<leader>oc", function()
 end, { desc = "[O]pen [C]opilot panel" })
 
 -- nvim-ufo keybinds
--- nnoremap("zR", require("ufo").openAllFolds)
--- nnoremap("zM", require("ufo").closeAllFolds)
+nnoremap("zR", require("ufo").openAllFolds)
+nnoremap("zM", require("ufo").closeAllFolds)
 
 -- toggle inlay hints
 nnoremap("<leader>ih", function()
