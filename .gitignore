@@ -1,2 +1,2 @@
 .local/bin/chezmoi/
-config/nvim/.undodir
+.undodir/*

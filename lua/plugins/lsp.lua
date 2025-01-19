@@ -14,7 +14,6 @@ return {
 
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
-			{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
 		},
 		config = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
@@ -34,31 +33,6 @@ return {
 				includeInlayPropertyDeclarationTypeHints = true,
 				includeInlayVariableTypeHints = true,
 				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-			}
-
-			local msbuild = {
-				msbuild = {
-					enabled = true,
-					EnablePackageAutoRestore = true,
-					loadProjectsOnDemand = false,
-				},
-				Sdk = {
-					IncludePrereleases = true,
-				},
-				cake = {
-					enabled = true,
-					bakeryPath = nil,
-				},
-				FormattingOptions = {
-					EnableEditorConfigSupport = true,
-					OrganizeImports = true,
-				},
-				RoslynExtensionsOptions = {
-					AnalyzeOpenDocumentsOnly = false,
-					enableDecompilationSupport = true,
-					enableImportCompletion = true,
-					enableAnalyzersSupport = false,
-				},
 			}
 
 			-- Function to run when neovim connects to a Lsp client
@@ -143,56 +117,13 @@ return {
 					},
 				},
 				marksman = {},
-				ocamllsp = {},
-				omnisharp = {
-					settings = msbuild,
-					cmd = { vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp" },
-					-- cmd = { "dotnet", os.getenv('HOME') .. "/.local/lib/omnisharp/OmniSharp.dll" },
-					filetypes = { "cs", "vb" },
-					handlers = {
-						["textDocument/definition"] = require("omnisharp_extended").handler,
-						-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "double" }),
-						-- 	["textDocument/signatureHelp"] = vim.lsp.with(
-						-- 		vim.lsp.handlers.signature_help,
-						-- 		{ border = "double" }
-						-- 	),
-					},
-					-- enable_editorconfig_support = true,
-					-- enable_ms_build_load_projects_on_demand = false,
-					-- enable_roslyn_analyzers = true,
-					-- organize_imports_on_format = true,
-					-- enable_import_completion = true,
-					-- sdk_include_prereleases = true,
-					-- analyze_open_documents_only = true,
-					-- on_attach = function(_, bufnr)
-					-- 	local omnisharp = require("omnisharp_extended")
-					-- 	vim.keymap.set("n", "gd", function()
-					-- 		omnisharp.telescope_lsp_definitions()
-					-- 	end, {
-					-- 		buffer = bufnr,
-					-- 		noremap = true,
-					-- 		silent = true,
-					-- 		desc = "LSP: [G]oto [D]efinition",
-					-- 	})
-					-- 	vim.keymap.set("n", "gi", function()
-					-- 		omnisharp.telescope_lsp_implementation()
-					-- 	end, {
-					-- 		buffer = bufnr,
-					-- 		noremap = true,
-					-- 		silent = true,
-					-- 		desc = "LSP: [G]oto [I]mplementation",
-					-- 	})
-					-- 	vim.keymap.set("n", "gr", function()
-					-- 		omnisharp.telescope_lsp_references()
-					-- 	end, {
-					-- 		buffer = bufnr,
-					-- 		noremap = true,
-					-- 		silent = true,
-					-- 		desc = "LSP: [G]oto [R]eferences",
-					-- 	})
-					-- end,
-				},
 				nil_ls = {},
+				powershell_es = {
+					bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
+					init_options = {
+						enableProfileLoading = false,
+					},
+				},
 				pyright = {},
 				sqlls = {},
 				svelte = {},
@@ -223,11 +154,18 @@ return {
 				stylua = {},
 				goimports = {},
 				csharpier = {},
+				xmlformatter = {},
 			}
 
-			local manually_installed_servers = { "ocamllsp", "gleam" }
+			local other_tools = {
+				netcoredbg = {},
+				rustywind = {},
+			}
 
-			local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters))
+			local manually_installed_servers = { "gleam" }
+
+			local mason_tools_to_install =
+				vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters, other_tools))
 
 			local ensure_installed = vim.tbl_filter(function(name)
 				return not vim.tbl_contains(manually_installed_servers, name)
@@ -274,6 +212,34 @@ return {
 				},
 			})
 		end,
+	},
+	{
+		"folke/trouble.nvim",
+		event = "VeryLazy",
+		cmd = "Trouble",
+		opts = {
+			modes = {
+				preview_float = {
+					mode = "diagnostics",
+					preview = {
+						type = "float",
+						relative = "editor",
+						border = "single",
+						title = "Preview",
+						title_pos = "center",
+						position = { 0, -2 },
+						size = { width = 0.3, height = 0.3 },
+						zindex = 200,
+					},
+				},
+			},
+		},
+    -- stylua: ignore start
+    keys = {
+      {"<leader>xw", "<cmd>Trouble diagnostics toggle<cr>", desc = "workspace diagnostics" },
+      {"<leader>xx", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "buffer diagnostics" },
+    },
+		-- stylua: ignore end
 	},
 	{ --ohhh the pain
 		"treramey/cfmlsp.nvim",

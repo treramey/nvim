@@ -1,39 +1,41 @@
 return {
-	{
-		"stevearc/conform.nvim",
-		event = { "BufWritePre" },
-		cmd = { "ConformInfo" },
-		opts = {
-			notify_on_error = false,
-			default_format_opts = {
-				async = true,
-				timeout_ms = 500,
-				lsp_format = "fallback",
-			},
-			format_after_save = {
-				async = true,
-				timeout_ms = 500,
-				lsp_format = "fallback",
-				stop_after_first = true,
-			},
+	"stevearc/conform.nvim",
+	lazy = true,
+	event = { "BufWritePre" },
+	config = function()
+		require("conform").setup({
+			quiet = true,
+			lsp_fallback = true,
 			formatters_by_ft = {
-				astro = { "prettierd", "prettier" },
-				cs = { "csharpier" },
-				go = { "gofmt", "goimports" },
-				gohtml = { "goimports" },
-				javascript = { "biome" },
 				lua = { "stylua" },
-				svelte = { "prettierd", "prettier" },
-				typescript = { "biome" },
-				typescriptreact = { "biome" },
-				yaml = { "yamlfmt" },
+				javascript = { "prettier", "eslint", stop_after_first = true },
+				typescript = { "prettier", "eslint", stop_after_first = true },
+				javascriptreact = { "prettier", "rustywind" },
+				typescriptreact = { "prettier", "rustywind" },
+				svelte = { "prettier", "rustywind" },
+				html = { "prettier", "rustywind" },
+				css = { "prettier" },
+				scss = { "prettier" },
+				less = { "prettier" },
+				json = { "prettier" },
+				jsonc = { "prettier" },
+				yaml = { "prettier" },
+				markdown = { "prettier" },
+				mdx = { "prettier" },
+				graphql = { "prettier" },
+				go = { "gofmt" },
+				cs = { "csharpier" },
+				xml = { "xmlformat" },
+				svg = { "xmlformat" },
+				rust = { "rustfmt" },
 			},
 			formatters = {
-				csharpier = {
-					command = "dotnet-csharpier",
-					args = { "--write-stdout", "--no-cache", "$FILENAME" },
+				xmlformat = {
+					cmd = { "xmlformat" },
+					args = { "--selfclose", "-" },
 				},
+				injected = { options = { ignore_errors = false } },
 			},
-		},
-	},
+		})
+	end,
 }

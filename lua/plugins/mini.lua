@@ -38,4 +38,15 @@ return {
 			})
 		end,
 	},
+	{
+		"echasnovski/mini.diff",
+		version = false,
+		lazy = true,
+		opts = {
+			view = {
+				style = "sign",
+				signs = { add = "┃", change = "┃", delete = "_" },
+			},
+		},
+	},
 }

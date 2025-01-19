@@ -4,6 +4,7 @@ return {
 		event = "VeryLazy",
 		config = function()
 			local harpoon = require("harpoon.mark")
+			local trouble = require("trouble")
 
 			local function truncate_branch_name(branch)
 				if not branch or branch == "" then
@@ -37,6 +38,16 @@ return {
 
 				return string.format("󱡅 %s/%d", current_mark, total_marks)
 			end
+			local symbols = trouble.statusline({
+				mode = "lsp_document_symbols",
+				groups = {},
+				title = false,
+				filter = { range = true },
+				format = "{kind_icon}{symbol.name:Normal}",
+				-- The following line is needed to fix the background color
+				-- Set it to the lualine section you want to use
+				hl_group = "lualine_c_normal",
+			})
 
 			require("lualine").setup({
 				options = {
@@ -54,6 +65,7 @@ return {
 					},
 					lualine_c = {
 						{ "filename", path = 1 },
+						{ symbols.get, cond = symbols.has },
 					},
 					lualine_x = {
 						"filetype",

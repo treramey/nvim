@@ -1,110 +1,48 @@
-local dotnet_languages = { "cs", "vb" }
-
-local function get_secret_path(secret_guid)
-	local path = ""
-	local home_dir = vim.fn.expand("~")
-	if require("easy-dotnet.extensions").isWindows() then
-		local secret_path = home_dir
-			.. "\\AppData\\Roaming\\Microsoft\\UserSecrets\\"
-			.. secret_guid
-			.. "\\secrets.json"
-		path = secret_path
-	else
-		local secret_path = home_dir .. "/.microsoft/usersecrets/" .. secret_guid .. "/secrets.json"
-		path = secret_path
-	end
-	return path
-end
-
 return {
 	{
-		"adamclerk/vim-razor",
-		ft = dotnet_languages,
-	},
-	{
-		"issafalcon/neotest-dotnet",
-		ft = dotnet_languages,
-	},
-	{
-		"moaidhathot/dotnet.nvim",
-		cmd = "DotnetUI",
-		opts = {
-			bootstrap = {
-				auto_bootstrap = true, -- Automatically call "bootstrap" when creating a new file, adding a namespace and a class to the files
-			},
-			project_selection = {
-				path_display = "filename_first", -- Determines how file paths are displayed. All of Telescope's path_display options are supported
-			},
-		},
-		ft = dotnet_languages,
-	},
-	{
-		"iabdelkareem/csharp.nvim",
-		dependencies = {
-			"williamboman/mason.nvim", -- Required, automatically installs omnisharp
-			"mfussenegger/nvim-dap",
-			"tastyep/structlog.nvim", -- optional, but highly recommended for debugging
-		},
-		opts = {
-			lsp = {
-				-- Sets if you want to use omnisharp as your LSP
-				omnisharp = {
-					-- When set to false, csharp.nvim won't launch omnisharp automatically.
-					enable = false,
+		"seblj/roslyn.nvim",
+		ft = "cs",
+		opts = function()
+			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
+			vim.api.nvim_create_autocmd({ "LspAttach", "InsertLeave" }, {
+				pattern = "*",
+				callback = function()
+					local clients = vim.lsp.get_clients({ name = "roslyn" })
+					if not clients or #clients == 0 then
+						return
+					end
+
+					local buffers = vim.lsp.get_buffers_by_client_id(clients[1].id)
+					for _, buf in ipairs(buffers) do
+						map_lsp_keybinds(buf)
+						vim.lsp.util._refresh("textDocument/diagnostic", { bufnr = buf })
+						vim.lsp.codelens.refresh()
+					end
+				end,
+			})
+			return {
+				config = {
+					settings = {
+						["csharp|code_lens"] = {
+							dotnet_enable_references_code_lens = true,
+						},
+					},
 				},
-				-- Sets if you want to use roslyn as your LSP
-				roslyn = {
-					-- When set to true, csharp.nvim will launch roslyn automatically.
-					enable = false,
-					-- Path to the roslyn LSP see 'Roslyn LSP Specific Prerequisites' above.
-					cmd_path = nil,
-				},
-				-- The capabilities to pass to the omnisharp server
-				capabilities = nil,
-				-- on_attach function that'll be called when the LSP is attached to a buffer
-				on_attach = nil,
-			},
-			logging = {
-				-- The minimum log level.
-				level = "INFO",
-			},
-			dap = {
-				-- When set, csharp.nvim won't launch install and debugger automatically. Instead, it'll use the debug adapter specified.
-				--- @type string?
-				adapter_name = nil,
-			},
+			}
+		end,
+		keys = {
+			{ "<leader>nl", "<cmd>Roslyn restart<cr>", desc = "restart roslyn lsp" },
 		},
-		ft = dotnet_languages,
 	},
 	{
-		"gustaveikaas/easy-dotnet.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
+		"GustavEikaas/easy-dotnet.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		ft = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "targets" },
+		lazy = true,
+		cmd = "Dotnet",
 		opts = {
-			test_runner = {
-				---@type "split" | "float" | "buf"
-				viewmode = "float",
-				enable_buffer_test_execution = true, --Experimental, run tests directly from buffer
-				noBuild = true,
-				noRestore = true,
-				icons = {
-					passed = "",
-					skipped = "",
-					failed = "",
-					success = "",
-					reload = "",
-					test = "",
-					sln = "󰘐",
-					project = "󰘐",
-					dir = "",
-					package = "",
-				},
-			},
-			---@param action "test" | "restore" | "build" | "run"
 			terminal = function(path, action)
-				local cmd_definitions = {
+				local commands = {
 					run = function()
 						return "dotnet run --project " .. path
 					end,
@@ -118,17 +56,26 @@ return {
 						return "dotnet build " .. path
 					end,
 				}
-				local command = cmd_definitions[action]() .. "\r"
-				vim.cmd("vsplit")
-				vim.cmd("term " .. command)
+				local cmd = commands[action]() .. "\r"
+				Snacks.terminal.open(cmd)
 			end,
-			secrets = {
-				path = get_secret_path,
+			test_runner = {
+				viewmode = "float",
+				icons = {
+					project = "󰗀",
+				},
 			},
-			csproj_mappings = true,
-			fsproj_mappings = true,
-			auto_bootstrap_namespace = true,
 		},
-		ft = dotnet_languages,
+		keys = {
+      -- stylua: ignore start 
+      -- { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build" },
+      { "<leader>nB", function() require("easy-dotnet").build_quickfix() end, desc = "build solution" },
+      { "<leader>nr", function() require("easy-dotnet").run_default() end, desc = "run" },
+      { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },
+      { "<leader>nx", function() require("easy-dotnet").clean() end, desc = "clean solution" },
+      { "<leader>na", "<cmd>Dotnet new<cr>", desc = "new item" },
+      { "<leader>nt", "<cmd>Dotnet testrunner<cr>", desc = "open test runner" },
+			-- stylua: ignore end
+		},
 	},
 }
