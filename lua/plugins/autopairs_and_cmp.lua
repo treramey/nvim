@@ -41,6 +41,15 @@ return {
 			-- Load snippets
 			require("luasnip.loaders.from_vscode").lazy_load()
 
+			local has_words_before = function()
+				if vim.bo.buftype == "prompt" then
+					return false
+				end
+				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+				return col ~= 0
+					and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
+			end
+
 			--- @diagnostic disable: redundant-parameter
 			cmp.setup({
 				snippet = {
@@ -56,7 +65,7 @@ return {
 					["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
 					["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
 					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
+						if cmp.visible() and has_words_before() then
 							cmp.select_next_item()
 						elseif luasnip.expand_or_jumpable() then
 							luasnip.expand_or_jump()
@@ -73,27 +82,31 @@ return {
 							fallback()
 						end
 					end, { "i", "s" }),
-					["<C-u>"] = cmp.mapping.scroll_docs(-4), -- scroll up preview
-					["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
-					["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
-					["<C-c>"] = cmp.mapping.abort(), -- close completion window
-					["<CR>"] = cmp.mapping({ -- works better if we are using copilot
+					["<C-u>"] = cmp.mapping.scroll_docs(-4),
+					["<C-d>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-c>"] = cmp.mapping.abort(),
+					["<CR>"] = cmp.mapping({
 						i = function(fallback)
 							if cmp.visible() and cmp.get_active_entry() then
-								cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+								cmp.confirm({
+									-- For Copilot
+									behavior = cmp.ConfirmBehavior.Replace,
+									-- Only when explicitly selected
+									select = false,
+								})
 							else
 								fallback()
 							end
 						end,
-						s = cmp.mapping.confirm({ select = false }),
-						c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+						s = cmp.mapping.confirm({ select = true }),
 					}),
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp", group_index = 1 }, -- lsp
+					{ name = "copilot", group_index = 1 }, -- Copilot suggestions
 					{ name = "buffer", max_item_count = 5, group_index = 2 }, -- text within current buffer
-					{ name = "copilot", group_index = 3 }, -- Copilot suggestions
 					{ name = "path", max_item_count = 3, group_index = 3 }, -- file system paths
 					{ name = "luasnip", max_item_count = 3, group_index = 5 }, -- snippets
 					{ name = "nvim-lsp-signature-help" },

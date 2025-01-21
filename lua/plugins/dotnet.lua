@@ -4,6 +4,11 @@ return {
 		ft = "cs",
 		opts = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
+
+			local on_attach = function(client, bufnr)
+				map_lsp_keybinds(bufnr)
+			end
+
 			vim.api.nvim_create_autocmd({ "LspAttach", "InsertLeave" }, {
 				pattern = "*",
 				callback = function()
@@ -14,7 +19,6 @@ return {
 
 					local buffers = vim.lsp.get_buffers_by_client_id(clients[1].id)
 					for _, buf in ipairs(buffers) do
-						map_lsp_keybinds(buf)
 						vim.lsp.util._refresh("textDocument/diagnostic", { bufnr = buf })
 						vim.lsp.codelens.refresh()
 					end
@@ -22,6 +26,7 @@ return {
 			})
 			return {
 				config = {
+          on_attach = on_attach,
 					settings = {
 						["csharp|code_lens"] = {
 							dotnet_enable_references_code_lens = true,

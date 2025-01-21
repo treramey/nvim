@@ -213,34 +213,6 @@ return {
 			})
 		end,
 	},
-	{
-		"folke/trouble.nvim",
-		event = "VeryLazy",
-		cmd = "Trouble",
-		opts = {
-			modes = {
-				preview_float = {
-					mode = "diagnostics",
-					preview = {
-						type = "float",
-						relative = "editor",
-						border = "single",
-						title = "Preview",
-						title_pos = "center",
-						position = { 0, -2 },
-						size = { width = 0.3, height = 0.3 },
-						zindex = 200,
-					},
-				},
-			},
-		},
-    -- stylua: ignore start
-    keys = {
-      {"<leader>xw", "<cmd>Trouble diagnostics toggle<cr>", desc = "workspace diagnostics" },
-      {"<leader>xx", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "buffer diagnostics" },
-    },
-		-- stylua: ignore end
-	},
 	{ --ohhh the pain
 		"treramey/cfmlsp.nvim",
 		event = { "BufReadPost" },
@@ -248,6 +220,13 @@ return {
 			"neovim/nvim-lspconfig",
 			"hrsh7th/cmp-nvim-lsp",
 		},
-		opts = {},
+		opts = function()
+			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
+			return {
+				on_attach = function(_, bufnr)
+					map_lsp_keybinds(bufnr)
+				end,
+			}
+		end,
 	},
 }
