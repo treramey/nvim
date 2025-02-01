@@ -10,6 +10,9 @@ vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.expandtab = true
 
+--Hide cmd line when inactive
+vim.o.cmdheight = 0
+
 -- Enable auto indenting and set it to spaces
 vim.opt.smartindent = true
 vim.opt.shiftwidth = 2
