@@ -127,14 +127,7 @@ return {
 				pyright = {},
 				sqlls = {},
 				svelte = {},
-				tailwindcss = {
-					filetypes = {
-						"typescriptreact",
-						"javascriptreact",
-						"html",
-						"svelte",
-					},
-				},
+				tailwindcss = {},
 				ts_ls = {
 					settings = {
 						maxTsServerMemory = 12288,

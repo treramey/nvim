@@ -86,21 +86,22 @@ return {
 					["<C-d>"] = cmp.mapping.scroll_docs(4),
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<C-c>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping({
-						i = function(fallback)
-							if cmp.visible() and cmp.get_active_entry() then
-								cmp.confirm({
-									-- For Copilot
-									behavior = cmp.ConfirmBehavior.Replace,
-									-- Only when explicitly selected
-									select = false,
-								})
-							else
-								fallback()
-							end
-						end,
-						s = cmp.mapping.confirm({ select = true }),
-					}),
+					-- ["<CR>"] = cmp.mapping({
+					-- 	i = function(fallback)
+					-- 		if cmp.visible() and cmp.get_active_entry() then
+					-- 			cmp.confirm({
+					-- 				-- For Copilot
+					-- 				behavior = cmp.ConfirmBehavior.Replace,
+					-- 				-- Only when explicitly selected
+					-- 				select = false,
+					-- 			})
+					-- 		else
+					-- 			fallback()
+					-- 		end
+					-- 	end,
+					-- 	s = cmp.mapping.confirm({ select = true }),
+					-- }),
+					["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
