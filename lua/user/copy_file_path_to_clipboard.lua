@@ -21,7 +21,6 @@ vim.api.nvim_create_user_command("CFP", function()
 	vim.cmd(":CopyFilePathToClipboard")
 end, {})
 
-
 --  https://www.reddit.com/r/neovim/comments/1d6wreh/comment/logifn9/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 --  clipboard overrides is needed as Alacritty does not support runtime OSC 52 detection.
 --  In SSH_TTY, OSC 52 should work, but needs to be overridden as I use Alacritty.
@@ -34,19 +33,19 @@ end, {})
 --  You can test OSC 52 in terminal by using following in your terminal -
 --  printf $'\e]52;c;%s\a' "$(base64 <<<'hello world')"
 if vim.env.SSH_TTY then
-   local function paste()
-     return { vim.fn.split(vim.fn.getreg(""), "\n"),       vim.fn.getregtype("") }
-   end
-   local osc52 = require("vim.ui.clipboard.osc52")
-   vim.g.clipboard = {
-     name = "OSC 52",
-     copy = {
-      ["+"] = osc52.copy("+"),
-      ["*"] = osc52.copy("*"),
-    },
-    paste = {
-      ["+"] = paste,
-      ["*"] = paste,
-    },
-   }
- end
+	local function paste()
+		return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+	end
+	local osc52 = require("vim.ui.clipboard.osc52")
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = osc52.copy("+"),
+			["*"] = osc52.copy("*"),
+		},
+		paste = {
+			["+"] = osc52.paste("+"),
+			["*"] = osc52.paste("*"),
+		},
+	}
+end
