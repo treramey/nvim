@@ -14,14 +14,6 @@ My personalized development environment,
 | ★ Gleam        | gleam     | -                           | -               |
 | TS/JS          | tsserver  | eslint & prettierd or biome | eslint or biome |
 
-## Preview
-
-![image](https://github.com/emxxjnm/nvim/assets/54089360/8876a392-c803-42cf-9793-46101e94e15a)
-![image](https://github.com/emxxjnm/nvim/assets/54089360/d715070d-dabf-468a-b242-d9233fad5008)
-![image](https://github.com/emxxjnm/nvim/assets/54089360/4c7892d6-6a24-4e5e-8ccb-12270654ad61)
-![image](https://github.com/emxxjnm/nvim/assets/54089360/c973ff75-d4b4-4fad-b485-c515a61728ae)
-![image](https://github.com/emxxjnm/nvim/assets/54089360/44b31fc1-fb2c-4e47-bf7a-b756d16e0837)
-
 ## Try it with docker
 
 ```bash
