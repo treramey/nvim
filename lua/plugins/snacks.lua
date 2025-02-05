@@ -25,6 +25,10 @@ return {
 				enabled = true,
 				timeout = 3000,
 			},
+			lazygit = {
+				configure = false,
+				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
+			},
 			quickfile = { enabled = true },
 			statuscolumn = { enabled = true },
 			terminal = {},
