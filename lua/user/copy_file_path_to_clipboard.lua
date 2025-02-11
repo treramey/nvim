@@ -32,21 +32,24 @@ end, {})
 --
 --  You can test OSC 52 in terminal by using following in your terminal -
 --  printf $'\e]52;c;%s\a' "$(base64 <<<'hello world')"
--- local is_tmux_session = vim.env.TERM_PROGRAM == "tmux" -- Tmux is its own clipboard provider which directly works.
+local is_tmux_session = vim.env.TERM_PROGRAM == "tmux" -- Tmux is its own clipboard provider which directly works.
 -- -- TMUX documentation about its clipboard - https://github.com/tmux/tmux/wiki/Clipboard#the-clipboard
-local osc52 = require("vim.ui.clipboard.osc52")
-vim.g.clipboard = {
-	name = "OSC 52",
-	copy = {
-		["+"] = osc52.copy("+"),
-		["*"] = osc52.copy("*"),
-	},
-	paste = {
-		["+"] = osc52.paste("+"),
-		["*"] = osc52.paste("*"),
-	},
-}
-if vim.env.TMUX ~= nil then
+if vim.env.SSH_TTY and not is_tmux_session then
+	local osc52 = require("vim.ui.clipboard.osc52")
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = osc52.copy("+"),
+			["*"] = osc52.copy("*"),
+		},
+		paste = {
+			["+"] = osc52.paste("+"),
+			["*"] = osc52.paste("*"),
+		},
+	}
+end
+
+if is_tmux_session then
 	local copy = { "tmux", "load-buffer", "-w", "-" }
 	local paste = { "bash", "-c", "tmux refresh-client -l && sleep 0.05 && tmux save-buffer -" }
 	vim.g.clipboard = {
