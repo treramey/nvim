@@ -40,12 +40,16 @@ return {
 					chat = {
 						render_headers = false,
 					},
+					diff = {
+						provider = "mini_diff",
+					},
 				},
 			},
 		},
 		keys = {
 			{ "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "x" }, desc = "actions" },
 			{ "<leader>at", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "x" }, desc = "toggle" },
+			{ "<leader>ab", "<cmd>CodeCompanionChat Add<cr>", mode = "v", noremap = true, silent = true, desc = "add" },
 		},
 		init = function()
 			vim.api.nvim_create_autocmd("BufEnter", {
