@@ -1,6 +1,6 @@
 return {
 	{
-		"seblj/roslyn.nvim",
+		"seblyng/roslyn.nvim",
 		ft = "cs",
 		opts = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
