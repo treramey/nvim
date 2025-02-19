@@ -5,6 +5,7 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			"jmacadie/telescope-hierarchy.nvim",
 		},
 
 		config = function()
@@ -62,10 +63,14 @@ return {
 						"filename_first",
 					},
 				},
+				extensions = {
+					hierarchy = {},
+				},
 			})
 
 			-- Enable telescope fzf native, if installed
 			pcall(require("telescope").load_extension, "fzf")
+			require("telescope").load_extension("hierarchy")
 		end,
 	},
 }

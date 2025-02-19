@@ -230,6 +230,8 @@ end, { desc = "[S]earch [F]iles" })
 nnoremap("<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
 nnoremap("<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
 nnoremap("<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
+nnoremap("<leader>si", ":Telescope hierarchy incoming_calls<CR>", { desc = "LSP: [S]earch [I]ncoming Calls" })
+nnoremap("<leader>so", ":Telescope hierarchy outgoing_calls<CR>", { desc = "LSP: [S]earch [O]utgoing Calls" })
 
 nnoremap("<leader>sc", function()
 	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
@@ -270,7 +272,7 @@ M.map_lsp_keybinds = function(buffer_number)
 end
 
 -- Symbol Outline keybind
-nnoremap("<leader>so", ":SymbolsOutline<cr>")
+nnoremap("<leader>sO", ":SymbolsOutline<cr>")
 
 -- Open Copilot panel
 nnoremap("<leader>oc", function()

@@ -16,7 +16,7 @@ return {
 					Constructor = { icon = "", hl = "@constructor" },
 					Enum = { icon = "", hl = "@type" },
 					Interface = { icon = "", hl = "@type" },
-					Function = { icon = "", hl = "@function" },
+					Function = { icon = "ƒ", hl = "@function" },
 					Variable = { icon = "", hl = "@constant" },
 					Constant = { icon = "", hl = "@constant" },
 					String = { icon = "", hl = "@string" },
