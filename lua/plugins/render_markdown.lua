@@ -20,6 +20,6 @@ return {
 				icons = {},
 			},
 		},
-		ft = { "markdown", "norg", "rmd", "org" },
+		ft = { "markdown", "norg", "rmd", "org", "codecompanion" },
 	},
 }
