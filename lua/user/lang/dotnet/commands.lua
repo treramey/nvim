@@ -37,8 +37,10 @@ local execute = function(cmd)
 	local terminal_opts = {
 		win = {
 			position = "bottom",
+			height = 0.20, -- Set the desired height here
 		},
 	}
+
 	if vim.g.dotnet_utils.last_used_csproj == nil then
 		vim.ui.select(all_csproj, {
 			prompt = "select project",
@@ -51,6 +53,7 @@ local execute = function(cmd)
 		}, function(choice)
 			if not check_csproj(choice) then
 				error("invalid csproj path")
+				return
 			end
 			vim.g.dotnet_utils.last_used_csproj = choice
 
@@ -75,7 +78,7 @@ M.setup = function()
 	}
   -- stylua: ignore start 
   vim.keymap.set("n", "<leader>nw", function () M.watch() end, { desc = "watch project", noremap = true })
-  vim.keymap.set("n", "<leader>nb", function () M.build() end, { desc = "build project", noremap = true })
+	-- vim.keymap.set("n", "<leader>nb", function () M.build() end, { desc = "build project", noremap = true })
 	-- stylua: ignore end
 end
 
