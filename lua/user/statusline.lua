@@ -168,7 +168,7 @@ local function get_harpoon_status()
 		if not fullpath then
 			return nil
 		end
-		local filename = fullpath:match(".+/([^/]+)$")
+		local filename = fullpath:match(".+/([^/]+)%.%w+$")
 		return filename or fullpath
 	end
 
@@ -199,9 +199,9 @@ local function get_harpoon_status()
 
 		local status_entry
 		if full_path == current_file then
-			status_entry = hl_main .. harpoon_icons.active .. _spacer(1) .. hl_main .. filename
+			status_entry = hl_main .. harpoon_icons.active .. " " .. filename
 		else
-			status_entry = hl_accent .. harpoon_icons.indicators[i] .. _spacer(1) .. hl_accent .. filename
+			status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
 		end
 
 		if status_entry then
@@ -283,16 +283,16 @@ local function get_branch()
 	return hl_accent .. " " .. hl_main .. branch .. _spacer(2)
 end
 
--- local function get_recording()
--- 	local hl_main = "%#StatuslineTextMain#"
--- 	local hl_accent = "%#StatuslineTextAccent#"
--- 	local noice = lazy_require("noice")
--- 	local status = noice.api.status.mode.get()
--- 	if status == nil then
--- 		return ""
--- 	end
--- 	return hl_accent .. " " .. hl_main .. status .. _spacer(2)
--- end
+local function get_recording()
+	local hl_main = "%#StatuslineTextMain#"
+	local hl_accent = "%#StatuslineTextAccent#"
+	-- Check macro recording
+	local recording = vim.fn.reg_recording()
+	if recording ~= "" then
+		return hl_accent .. " " .. hl_main .. "recording " .. recording .. _spacer(2)
+	end
+	return ""
+end
 
 local function get_percentage()
 	if is_truncated(75) then
