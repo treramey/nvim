@@ -49,6 +49,7 @@ return {
 			},
 		},
 	},
+	{ "echasnovski/mini-git", lazy = true, version = false, main = "mini.git", opts = {} },
 	{
 		"echasnovski/mini.icons",
 		opts = {

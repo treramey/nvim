@@ -18,11 +18,10 @@ return {
 	},
 	{
 		"olimorris/codecompanion.nvim",
-		lazy = true,
+		event = "VeryLazy",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
-			"zbirenbaum/copilot.lua",
 		},
 		opts = {
 			strategies = {
@@ -44,6 +43,17 @@ return {
 						provider = "mini_diff",
 					},
 				},
+			},
+			adapters = {
+				copilot = function()
+					return require("codecompanion.adapters").extend("copilot", {
+						schema = {
+							model = {
+								default = "claude-3.5-sonnet",
+							},
+						},
+					})
+				end,
 			},
 		},
 		keys = {
