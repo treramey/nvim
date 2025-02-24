@@ -199,6 +199,7 @@ nnoremap("<leader>ho", function()
 		ui_max_width = 75,
 		border = "rounded",
 		title = " Harpoon ",
+		title_pos = "center",
 	})
 end)
 

@@ -12,7 +12,7 @@ nnoremap("<leader>rp", function()
 		return
 	end
 
-	local cmd = "python " .. current_file
+	local cmd = "python3 " .. current_file
 	local terminal_opts = {
 		win = {
 			position = "bottom",
