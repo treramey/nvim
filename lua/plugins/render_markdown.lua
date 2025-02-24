@@ -8,8 +8,9 @@ vim.api.nvim_create_autocmd("FileType", {
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		dependencies = { "nvim-treesitter/nvim-treesitter" }, -- if you use the mini.nvim suite
+		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" },
 		opts = {
+			file_types = { "markdown", "copilot-chat", "codecompanion" },
 			code = {
 				sign = false,
 				width = "block",
@@ -17,9 +18,11 @@ return {
 			},
 			heading = {
 				sign = false,
-				icons = {},
+				icons = { " " }, -- stylua: ignore
+				position = "inline",
 			},
+			pipe_table = { alignment_indicator = "┅" },
 		},
-		ft = { "markdown", "norg", "rmd", "org", "codecompanion" },
+		ft = { "markdown", "copilot-chat", "codecompanion" },
 	},
 }
