@@ -20,7 +20,21 @@ return {
 		opts = {
 			bigfile = { enabled = true },
 			dim = { enabled = true },
-			indent = { enabled = true },
+			indent = {
+				enabled = true,
+				filter = function(buf)
+					local b = vim.b[buf]
+					local bo = vim.bo[buf]
+					local excluded_filetypes = {
+						markdown = true,
+						text = true,
+					}
+					return vim.g.snacks_indent ~= false
+						and b.snacks_indent ~= false
+						and bo.buftype == ""
+						and not excluded_filetypes[bo.filetype]
+				end,
+			},
 			notifier = {
 				enabled = true,
 				timeout = 3000,

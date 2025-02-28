@@ -57,14 +57,13 @@ return {
 						"_build",
 						".next",
 						".undodir",
+						"bin",
+						"obj",
 					},
 					hidden = true,
 					path_display = {
 						"filename_first",
 					},
-				},
-				extensions = {
-					hierarchy = {},
 				},
 			})
 

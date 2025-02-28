@@ -11,7 +11,7 @@ return {
 	{
 		"zbirenbaum/copilot-cmp",
 		event = { "BufEnter" },
-		dependencies = { "zbirenbaum/copilot.lua" },
+		dependencies = { "zbirenbaum/copilot.lua", "j-hui/fidget.nvim" },
 		config = function()
 			require("copilot_cmp").setup()
 		end,
@@ -56,12 +56,16 @@ return {
 				end,
 			},
 		},
+    -- stylua: ignore start
 		keys = {
 			{ "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "x" }, desc = "actions" },
 			{ "<leader>at", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "x" }, desc = "toggle" },
-			{ "<leader>ab", "<cmd>CodeCompanionChat Add<cr>", mode = "v", noremap = true, silent = true, desc = "add" },
+			{ "<leader>ab", "<cmd>CodeCompanionChat Add<cr><esc>", mode = "v", noremap = true, silent = true, desc = "add" },
 		},
+    -- stylua: ignore stop
+
 		init = function()
+      require("plugins.codecompanion.fidget-spinner"):init()
 			vim.api.nvim_create_autocmd("BufEnter", {
 				callback = function(opts)
 					if vim.bo[opts.buf].filetype == "codecompanion" then
