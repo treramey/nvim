@@ -35,7 +35,17 @@ return {
 		formatters = {
 			xmlformat = {
 				cmd = { "xmlformat" },
-				args = { "--selfclose", "-" },
+				args = {
+					"--selfclose",
+					"--indent",
+					"1",
+					"--indent-char",
+					"\t",
+					"--preserve",
+					'"literal"',
+					"--blanks",
+					"-",
+				},
 			},
 			injected = { options = { ignore_errors = false } },
 		},
