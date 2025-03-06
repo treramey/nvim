@@ -17,6 +17,7 @@ return {
 					cmp = true,
 					fidget = true,
 					gitsigns = true,
+					grug_far = true,
 					harpoon = true,
 					indent_blankline = {
 						enabled = false,
@@ -27,8 +28,13 @@ return {
 					native_lsp = { enabled = true },
 					noice = true,
 					notify = true,
+					render_markdown = true,
 					symbols_outline = true,
-					telescope = true,
+					snacks = {
+						enabled = false,
+						indent_scope_color = "mauve",
+					},
+					telescope = { enabled = true },
 					treesitter = true,
 					treesitter_context = true,
 				},
@@ -56,6 +62,27 @@ return {
 						CodeCompanionChatTool = { fg = colors.sapphire },
 						CodeCompanionChatVariable = { fg = colors.base, bg = colors.mauve },
 						CodeCompanionVirtualText = { fg = colors.mauve },
+						SnacksPicker = { bg = colors.base, fg = colors.text },
+						SnacksPickerBoxBorder = {
+							fg = colors.mauve,
+						},
+						SnacksPickerInputBorder = {
+							fg = colors.mauve,
+						},
+						SnacksPickerTitle = { fg = colors.mauve },
+
+						-- C# type highlighting
+						-- ["@type.qualifier.c_sharp"] = { fg = colors.blue }, -- For namespaces and type qualifiers
+						["@type.c_sharp"] = { fg = colors.rosewater }, -- For regular types
+						-- ["@constructor.c_sharp"] = { fg = colors.peach }, -- For constructors
+						-- ["@lsp.type.interface.c_sharp"] = { fg = colors.sky }, -- For interfaces (like IEnumerable)
+						-- ["@lsp.type.class.c_sharp"] = { fg = colors.green }, -- For classes
+						-- ["@lsp.type.enum.c_sharp"] = { fg = colors.mauve }, -- For enums
+						-- ["@lsp.type.typeParameter.c_sharp"] = { fg = colors.lavender }, -- For type parameters in generics
+						-- ["@punctuation.bracket.c_sharp"] = { fg = colors.overlay2 }, -- For angle brackets < >
+
+						-- Special case for generic type containers
+						CSharpGenericContainer = { fg = colors.lavender, italic = true }, -- Special styling for generic containers
 					}
 				end,
 			})

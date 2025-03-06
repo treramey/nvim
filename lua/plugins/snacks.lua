@@ -1,8 +1,6 @@
 local macchiato = require("catppuccin.palettes").get_palette("macchiato")
 local filtered_message = { "No information available" }
 
-vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = macchiato.mauve })
-
 return {
 	{
 		"folke/snacks.nvim",
@@ -44,7 +42,6 @@ return {
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
 			},
 			picker = { enabled = true },
-			picker = { enabled = false },
 			quickfile = { enabled = true },
 			statuscolumn = { enabled = true },
 			terminal = {},

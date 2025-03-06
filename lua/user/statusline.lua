@@ -199,9 +199,11 @@ local function get_harpoon_status()
 
 		local status_entry
 		if full_path == current_file then
-			status_entry = hl_main .. harpoon_icons.active .. " " .. filename
+			-- status_entry = hl_main .. harpoon_icons.active .. " " .. filename
+			status_entry = hl_main .. harpoon_icons.indicators[i]
 		else
-			status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
+			-- status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
+			status_entry = hl_accent .. harpoon_icons.indicators[i]
 		end
 
 		if status_entry then
