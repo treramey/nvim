@@ -9,6 +9,7 @@ vim.opt.showmode = false
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.expandtab = true
+vim.opt.conceallevel = 2
 
 -- Enable auto indenting and set it to spaces
 vim.opt.smartindent = true

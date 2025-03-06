@@ -77,13 +77,11 @@ M.setup = function()
 	vim.g.dotnet_utils = {
 		last_used_csproj = nil,
 	}
-	-- stylua: ignore start T
-	-- vim.keymap.set("n", "<leader>nb", function () M.build() end, { desc = "build project", noremap = true })
-	-- stylua: ignore end
 end
 
-nnoremap("<leader>nw", function()
-	M.watch()
-end, { desc = "watch project" })
+	-- stylua: ignore start
+nnoremap("<leader>nb", function() M.build() end, { desc = "build project" })
+nnoremap("<leader>nw", function() M.watch() end, { desc = "watch project" })
+-- stylua: ignore end
 
 return M

@@ -87,17 +87,6 @@ nnoremap("S", function()
 	vim.api.nvim_feedkeys(keys, "n", false)
 end)
 
--- Open Spectre for global find/replace
-nnoremap("<leader>S", function()
-	require("spectre").toggle()
-end)
-
--- Open Spectre for global find/replace for the word under the cursor in normal mode
--- TODO Fix, currently being overriden by Telescope
-nnoremap("<leader>sw", function()
-	require("spectre").open_visual({ select_word = true })
-end, { desc = "Search current word" })
-
 -- Press 'H', 'L' to jump to start/end of a line (first/last char)
 nnoremap("L", "$")
 nnoremap("H", "^")
