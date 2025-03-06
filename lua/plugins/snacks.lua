@@ -44,6 +44,7 @@ return {
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
 			},
 			picker = { enabled = true },
+			picker = { enabled = false },
 			quickfile = { enabled = true },
 			statuscolumn = { enabled = true },
 			terminal = {},

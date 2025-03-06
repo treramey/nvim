@@ -76,4 +76,17 @@ return {
 			})
 		end,
 	},
+	{
+		"PLAZMAMA/bunnyhop.nvim",
+		keys = {
+			{
+				"<leader>aj",
+				function()
+					require("bunnyhop").hop()
+				end,
+				desc = "hop to predicted location.",
+			},
+		},
+		opts = {},
+	},
 }
