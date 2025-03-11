@@ -239,6 +239,8 @@ nnoremap("<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earc
 nnoremap("<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
 nnoremap("<leader>si", ":Telescope hierarchy incoming_calls<CR>", { desc = "LSP: [S]earch [I]ncoming Calls" })
 nnoremap("<leader>so", ":Telescope hierarchy outgoing_calls<CR>", { desc = "LSP: [S]earch [O]utgoing Calls" })
+nnoremap("<leader>gws", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
+nnoremap("<leader>gwc", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
 
 nnoremap("<leader>sc", function()
 	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({

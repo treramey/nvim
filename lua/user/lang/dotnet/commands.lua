@@ -1,5 +1,6 @@
 local nnoremap = require("user.keymap_utils").nnoremap
 local M = {}
+local terminals = {}
 
 local error = function(msg)
 	vim.notify(msg, 4)
@@ -34,6 +35,16 @@ local check_csproj = function(csproj)
 end
 
 local execute = function(cmd)
+	print("old choice: " .. vim.inspect(vim.g.dotnet_utils.last_used_csproj))
+	print("cmd: " .. vim.inspect(cmd))
+
+	-- If we have a last used project and its terminal exists - toggle it
+	if vim.g.dotnet_utils.last_used_csproj and terminals[vim.g.dotnet_utils.last_used_csproj] then
+		terminals[vim.g.dotnet_utils.last_used_csproj]:toggle()
+		return
+	end
+
+	-- Otherwise proceed with project selection and new terminal creation
 	local all_csproj = get_all_csproj()
 	local terminal_opts = {
 		win = {
@@ -42,27 +53,22 @@ local execute = function(cmd)
 		},
 	}
 
-	if vim.g.dotnet_utils.last_used_csproj == nil then
-		vim.ui.select(all_csproj, {
-			prompt = "select project",
-			format_item = function(item)
-				local csproj = vim.fs.basename(item)
-				local icon, _, _ = require("mini.icons").get("file", csproj)
-				local without_extenstion = vim.fn.fnamemodify(csproj, ":r2")
-				return icon .. " " .. without_extenstion
-			end,
-		}, function(choice)
-			if not check_csproj(choice) then
-				error("invalid csproj path")
-				return
-			end
-			vim.g.dotnet_utils.last_used_csproj = choice
-
-			Snacks.terminal.toggle(cmd .. choice, terminal_opts)
-		end)
-	else
-		Snacks.terminal.toggle(cmd .. vim.g.dotnet_utils.last_used_csproj, terminal_opts)
-	end
+	vim.ui.select(all_csproj, {
+		prompt = "select project",
+		format_item = function(item)
+			local csproj = vim.fs.basename(item)
+			local icon, _, _ = require("mini.icons").get("file", csproj)
+			local without_extenstion = vim.fn.fnamemodify(csproj, ":r")
+			return icon .. " " .. without_extenstion
+		end,
+	}, function(choice)
+		if not check_csproj(choice) then
+			error("invalid csproj path")
+			return
+		end
+		vim.g.dotnet_utils.last_used_csproj = vim.inspect(choice)
+		terminals[choice] = Snacks.terminal.toggle(cmd .. choice, terminal_opts)
+	end)
 end
 
 M.build = function()

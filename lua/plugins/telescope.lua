@@ -6,6 +6,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 			"jmacadie/telescope-hierarchy.nvim",
+			"polarmutex/git-worktree.nvim",
 		},
 
 		config = function()
