@@ -49,9 +49,6 @@ return {
 					chat = {
 						render_headers = false,
 					},
-					diff = {
-						provider = "mini_diff",
-					},
 				},
 			},
 			adapters = {

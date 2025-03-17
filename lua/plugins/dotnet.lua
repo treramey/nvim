@@ -46,10 +46,11 @@ return {
 	{
 		"GustavEikaas/easy-dotnet.nvim",
 		enabled = vim.fn.executable("dotnet") == 1,
-		dependencies = { "nvim-lua/plenary.nvim" },
+		dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
 		ft = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "targets" },
 		cmd = "Dotnet",
 		opts = {
+			picker = "snacks",
 			terminal = function(path, action)
 				local commands = {
 					run = function()
