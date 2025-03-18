@@ -1,4 +1,3 @@
-local macchiato = require("catppuccin.palettes").get_palette("macchiato")
 local filtered_message = { "No information available" }
 
 return {
@@ -17,7 +16,7 @@ return {
 		---@type snacks.Config
 		opts = {
 			bigfile = { enabled = true },
-			dim = { enabled = true },
+			gitbrowse = { enabled = true },
 			indent = {
 				enabled = true,
 				filter = function(buf)
@@ -42,11 +41,9 @@ return {
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
 			},
 			picker = { enabled = true },
-			quickfile = { enabled = true },
 			statuscolumn = { enabled = true },
 			terminal = {},
 			words = { enabled = true },
-			zen = { enabled = true },
 		},
 		init = function()
 			vim.api.nvim_create_autocmd("User", {

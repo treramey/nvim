@@ -31,7 +31,7 @@ return {
 					render_markdown = true,
 					symbols_outline = true,
 					snacks = {
-						enabled = false,
+						enabled = true,
 						indent_scope_color = "mauve",
 					},
 					telescope = { enabled = true },
