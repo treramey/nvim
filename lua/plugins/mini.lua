@@ -46,6 +46,17 @@ return {
 		end,
 	},
 	{
+		"echasnovski/mini.diff",
+		version = false,
+
+		opts = {
+			view = {
+				style = "sign",
+				signs = { add = "┃", change = "┃", delete = "_" },
+			},
+		},
+	},
+	{
 		"echasnovski/mini.pairs",
 		version = false,
 		config = function()
