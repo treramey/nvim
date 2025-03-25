@@ -44,11 +44,13 @@ return {
 				ellipsis_char = "...",
 				menu = {
 					nvim_lsp = "[LSP]",
-					buffer = "[Buffer]",
 					path = "[Path]",
 					luasnip = "[Snippet]",
+					buffer = "[Buffer]",
 					nvim_lsp_signature_help = "[Signature]",
+					copilot = "[Copilot]",
 				},
+				symbol_map = { Copilot = "" },
 			})
 
 			luasnip.config.setup({})
@@ -94,18 +96,22 @@ return {
 					["<C-c>"] = cmp.mapping.abort(), -- close completion window
 					["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
 				}),
+
 				-- sources for autocompletion
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp", group_index = 1 }, -- lsp
+					{ name = "copilot", group_index = 1 },
 					{ name = "buffer", max_item_count = 5, group_index = 2 }, -- text within current buffer
 					{ name = "path", max_item_count = 3, group_index = 3 }, -- file system paths
 					{ name = "luasnip", max_item_count = 3, group_index = 5 }, -- snippets
-					{ name = "easy-dotnet", max_item_count = 3, group_index = 5 },
 					{ name = "nvim-lsp-signature-help" },
+					{ name = "easy-dotnet" },
 				}),
+
 				-- Enable pictogram icons for lsp/autocompletion
 				formatting = {
 					expandable_indicator = true,
+					fields = { "kind", "abbr" },
 					format = function(entry, item)
 						local color_item = require("nvim-highlight-colors").format(entry, { kind = item.kind })
 						item = format_item_with_lspkind(entry, item)

@@ -5,22 +5,23 @@ return {
 		build = ":Copilot auth",
 		event = "InsertEnter",
 		opts = {
-			suggestion = {
-				enabled = true,
-				auto_trigger = true,
-				hide_during_completion = false,
-				debounce = 25,
-				keymap = {
-					accept = false,
-					accept_word = false,
-					accept_line = "<Tab>",
-					next = false,
-					prev = false,
-					dismiss = false,
-				},
-			},
+			suggestion = { enabled = false },
 			panel = { enabled = false },
 		},
+	},
+	{
+		"zbirenbaum/copilot-cmp",
+		dependencies = {
+			"hrsh7th/nvim-cmp",
+			"zbirenbaum/copilot.lua",
+		},
+		config = function()
+			local has_cmp, cmp = pcall(require, "cmp")
+			if not has_cmp then
+				return
+			end
+			require("copilot_cmp").setup({})
+		end,
 	},
 	{
 		"olimorris/codecompanion.nvim",
