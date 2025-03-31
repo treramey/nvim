@@ -32,8 +32,28 @@ return {
 			require("mini.comment").setup({
 				options = {
 					custom_commentstring = function()
+						local ft = vim.bo.filetype
+						local ext = vim.fn.expand("%:e")
+
+						-- C# files
+						if ft == "cs" then
+							return "// %s"
+						end
+
+						-- ColdFusion component/script files
+						if ext == "cfc" or ext == "cfs" or ext == "bx" or ext == "bxs" then
+							return "// %s"
+						end
+
+						-- ColdFusion markup files
+						if ext == "cfm" or ext == "bxm" then
+							return "<!--- %s --->"
+						end
+
+						-- Fall back to ts_context_commentstring or default commentstring
 						return require("ts_context_commentstring").calculate_commentstring() or vim.bo.commentstring
 					end,
+					pad_comment_parts = true,
 				},
 			})
 		end,
@@ -55,38 +75,6 @@ return {
 				signs = { add = "┃", change = "┃", delete = "_" },
 			},
 		},
-	},
-	{
-		"echasnovski/mini.pairs",
-		version = false,
-		config = function()
-			require("mini.pairs").setup({})
-		end,
-	},
-	{
-		"echasnovski/mini.surround",
-		event = "VeryLazy",
-		config = function()
-			require("mini.surround").setup({
-				n_lines = 50,
-				highlight_duration = 500,
-				custom_surroundings = {
-					["("] = { output = { left = "(", right = ")" } },
-					[")"] = { output = { left = "(", right = ")" } },
-					["["] = { output = { left = "[", right = "]" } },
-					["]"] = { output = { left = "[", right = "]" } },
-				},
-				mappings = {
-					add = "gsa", -- Add surrounding in Normal and Visual modes
-					delete = "gsd", -- Delete surrounding
-					find = "gsf", -- Find surrounding (to the right)
-					find_left = "gsF", -- Find surrounding (to the left)
-					highlight = "gsh", -- Highlight surrounding
-					replace = "gsr", -- Replace surrounding
-					update_n_lines = "gsn", -- Update `n_lines`
-				},
-			})
-		end,
 	},
 	{ "echasnovski/mini-git", lazy = true, version = false, main = "mini.git", opts = {} },
 	{

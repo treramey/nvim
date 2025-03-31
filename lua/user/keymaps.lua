@@ -34,10 +34,8 @@ vim.keymap.set("n", "<C-a>", "ggVGy", { desc = "Select all and yank" })
 -- Swap between last two buffers
 vim.keymap.set("n", "<leader>'", "<C-^>", { desc = "Switch to last buffer" })
 
--- Save with leader key
+-- Save and quit
 vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { silent = false })
-
--- Quit with leader key
 vim.keymap.set("n", "<leader>q", "<cmd>q<cr>", { silent = false })
 
 -- Map Oil to <leader>e
@@ -233,8 +231,8 @@ vim.keymap.set(
 	":Telescope hierarchy outgoing_calls<CR>",
 	{ desc = "LSP: [S]earch [O]utgoing Calls" }
 )
-vim.keymap.set("n", "<leader>gws", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
-vim.keymap.set("n", "<leader>gwc", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
+vim.keymap.set("n", "<leader>swt", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
+vim.keymap.set("n", "<leader>swc", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
 
 vim.keymap.set("n", "<leader>sc", function()
 	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
@@ -281,11 +279,6 @@ end
 
 -- Symbol Outline keybind
 vim.keymap.set("n", "<leader>sO", ":SymbolsOutline<cr>")
-
--- Open Copilot panel
-vim.keymap.set("n", "<leader>oc", function()
-	require("copilot.panel").open({})
-end, { desc = "[O]pen [C]opilot panel" })
 
 -- nvim-ufo keybinds
 vim.keymap.set("n", "zR", require("ufo").openAllFolds)

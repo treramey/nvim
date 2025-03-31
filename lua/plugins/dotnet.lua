@@ -78,6 +78,7 @@ return {
 		},
 		keys = {
       -- stylua: ignore start 
+      { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build" },
       { "<leader>nB", function() require("easy-dotnet").build_quickfix() end, desc = "build solution" },
       { "<leader>nr", function() require("easy-dotnet").run_default() end, desc = "run" },
       { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },

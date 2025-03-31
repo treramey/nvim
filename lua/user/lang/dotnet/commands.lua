@@ -1,4 +1,3 @@
-local nnoremap = require("user.keymap_utils").nnoremap
 local M = {}
 local terminals = {}
 
@@ -86,8 +85,8 @@ M.setup = function()
 end
 
 	-- stylua: ignore start
-nnoremap("<leader>nb", function() M.build() end, { desc = "build project" })
-nnoremap("<leader>nw", function() M.watch() end, { desc = "watch project" })
+-- vim.keymap.set("n", "<leader>nb", function() M.build() end, { desc = "build project" })
+vim.keymap.set("n", "<leader>nw", function() M.watch() end, { desc = "watch project" })
 -- stylua: ignore end
 
 return M

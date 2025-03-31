@@ -10,20 +10,6 @@ return {
 		},
 	},
 	{
-		"zbirenbaum/copilot-cmp",
-		dependencies = {
-			"hrsh7th/nvim-cmp",
-			"zbirenbaum/copilot.lua",
-		},
-		config = function()
-			local has_cmp, cmp = pcall(require, "cmp")
-			if not has_cmp then
-				return
-			end
-			require("copilot_cmp").setup({})
-		end,
-	},
-	{
 		"olimorris/codecompanion.nvim",
 		event = "VeryLazy",
 		dependencies = {
@@ -89,18 +75,5 @@ return {
 				end,
 			})
 		end,
-	},
-	{
-		"PLAZMAMA/bunnyhop.nvim",
-		keys = {
-			{
-				"<leader>aj",
-				function()
-					require("bunnyhop").hop()
-				end,
-				desc = "hop to predicted location.",
-			},
-		},
-		opts = {},
 	},
 }

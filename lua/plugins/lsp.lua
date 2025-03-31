@@ -119,6 +119,15 @@ return {
 				marksman = {},
 				nil_ls = {},
 				powershell_es = {
+					cmd = {
+						"pwsh",
+						"-NoLogo",
+						"-NoProfile",
+						"-Command",
+						vim.fn.stdpath("data")
+							.. "/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1",
+					},
+					capabilities = require("cmp_nvim_lsp").default_capabilities(),
 					bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
 					init_options = {
 						enableProfileLoading = false,
@@ -203,10 +212,21 @@ return {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 
 			-- Configure diagnostics border
+			-- diagnostic configurations
 			vim.diagnostic.config({
 				float = {
 					border = "rounded",
 				},
+
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = "",
+						[vim.diagnostic.severity.WARN] = "",
+						[vim.diagnostic.severity.INFO] = "",
+						[vim.diagnostic.severity.HINT] = "",
+					},
+				},
+				virtual_text = false,
 			})
 		end,
 	},
