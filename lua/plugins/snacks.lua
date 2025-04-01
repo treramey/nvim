@@ -16,6 +16,7 @@ return {
 		---@type snacks.Config
 		opts = {
 			bigfile = { enabled = true },
+			picker = { enabled = true },
 			gitbrowse = { enabled = true },
 			indent = {
 				enabled = true,

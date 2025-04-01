@@ -16,8 +16,10 @@ return {
 			cmdline = {
 				view = "cmdline",
 				format = {
+					cmdline = { icon = "" },
 					search_down = {
 						view = "cmdline",
+						icon = "",
 					},
 					search_up = {
 						view = "cmdline",

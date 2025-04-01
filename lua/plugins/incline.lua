@@ -7,7 +7,7 @@ return {
 				falling = 1000,
 			},
 			window = {
-				padding = 1,
+				padding = 0,
 				margin = { horizontal = 0 },
 			},
 			render = function(props)
@@ -27,14 +27,14 @@ return {
 				local icon, hl, _ = require("mini.icons").get("filetype", vim.bo.filetype)
 				local diagnostics = vim.diagnostic.get(props.buf)
 				return {
-					guibg = palette.overlay0,
-					{ "", guifg = palette.overlay0, guibg = palette.base },
+					guibg = palette.mantle,
+					{ "", guifg = palette.mantle, guibg = palette.base },
 					vim.bo[props.buf].modified and { " ", "", guifg = palette.yellow } or "",
 					icon and { " ", icon, " ", guifg = vim.fn.synIDattr(vim.fn.hlID(hl), "fg") } or "",
 					{ filename, guifg = #diagnostics > 0 and diagnostic_map[diagnostics[1].severity] or "" },
 					" ",
 					{ path, " ", gui = "italic", guifg = palette.subtext0 },
-					{ "", guifg = palette.overlay0, guibg = palette.base },
+					{ "", guifg = palette.mantle, guibg = palette.base },
 				}
 			end,
 		},

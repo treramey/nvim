@@ -104,72 +104,96 @@ local function get_copilot_status()
 	if not ok then
 		return ""
 	end
-	return hl_copilot .. " " .. _spacer(1)
+	return hl_copilot .. " " .. _spacer(2)
 end
 
+-- local function get_harpoon_status()
+-- 	local function is_full_path(path)
+-- 		return path and path:sub(1, 1) == "/"
+-- 	end
+--
+-- 	local function get_full_path(root_dir, value)
+-- 		return root_dir .. "/" .. value
+-- 	end
+--
+-- 	local function extract_filename(fullpath)
+-- 		if not fullpath then
+-- 			return nil
+-- 		end
+-- 		local filename = fullpath:match(".+/([^/]+)%.%w+$")
+-- 		return filename or fullpath
+-- 	end
+--
+-- 	local hl_main = "%#StatuslineActiveHarpoon#"
+-- 	local hl_accent = "%#StatuslineTextAccent#"
+-- 	local harpoon_icons = {
+-- 		indicators = { "[1]", "[2]", "[3]", "[4]", "[5]" },
+-- 		active = "[]",
+-- 	}
+--
+-- 	local harpoon = require("harpoon")
+-- 	local root_dir = vim.loop.cwd()
+-- 	local len = math.min(5, harpoon:list():length())
+-- 	local status_line = {}
+-- 	local current_file = vim.api.nvim_buf_get_name(0)
+--
+--
+-- 	for i = 1, len do
+-- 		local entry = harpoon:list():get(i)
+-- 		if not entry or not entry.value then
+-- 			goto continue
+-- 		end
+--
+-- 		local full_path = is_full_path(entry.value) and entry.value or get_full_path(root_dir, entry.value)
+-- 		local filename = extract_filename(full_path)
+-- 		if not filename then
+-- 			goto continue
+-- 		end
+--
+-- 		local status_entry
+-- 		if full_path == current_file then
+-- 			-- status_entry = hl_main .. harpoon_icons.active .. " " .. filename
+-- 			status_entry = hl_main .. harpoon_icons.indicators[i]
+-- 		else
+-- 			-- status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
+-- 			status_entry = hl_accent .. harpoon_icons.indicators[i]
+-- 		end
+--
+-- 		if status_entry then
+-- 			table.insert(status_line, status_entry)
+-- 		end
+--
+-- 		::continue::
+-- 	end
+--
+-- 	if #status_line == 0 then
+-- 		return ""
+-- 	end
+--
+-- 	return table.concat(status_line, " ")
+-- end
+
 local function get_harpoon_status()
-	local function is_full_path(path)
-		return path and path:sub(1, 1) == "/"
-	end
-
-	local function get_full_path(root_dir, value)
-		return root_dir .. "/" .. value
-	end
-
-	local function extract_filename(fullpath)
-		if not fullpath then
-			return nil
-		end
-		local filename = fullpath:match(".+/([^/]+)%.%w+$")
-		return filename or fullpath
-	end
-
-	local hl_main = "%#StatuslineActiveHarpoon#"
-	local hl_accent = "%#StatuslineTextAccent#"
-	local harpoon_icons = {
-		indicators = { "[1]", "[2]", "[3]", "[4]", "[5]" },
-		active = "[]",
-	}
-
 	local harpoon = require("harpoon")
-	local root_dir = vim.loop.cwd()
-	local len = math.min(5, harpoon:list():length())
-	local status_line = {}
-	local current_file = vim.api.nvim_buf_get_name(0)
+	local entries = harpoon:list()
+	local count = 0
 
-	for i = 1, len do
-		local entry = harpoon:list():get(i)
-		if not entry or not entry.value then
-			goto continue
+	-- Iterate through all harpoon entries and count the valid ones.
+	for i = 1, entries:length() do
+		local entry = entries:get(i)
+		if entry and entry.value then
+			count = count + 1
 		end
-
-		local full_path = is_full_path(entry.value) and entry.value or get_full_path(root_dir, entry.value)
-		local filename = extract_filename(full_path)
-		if not filename then
-			goto continue
-		end
-
-		local status_entry
-		if full_path == current_file then
-			-- status_entry = hl_main .. harpoon_icons.active .. " " .. filename
-			status_entry = hl_main .. harpoon_icons.indicators[i]
-		else
-			-- status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
-			status_entry = hl_accent .. harpoon_icons.indicators[i]
-		end
-
-		if status_entry then
-			table.insert(status_line, status_entry)
-		end
-
-		::continue::
 	end
 
-	if #status_line == 0 then
+	-- If there are no entries, return an empty string.
+	if count == 0 then
 		return ""
 	end
 
-	return table.concat(status_line, " ")
+	local hl_main = "%#StatuslineActiveHarpoon#"
+	-- Return the status string with the  icon and the count.
+	return hl_main .. " " .. count .. _spacer(2)
 end
 
 local function get_diagnostics()
@@ -186,7 +210,7 @@ local function get_diagnostics()
 	for _, severity in ipairs(severities) do
 		local count = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity[severity.name] })
 		if count > 0 then
-			result = result .. severity.hl .. "• " .. count .. _spacer(1)
+			result = result .. severity.hl .. "•" .. count .. _spacer(1)
 			diag_count = 1
 		end
 	end
@@ -203,7 +227,7 @@ local function get_dotnet_solution()
 	solution = solution:gsub("%.[^%.]+$", "")
 	local icon, hl, _ = require("mini.icons").get("filetype", "solution")
 	hl = "%#" .. hl .. "#"
-	return hl .. icon .. " " .. hl_main .. solution .. _spacer(2)
+	return hl .. icon .. _spacer(1) .. hl_main .. solution .. _spacer(2)
 end
 
 local function get_branch()
@@ -227,7 +251,7 @@ local function get_recording()
 	if status == nil then
 		return ""
 	end
-	return hl_accent .. " " .. hl_main .. status .. _spacer(2)
+	return hl_accent .. " " .. hl_main .. status .. _spacer(2)
 end
 
 local function get_percentage()
@@ -275,12 +299,12 @@ M.load = function()
 		get_lsp_status(),
 		get_formatter_status(),
 		get_copilot_status(),
+		get_harpoon_status(),
 		get_diagnostics(),
 		get_recording(),
 		get_dotnet_solution(),
 		get_branch(),
 		get_percentage(),
-		get_harpoon_status(),
 		_truncate(),
 		_separator("right"),
 		_align(),
