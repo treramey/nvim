@@ -37,9 +37,9 @@ return {
 				custom_highlights = function(colors)
 					return {
 						-- custom
-						DiagnosticError = { bg = colors.base },
-						DiagnosticWarn = { bg = colors.base },
-						DiagnosticInfo = { bg = colors.base },
+						DiagnosticError = { bg = colors.mantle },
+						DiagnosticWarn = { bg = colors.mantle },
+						DiagnosticInfo = { bg = colors.mantle },
 						DiagnosticHint = { bg = colors.mantle },
 						StatusLine = { bg = colors.base },
 						StatusLineTerm = { fg = colors.text, bg = "none" },
@@ -66,6 +66,7 @@ return {
 						CodeCompanionChatVariable = { fg = colors.base, bg = colors.mauve },
 						CodeCompanionVirtualText = { fg = colors.mauve },
 						SnacksPicker = { bg = colors.base, fg = colors.text },
+						MiniIconsBlue = { bg = colors.mantle, fg = colors.lavender },
 						SnacksPickerBoxBorder = {
 							fg = colors.mauve,
 						},

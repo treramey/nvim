@@ -260,7 +260,10 @@ M.map_lsp_keybinds = function(buffer_number)
 		return { buffer = buffer_number, desc = desc }
 	end
 
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover Documentation"))
+	vim.keymap.set("n", "K", function()
+		vim.lsp.buf.hover({ border = "rounded" })
+	end, opts("Hover Documentation"))
+
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
 	vim.keymap.set("n", "gi", require("telescope.builtin").lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
@@ -268,7 +271,11 @@ M.map_lsp_keybinds = function(buffer_number)
 	vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
-	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts("LSP: Signature Documentation"))
+
+	vim.keymap.set("n", "<leader>k", function()
+		vim.lsp.buf.signature_help({ border = "rounded" })
+	end, opts("LSP: Signature Documentation"))
+
 	vim.keymap.set(
 		"n",
 		"<leader>bs",

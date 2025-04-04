@@ -188,11 +188,11 @@ return {
 			-- Iterate over our servers and set them up
 			for name, config in pairs(servers) do
 				require("lspconfig")[name].setup({
-					autostart = config.autostart,
 					cmd = config.cmd,
 					capabilities = capabilities,
 					filetypes = config.filetypes,
-					handlers = vim.tbl_deep_extend("force", {}, default_handlers, config.handlers or {}),
+					handlers = vim.tbl_deep_extend("force", {}, config.handlers or {}),
+					autostart = config.autostart,
 					on_attach = on_attach,
 					settings = config.settings,
 					root_dir = config.root_dir,
@@ -217,7 +217,6 @@ return {
 				float = {
 					border = "rounded",
 				},
-
 				signs = {
 					text = {
 						[vim.diagnostic.severity.ERROR] = "",

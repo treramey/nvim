@@ -243,17 +243,6 @@ local function get_branch()
 	return hl_accent .. " " .. hl_main .. branch .. _spacer(2)
 end
 
-local function get_recording()
-	local hl_main = "%#StatuslineTextMain#"
-	local hl_accent = "%#StatuslineTextAccent#"
-	local noice = lazy_require("noice")
-	local status = noice.api.status.mode.get()
-	if status == nil then
-		return ""
-	end
-	return hl_accent .. " " .. hl_main .. status .. _spacer(2)
-end
-
 local function get_percentage()
 	if is_truncated(75) then
 		return ""
@@ -301,7 +290,6 @@ M.load = function()
 		get_copilot_status(),
 		get_harpoon_status(),
 		get_diagnostics(),
-		get_recording(),
 		get_dotnet_solution(),
 		get_branch(),
 		get_percentage(),
