@@ -1,3 +1,4 @@
 .local/bin/chezmoi/
 .undodir/*
 lazy-lock.json
+.aider*

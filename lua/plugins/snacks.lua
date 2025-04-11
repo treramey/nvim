@@ -33,6 +33,7 @@ return {
 						and not excluded_filetypes[bo.filetype]
 				end,
 			},
+			input = { enabled = true },
 			notifier = {
 				enabled = true,
 				timeout = 3000,
@@ -61,6 +62,14 @@ return {
 					end
 				end,
 			})
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "OilActionsPost",
+				callback = function(event)
+					if event.data.actions.type == "move" then
+						Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+					end
+				end,
+			})
 		end,
     -- stylua: ignore start
 		keys = {
@@ -68,6 +77,7 @@ return {
 			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
+      { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
 			{ "<leader>og", function() Snacks.gitbrowse() end, desc = "[O]pen [G]it", mode = { "n", "v" } },
 			{ "<leader>nh", function() Snacks.notifier.show_history() end, desc = "Notification History" },

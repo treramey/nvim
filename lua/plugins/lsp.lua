@@ -9,13 +9,13 @@ return {
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 
-			-- Install lsp autocompletions
-			"hrsh7th/cmp-nvim-lsp",
-
 			-- Progress/Status update for LSP
 			{ "j-hui/fidget.nvim", opts = {} },
 		},
 		config = function()
+			local mason = require("mason")
+			local mason_tool_installer = require("mason-tool-installer")
+			local mason_lspconfig = require("mason-lspconfig")
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
 
 			-- Default handlers for LSP
@@ -42,22 +42,8 @@ return {
 				map_lsp_keybinds(buffer_number)
 			end
 
-			-- LSP servers and clients are able to communicate to each other what features they support.
-			--  By default, Neovim doesn't support everything that is in the LSP Specification.
-			--  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-			--  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-
 			local util = require("lspconfig/util")
 
-			-- LSP servers to install (see list here: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers )
-			--  Add any additional override configuration in the following tables. Available keys are:
-			--  - cmd (table): Override the default command used to start the server
-			--  - filetypes (table): Override the default list of associated filetypes for the server
-			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-			--  - settings (table): Override the default settings passed when initializing the server.
-			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
 				-- LSP Servers
 				astro = {},
@@ -105,12 +91,7 @@ return {
 							runtime = { version = "LuaJIT" },
 							workspace = {
 								checkThirdParty = false,
-								-- Tells lua_ls where to find all the Lua files that you have loaded
-								-- for your neovim configuration.
-								library = {
-									"${3rd}/luv/library",
-									unpack(vim.api.nvim_get_runtime_file("", true)),
-								},
+								-- lazydev.nvim will handle library configuration
 							},
 							telemetry = { enabled = false },
 						},
@@ -118,21 +99,6 @@ return {
 				},
 				marksman = {},
 				nil_ls = {},
-				powershell_es = {
-					cmd = {
-						"pwsh",
-						"-NoLogo",
-						"-NoProfile",
-						"-Command",
-						vim.fn.stdpath("data")
-							.. "/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1",
-					},
-					capabilities = require("cmp_nvim_lsp").default_capabilities(),
-					bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
-					init_options = {
-						enableProfileLoading = false,
-					},
-				},
 				pyright = {},
 				sqlls = {},
 				svelte = {},
@@ -177,7 +143,7 @@ return {
 				return not vim.tbl_contains(manually_installed_servers, name)
 			end, mason_tools_to_install)
 
-			require("mason-tool-installer").setup({
+			mason_tool_installer.setup({
 				auto_update = true,
 				run_on_start = true,
 				start_delay = 3000,
@@ -200,13 +166,33 @@ return {
 			end
 
 			-- Setup mason so it can manage 3rd party LSP servers
-			require("mason").setup({
+			mason.setup({
+				max_concurrent_installers = 10,
 				ui = {
-					border = "rounded",
+					icons = {
+						package_installed = "✓",
+						package_pending = "➜",
+						package_uninstalled = "",
+					},
+					border = "single",
+				},
+				registries = {
+					"github:mason-org/mason-registry",
+					"github:syndim/mason-registry",
 				},
 			})
 
-			require("mason-lspconfig").setup()
+			mason_lspconfig.setup({
+				ensure_installed = {},
+				automatic_installation = true,
+				handlers = {
+					function(server_name)
+						local server = servers[server_name] or {}
+						server.capabilities = require("blink.cmp").get_lsp_capabilities(server.capabilities or {})
+						require("lspconfig")[server_name].setup(server)
+					end,
+				},
+			})
 
 			-- Configure borderd for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"
@@ -234,7 +220,6 @@ return {
 		event = { "BufReadPost" },
 		dependencies = {
 			"neovim/nvim-lspconfig",
-			"hrsh7th/cmp-nvim-lsp",
 		},
 		opts = function()
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds

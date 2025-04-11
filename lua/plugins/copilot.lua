@@ -5,7 +5,20 @@ return {
 		build = ":Copilot auth",
 		event = "InsertEnter",
 		opts = {
-			suggestion = { enabled = false },
+			suggestion = {
+				enabled = true,
+				auto_trigger = true,
+				hide_during_completion = false,
+				debounce = 25,
+				keymap = {
+					accept = false,
+					accept_word = false,
+					accept_line = "<C-l>",
+					next = false,
+					prev = false,
+					dismiss = false,
+				},
+			},
 			panel = { enabled = false },
 		},
 	},
@@ -30,7 +43,7 @@ return {
 					slash_commands = {
 						["file"] = {
 							callback = "strategies.chat.slash_commands.file",
-							description = "Select a file using Telescope",
+							description = "Select a file using snacks",
 							opts = {
 								provider = "telescope",
 								contains_code = true,
@@ -39,6 +52,9 @@ return {
 					},
 				},
 				display = {
+					action_palette = {
+						provider = "default",
+					},
 					chat = {
 						render_headers = false,
 					},
