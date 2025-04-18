@@ -6,6 +6,7 @@ return {
 			"rafamadriz/friendly-snippets",
 			"xzbdmw/colorful-menu.nvim",
 			"catppuccin/nvim", -- to customise highlights
+			{ "xzbdmw/colorful-menu.nvim", opts = {} },
 		},
 		version = "v1.*",
 		config = function()
@@ -100,7 +101,7 @@ return {
 					},
 					documentation = {
 						auto_show = true,
-						auto_show_delay_ms = 100,
+						auto_show_delay_ms = 50,
 						window = {
 							border = "rounded",
 						},
@@ -144,8 +145,6 @@ return {
 				},
 			}
 
-			require("blink.cmp").setup(opts)
-
 			for _, kind in ipairs(require("blink.cmp.types").CompletionItemKind) do
 				local name = "BlinkCmpKind" .. kind
 				local hlinfo = vim.api.nvim_get_hl(0, { name = name })
@@ -153,10 +152,8 @@ return {
 					vim.api.nvim_set_hl(0, name .. "Reversed", { fg = hlinfo.fg, reverse = true })
 				end
 			end
+
+			require("blink.cmp").setup(opts)
 		end,
-	},
-	{
-		"xzbdmw/colorful-menu.nvim",
-		opts = {},
 	},
 }

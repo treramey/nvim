@@ -29,7 +29,7 @@ vim.keymap.set("n", "<C-l>", function()
 end)
 
 -- Select all and yank with Ctrl-a
-vim.keymap.set("n", "<C-a>", "ggVGy", { desc = "Select all and yank" })
+-- vim.keymap.set("n", "<C-a>", "ggVGy", { desc = "Select all and yank" })
 
 -- Swap between last two buffers
 vim.keymap.set("n", "<leader>'", "<C-^>", { desc = "Switch to last buffer" })

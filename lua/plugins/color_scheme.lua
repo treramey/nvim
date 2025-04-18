@@ -11,7 +11,6 @@ return {
 					functions = { "italic" },
 				},
 				integrations = {
-					blink_cmp = true,
 					fidget = true,
 					gitsigns = true,
 					grug_far = true,
@@ -38,10 +37,15 @@ return {
 				custom_highlights = function(colors)
 					return {
 						-- custom
-						BlinkCmpMenu = { fg = colors.overlay2 },
-						BlinkCmpMenuBorder = { fg = colors.blue },
-						BlinkCmpDocBorder = { fg = colors.blue },
-						BlinkCmpSignatureHelpActiveParameter = { fg = colors.mauve },
+						BlinkCmpMenu = { bg = colors.base },
+						BlinkCmpDoc = { bg = colors.base },
+						BlinkCmpDocSeparator = { bg = colors.base },
+						BlinkCmpMenuBorder = { link = "FloatBorder" },
+						BlinkCmpDocBorder = { link = "FloatBorder" },
+						BlinkCmpSignatureHelpBorder = { link = "FloatBorder" },
+						BlinkCmpSource = { fg = colors.overlay0 },
+						BlinkCmpKind = { fg = colors.overlay0 },
+
 						DiagnostcError = { bg = colors.mantle },
 						DiagnosticWarn = { bg = colors.mantle },
 						DiagnosticInfo = { bg = colors.mantle },
