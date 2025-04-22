@@ -213,11 +213,11 @@ end)
 -- Telescope keybinds --
 vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
 vim.keymap.set("n", "<leader>sb", require("telescope.builtin").buffers, { desc = "[S]earch Open [B]uffers" })
-vim.keymap.set("n", "<leader>sf", function()
-	require("telescope.builtin").find_files({ hidden = true, no_ignore = true })
-end, { desc = "[S]earch [F]iles" })
+-- vim.keymap.set("n", "<leader>sf", function()
+-- require("telescope.builtin").find_files({ hidden = true, no_ignore = true })
+-- end, { desc = "[S]earch [F]iles" })
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
+-- vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
 vim.keymap.set("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
 vim.keymap.set(
 	"n",

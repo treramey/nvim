@@ -1,21 +1,8 @@
 return {
-	-- {
-	-- 	"mcauley-penney/visual-whitespace.nvim",
-	-- 	config = true,
-	-- 	opts = {
-	-- 		highlight = { link = "Visual" },
-	-- 		space_char = "·",
-	-- 		tab_char = "→",
-	-- 		nl_char = "↲",
-	-- 		cr_char = "←",
-	-- 		enabled = false,
-	-- 		excluded = {
-	-- 			filetypes = {},
-	-- 			buftypes = {},
-	-- 		},
-	-- 	},
-	-- 	init = function()
-	-- 		vim.keymap.set("n", "<leader>vw", require("visual-whitespace").toggle, {})
-	-- 	end,
+	-- "mcauley-penney/visual-whitespace.nvim",
+	-- lazy = true,
+	-- event = "BufRead",
+	-- opts = {
+	-- 	highlight = { link = "Comment" },
 	-- },
 }

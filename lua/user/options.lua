@@ -71,6 +71,21 @@ vim.opt.foldcolumn = "0"
 vim.opt.foldnestmax = 5
 vim.opt.foldtext = ""
 
+vim.diagnostic.config({
+	float = {
+		border = "rounded",
+	},
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "",
+			[vim.diagnostic.severity.WARN] = "",
+			[vim.diagnostic.severity.INFO] = "",
+			[vim.diagnostic.severity.HINT] = "",
+		},
+	},
+	virtual_text = false,
+})
+
 -- Always keep 8 lines above/below cursor unless at start/end of file
 vim.opt.scrolloff = 8
 

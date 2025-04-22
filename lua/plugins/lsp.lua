@@ -196,23 +196,6 @@ return {
 
 			-- Configure borderd for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"
-
-			-- Configure diagnostics border
-			-- diagnostic configurations
-			vim.diagnostic.config({
-				float = {
-					border = "rounded",
-				},
-				signs = {
-					text = {
-						[vim.diagnostic.severity.ERROR] = "",
-						[vim.diagnostic.severity.WARN] = "",
-						[vim.diagnostic.severity.INFO] = "",
-						[vim.diagnostic.severity.HINT] = "",
-					},
-				},
-				virtual_text = false,
-			})
 		end,
 	},
 	{ --ohhh the pain

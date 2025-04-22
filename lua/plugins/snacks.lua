@@ -16,10 +16,21 @@ return {
 		---@type snacks.Config
 		opts = {
 			bigfile = { enabled = true },
-			picker = { enabled = true },
+			bufdelete = { enabled = true },
+			dim = { enabled = true },
 			gitbrowse = { enabled = true },
+			image = {
+				doc = {
+					inline = false,
+					max_height = 12,
+					max_width = 24,
+				},
+			},
 			indent = {
 				enabled = true,
+				animate = {
+					enabled = false,
+				},
 				filter = function(buf)
 					local b = vim.b[buf]
 					local bo = vim.bo[buf]
@@ -34,16 +45,103 @@ return {
 				end,
 			},
 			input = { enabled = true },
-			notifier = {
-				enabled = true,
-				timeout = 3000,
-			},
 			lazygit = {
 				configure = false,
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
 			},
-			statuscolumn = { enabled = true },
+			notifier = {
+				enabled = true,
+				timeout = 3000,
+				style = "fancy",
+			},
+			picker = {
+				enabled = true,
+				matchers = {
+					frecency = true,
+					cwd_bonus = false,
+				},
+				formatters = {
+					file = {
+						filename_first = false,
+						filename_only = false,
+						icon_width = 2,
+					},
+				},
+				layout = {
+					-- presets options : "default" , "ivy" , "ivy-split" , "telescope" , "vscode", "select" , "sidebar"
+					-- override picker layout in keymaps function as a param below
+					preset = "telescope", -- defaults to this layout unless overidden
+					cycle = false,
+				},
+				layouts = {
+					select = {
+						preview = false,
+						layout = {
+							backdrop = false,
+							width = 0.6,
+							min_width = 80,
+							height = 0.4,
+							min_height = 10,
+							box = "vertical",
+							border = "rounded",
+							title = "{title}",
+							title_pos = "center",
+							{ win = "input", height = 1, border = "bottom" },
+							{ win = "list", border = "none" },
+							{ win = "preview", title = "{preview}", width = 0.6, height = 0.4, border = "top" },
+						},
+					},
+					telescope = {
+						reverse = true, -- set to false for search bar to be on top
+						layout = {
+							box = "horizontal",
+							backdrop = false,
+							width = 0.8,
+							height = 0.9,
+							border = "none",
+							{
+								box = "vertical",
+								{ win = "list", title = " Results ", title_pos = "center", border = "rounded" },
+								{
+									win = "input",
+									height = 1,
+									border = "rounded",
+									title = "{title} {live} {flags}",
+									title_pos = "center",
+								},
+							},
+							{
+								win = "preview",
+								title = "{preview:Preview}",
+								width = 0.50,
+								border = "rounded",
+								title_pos = "center",
+							},
+						},
+					},
+					ivy = {
+						layout = {
+							box = "vertical",
+							backdrop = false,
+							width = 0,
+							height = 0.4,
+							position = "bottom",
+							border = "top",
+							title = " {title} {live} {flags}",
+							title_pos = "left",
+							{ win = "input", height = 1, border = "bottom" },
+							{
+								box = "horizontal",
+								{ win = "list", border = "none" },
+								{ win = "preview", title = "{preview}", width = 0.5, border = "left" },
+							},
+						},
+					},
+				},
+			},
+			statuscolumn = {},
 			terminal = {},
+			toggle = { enabled = true },
 			words = { enabled = true },
 		},
 		init = function()
@@ -75,7 +173,9 @@ return {
 		keys = {
 			{ "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
+      { "<leader>sf", function() Snacks.picker.files() end, desc = "find files" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
+      { "<leader>sg", function() Snacks.picker.grep() end, desc = "live grep" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
       { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
@@ -86,13 +186,11 @@ return {
 			{ "<leader>zz", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [Z]en Mode" },
 			{ "<leader>cl", function() Snacks.toggle.option("cursorline", { name = "Cursor Line" }):toggle() end, desc = "Toggle [C]ursor [L]ine" },
 			{ "<leader>td", function() Snacks.toggle.diagnostics():toggle() end, desc = "[T]oggle [D]iagnostics" },
+      { "<leader>dm", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [D]im [M]ode" },
+			{ "<leader>zm", function() Snacks.toggle.zen():toggle() end, desc = "Toggle [Z]en [M]ode" },
       { "<leader>_", function() Snacks.terminal() end, desc = "terminal" },
-			{ "<leader>ln",
-				function()
-					Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle()
-				end,
-				desc = "Toggle Relative [L]ine [N]umbers",
-			},
+      { "<leader>ln", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle() end, desc = "Toggle Relative [L]ine [N]umbers" },
+      { "<leader>tw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "[T]oggle line [W]rap" },
 			{
 				"<leader>tt",
 				function()
