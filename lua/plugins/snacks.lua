@@ -73,6 +73,11 @@ return {
 					preset = "telescope", -- defaults to this layout unless overidden
 					cycle = false,
 				},
+				hl = {
+					border = "SnacksPickerBoxBorder",
+					title = "SnacksPickerTitle",
+					input_border = "SnacksPickerInputBorder",
+				},
 				layouts = {
 					select = {
 						preview = false,
@@ -171,6 +176,15 @@ return {
 		end,
     -- stylua: ignore start
 		keys = {
+        -- LSP
+      { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
+      { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
+      { "gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
+      { "gi", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
+      { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+      { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+
 			{ "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
       { "<leader>sf", function() Snacks.picker.files() end, desc = "find files" },
@@ -180,13 +194,12 @@ return {
       { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
 			{ "<leader>og", function() Snacks.gitbrowse() end, desc = "[O]pen [G]it", mode = { "n", "v" } },
-			{ "<leader>nh", function() Snacks.notifier.show_history() end, desc = "Notification History" },
 			{ "<leader>dn", function() Snacks.notifier.hide() end, desc = "[D]ismiss All [N]otifications" },
 			{ "<leader>nh", function() Snacks.notifier.show_history() end, desc = "[N]otification [H]istory" },
 			{ "<leader>zz", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [Z]en Mode" },
 			{ "<leader>cl", function() Snacks.toggle.option("cursorline", { name = "Cursor Line" }):toggle() end, desc = "Toggle [C]ursor [L]ine" },
 			{ "<leader>td", function() Snacks.toggle.diagnostics():toggle() end, desc = "[T]oggle [D]iagnostics" },
-      { "<leader>dm", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [D]im [M]ode" },
+      { "<leader>dm", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [D]im [M]ode" }, -- Same as <leader>zz but with different key
 			{ "<leader>zm", function() Snacks.toggle.zen():toggle() end, desc = "Toggle [Z]en [M]ode" },
       { "<leader>_", function() Snacks.terminal() end, desc = "terminal" },
       { "<leader>ln", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle() end, desc = "Toggle Relative [L]ine [N]umbers" },
@@ -197,7 +210,7 @@ return {
 					local tsc = require("treesitter-context")
 					Snacks.toggle({
 						name = "Treesitter Context",
-						get = tsc.enabled,
+						get = function() return tsc.enabled() end,
 						set = function(state)
 							if state then
 								tsc.enable()

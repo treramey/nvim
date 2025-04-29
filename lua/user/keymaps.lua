@@ -80,7 +80,7 @@ vim.keymap.set("n", "U", "<C-r>")
 vim.keymap.set("n", "<leader>no", "<cmd>noh<cr>")
 
 vim.keymap.set("n", "<leader>tw", function()
-	Snacks.toggle.option("wrap")
+	require("snacks").toggle.option("wrap")
 end, { desc = "[T]oggle [Wrap]" })
 
 -- Diagnostics
@@ -104,7 +104,7 @@ end)
 
 -- Goto previous error diagnostic
 vim.keymap.set("n", "[e", function()
-	vim.diagnostic.jump({ count = 1, float = true, severity = vim.diagnostic.severity.ERROR })
+	vim.diagnostic.jump({ count = -1, float = true, severity = vim.diagnostic.severity.ERROR })
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
 
@@ -246,11 +246,11 @@ vim.keymap.set("n", "<leader>/", function()
 	}))
 end, { desc = "[/] Fuzzily search in current buffer]" })
 
-vim.keymap.set("n", "<leader>ss", function()
-	require("telescope.builtin").spell_suggest(require("telescope.themes").get_dropdown({
-		previewer = false,
-	}))
-end, { desc = "[S]earch [S]pelling suggestions" })
+-- vim.keymap.set("n", "<leader>ss", function()
+-- 	require("telescope.builtin").spell_suggest(require("telescope.themes").get_dropdown({
+-- 		previewer = false,
+-- 	}))
+-- end, { desc = "[S]earch [S]pelling suggestions" })
 
 vim.keymap.set("n", "<leader>fl", ":TodoQuickFix<CR>", { desc = "[F]ind [L]ines with TODOs" })
 
@@ -264,11 +264,11 @@ M.map_lsp_keybinds = function(buffer_number)
 		vim.lsp.buf.hover({ border = "rounded" })
 	end, opts("Hover Documentation"))
 
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
-	vim.keymap.set("n", "gi", require("telescope.builtin").lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
-	vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
-	vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
+	-- vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
+	-- vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
+	-- vim.keymap.set("n", "gi", require("telescope.builtin").lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
+	-- vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
+	-- vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
 

@@ -46,10 +46,15 @@ return {
 						BlinkCmpSource = { fg = colors.overlay0 },
 						BlinkCmpKind = { fg = colors.overlay0 },
 
-						DiagnostcError = { bg = colors.mantle },
+						DiagnosticError = { bg = colors.mantle },
 						DiagnosticWarn = { bg = colors.mantle },
 						DiagnosticInfo = { bg = colors.mantle },
 						DiagnosticHint = { bg = colors.mantle },
+						StatuslineDiagnosticError = { fg = colors.red, bg = colors.mantle },
+						StatuslineDiagnosticWarn = { fg = colors.yellow, bg = colors.mantle },
+						StatuslineDiagnosticInfo = { fg = colors.sapphire, bg = colors.mantle },
+						StatuslineDiagnosticHint = { fg = colors.teal, bg = colors.mantle },
+
 						StatusLine = { bg = colors.base },
 						StatusLineTerm = { fg = colors.text, bg = "none" },
 						StatuslineSeparator = { fg = colors.mantle, bg = "none" },
@@ -69,10 +74,6 @@ return {
 						StatuslineCopilot = { fg = colors.sky, bg = colors.mantle },
 						StatuslineActiveHarpoon = { fg = colors.mauve, bg = colors.mantle },
 						StatuslineScrollbar = { fg = colors.flamingo, bg = colors.mantle },
-						StatuslineDiagnosticError = { fg = colors.red, bg = colors.mantle },
-						StatuslineDiagnosticWarn = { fg = colors.yellow, bg = colors.mantle },
-						StatuslineDiagnosticInfo = { fg = colors.sky, bg = colors.mantle },
-						StatuslineDiagnosticHint = { fg = colors.flamingo, bg = colors.mantle },
 						CodeCompanionChatHeader = { fg = colors.lavender },
 						CodeCompanionChatSeparator = { fg = colors.overlay0 },
 						CodeCompanionChatTokens = { fg = colors.yellow },
@@ -82,16 +83,16 @@ return {
 						SnacksPicker = { bg = colors.base, fg = colors.text },
 						MiniIconsBlue = { bg = colors.mantle, fg = colors.lavender },
 						SnacksPickerBoxBorder = {
-							fg = colors.mauve,
+							fg = colors.blue,
 						},
 						SnacksPickerInputBorder = {
-							fg = colors.mauve,
+							fg = colors.blue,
 						},
-						SnacksPickerTitle = { fg = colors.mauve },
+						SnacksPickerTitle = { fg = colors.blue },
 
 						-- C# type highlighting
 						-- ["@type.qualifier.c_sharp"] = { fg = colors.blue }, -- For namespaces and type qualifiers
-						["@type.c_sharp"] = { fg = colors.rosewater }, -- For regular types
+						-- ["@type.c_sharp"] = { fg = colors.rosewater }, -- For regular types
 						-- ["@constructor.c_sharp"] = { fg = colors.peach }, -- For constructors
 						-- ["@lsp.type.interface.c_sharp"] = { fg = colors.sky }, -- For interfaces (like IEnumerable)
 						-- ["@lsp.type.class.c_sharp"] = { fg = colors.green }, -- For classes
@@ -100,7 +101,7 @@ return {
 						-- ["@punctuation.bracket.c_sharp"] = { fg = colors.overlay2 }, -- For angle brackets < >
 
 						-- Special case for generic type containers
-						CSharpGenericContainer = { fg = colors.lavender, italic = true }, -- Special styling for generic containers
+						-- CSharpGenericContainer = { fg = colors.lavender, italic = true }, -- Special styling for generic containers
 					}
 				end,
 			})

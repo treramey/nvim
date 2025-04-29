@@ -153,6 +153,7 @@ return {
 
 			-- Iterate over our servers and set them up
 			for name, config in pairs(servers) do
+				local capabilities = require("blink.cmp").get_lsp_capabilities({})
 				require("lspconfig")[name].setup({
 					cmd = config.cmd,
 					capabilities = capabilities,
