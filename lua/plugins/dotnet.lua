@@ -49,33 +49,42 @@ return {
 		dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
 		ft = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "targets" },
 		cmd = "Dotnet",
-		opts = {
-			picker = "snacks",
-			terminal = function(path, action)
-				local commands = {
-					run = function()
-						return "dotnet run --project " .. path
-					end,
-					test = function()
-						return "dotnet test " .. path
-					end,
-					restore = function()
-						return "dotnet restore " .. path
-					end,
-					build = function()
-						return "dotnet build " .. path
-					end,
-				}
-				local cmd = commands[action]() .. "\r"
-				Snacks.terminal.open(cmd)
-			end,
-			test_runner = {
-				viewmode = "float",
-				icons = {
-					project = "󰗀",
+		config = function()
+			local dotnet = require("easy-dotnet")
+			dotnet.setup({
+
+				picker = "snacks",
+				terminal = function(path, action, args)
+					local args_str = args or ""
+					local commands = {
+						run = function()
+							return string.format("dotnet run --project %s %s", path, args_str)
+						end,
+						test = function()
+							return string.format("dotnet test %s %s", path, args_str)
+						end,
+						restore = function()
+							return string.format("dotnet restore %s %s", path, args_str)
+						end,
+						build = function()
+							return string.format("dotnet build %s %s", path, args_str)
+						end,
+						watch = function()
+							return string.format("dotnet watch --project %s %s", path, args_str)
+						end,
+					}
+
+					local cmd = commands[action]() .. "\r"
+					require("snacks").terminal.open(cmd)
+				end,
+				test_runner = {
+					viewmode = "float",
+					icons = {
+						project = "󰗀",
+					},
 				},
-			},
-		},
+			})
+		end,
 		keys = {
       -- stylua: ignore start 
       { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build" },

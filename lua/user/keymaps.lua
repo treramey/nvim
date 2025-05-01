@@ -1,6 +1,8 @@
 local harpoon = require("harpoon")
 local conform = require("conform")
 local smart_splits = require("smart-splits")
+local twoslash = require("twoslash-queries")
+local snacks = require("snacks")
 
 local M = {}
 
@@ -219,20 +221,20 @@ vim.keymap.set("n", "<leader>sb", require("telescope.builtin").buffers, { desc =
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
 -- vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
 vim.keymap.set("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
-vim.keymap.set(
-	"n",
-	"<leader>si",
-	":Telescope hierarchy incoming_calls<CR>",
-	{ desc = "LSP: [S]earch [I]ncoming Calls" }
-)
-vim.keymap.set(
-	"n",
-	"<leader>so",
-	":Telescope hierarchy outgoing_calls<CR>",
-	{ desc = "LSP: [S]earch [O]utgoing Calls" }
-)
-vim.keymap.set("n", "<leader>swt", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
-vim.keymap.set("n", "<leader>swc", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
+-- vim.keymap.set(
+-- 	"n",
+-- 	"<leader>si",
+-- 	":Telescope hierarchy incoming_calls<CR>",
+-- 	{ desc = "LSP: [S]earch [I]ncoming Calls" }
+-- )
+-- vim.keymap.set(
+-- 	"n",
+-- 	"<leader>so",
+-- 	":Telescope hierarchy outgoing_calls<CR>",
+-- 	{ desc = "LSP: [S]earch [O]utgoing Calls" }
+-- )
+vim.keymap.set("n", "<leader>wt", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
+vim.keymap.set("n", "<leader>wn", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
 
 vim.keymap.set("n", "<leader>sc", function()
 	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
@@ -264,11 +266,11 @@ M.map_lsp_keybinds = function(buffer_number)
 		vim.lsp.buf.hover({ border = "rounded" })
 	end, opts("Hover Documentation"))
 
-	-- vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
-	-- vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
-	-- vim.keymap.set("n", "gi", require("telescope.builtin").lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
-	-- vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
-	-- vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, opts("LSP: [G]oto [R]eferences"))
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
+	vim.keymap.set("n", "gi", snacks.picker.lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
+	vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
+	vim.keymap.set("n", "gr", snacks.picker.lsp_references, opts("LSP: [G]oto [R]eferences"))
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
 
@@ -276,16 +278,27 @@ M.map_lsp_keybinds = function(buffer_number)
 		vim.lsp.buf.signature_help({ border = "rounded" })
 	end, opts("LSP: Signature Documentation"))
 
-	vim.keymap.set(
-		"n",
-		"<leader>bs",
-		require("telescope.builtin").lsp_document_symbols,
-		opts("LSP: [B]uffer [S]ymbols")
-	)
+	-- vim.keymap.set(
+	-- 	"n",
+	-- 	"<leader>bs",
+	-- 	require("telescope.builtin").lsp_document_symbols,
+	-- 	opts("LSP: [B]uffer [S]ymbols")
+	-- )
 end
 
+vim.keymap.set("n", "<leader>ts", function()
+	if twoslash.config.is_enabled then
+		vim.cmd("TwoslashQueriesDisable")
+		Snacks.notify.info("Two Slash queries disabled")
+		return
+	end
+
+	vim.cmd(":TwoslashQueriesEnable")
+	Snacks.notify.info("Two Slash queries enabled")
+end, { desc = "Toggle [T]wo [S]lash queries" })
+
 -- Symbol Outline keybind
-vim.keymap.set("n", "<leader>sO", ":SymbolsOutline<cr>")
+vim.keymap.set("n", "<leader>so", ":SymbolsOutline<cr>")
 
 -- nvim-ufo keybinds
 vim.keymap.set("n", "zR", require("ufo").openAllFolds)
