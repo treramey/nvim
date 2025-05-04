@@ -215,44 +215,14 @@ end)
 -- Telescope keybinds --
 vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
 vim.keymap.set("n", "<leader>sb", require("telescope.builtin").buffers, { desc = "[S]earch Open [B]uffers" })
--- vim.keymap.set("n", "<leader>sf", function()
--- require("telescope.builtin").find_files({ hidden = true, no_ignore = true })
--- end, { desc = "[S]earch [F]iles" })
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
--- vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
 vim.keymap.set("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>si",
--- 	":Telescope hierarchy incoming_calls<CR>",
--- 	{ desc = "LSP: [S]earch [I]ncoming Calls" }
--- )
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>so",
--- 	":Telescope hierarchy outgoing_calls<CR>",
--- 	{ desc = "LSP: [S]earch [O]utgoing Calls" }
--- )
-vim.keymap.set("n", "<leader>wt", ":Telescope git_worktree git_worktree<CR>", { desc = "[S]earch [W]orktree" })
-vim.keymap.set("n", "<leader>wn", ":Telescope git_worktree create_git_worktree<CR>", { desc = "[C]reate [W]orktree" })
-
-vim.keymap.set("n", "<leader>sc", function()
-	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
-		previewer = false,
-	}))
-end, { desc = "[S]earch [C]ommands" })
 
 vim.keymap.set("n", "<leader>/", function()
 	require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 		previewer = false,
 	}))
 end, { desc = "[/] Fuzzily search in current buffer]" })
-
--- vim.keymap.set("n", "<leader>ss", function()
--- 	require("telescope.builtin").spell_suggest(require("telescope.themes").get_dropdown({
--- 		previewer = false,
--- 	}))
--- end, { desc = "[S]earch [S]pelling suggestions" })
 
 vim.keymap.set("n", "<leader>fl", ":TodoQuickFix<CR>", { desc = "[F]ind [L]ines with TODOs" })
 
@@ -277,13 +247,6 @@ M.map_lsp_keybinds = function(buffer_number)
 	vim.keymap.set("n", "<leader>k", function()
 		vim.lsp.buf.signature_help({ border = "rounded" })
 	end, opts("LSP: Signature Documentation"))
-
-	-- vim.keymap.set(
-	-- 	"n",
-	-- 	"<leader>bs",
-	-- 	require("telescope.builtin").lsp_document_symbols,
-	-- 	opts("LSP: [B]uffer [S]ymbols")
-	-- )
 end
 
 vim.keymap.set("n", "<leader>ts", function()
