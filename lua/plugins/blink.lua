@@ -121,7 +121,7 @@ return {
 				sources = {
 					default = function(_)
 						if vim.bo.filetype == "lua" then
-							return { "lsp", "lazydev", "path", "snippets", "buffer" }
+							return { "lsp", "lazydev", "path", "snippets", "buffer", "codecompanion" }
 						end
 
 						local success, node = pcall(vim.treesitter.get_node)
@@ -133,13 +133,20 @@ return {
 							return { "buffer" }
 						end
 
-						return { "lsp", "path", "snippets", "buffer" }
+						return { "lsp", "easy-dotnet", "path", "snippets", "buffer", "codecompanion" }
 					end,
 					providers = {
 						lazydev = {
 							name = "lazydev",
 							module = "lazydev.integrations.blink",
 							fallbacks = { "lsp" },
+						},
+						["easy-dotnet"] = {
+							name = "easy-dotnet",
+							enabled = true,
+							module = "easy-dotnet.completion.blink",
+							score_offset = 10000,
+							async = true,
 						},
 					},
 				},

@@ -6,7 +6,7 @@ return {
 		event = "InsertEnter",
 		opts = {
 			suggestion = {
-				enabled = true,
+				enabled = false,
 				auto_trigger = true,
 				hide_during_completion = false,
 				debounce = 25,
@@ -45,7 +45,7 @@ return {
 							callback = "strategies.chat.slash_commands.file",
 							description = "Select a file using snacks",
 							opts = {
-								provider = "telescope",
+								provider = "snacks",
 								contains_code = true,
 							},
 						},
@@ -68,7 +68,7 @@ return {
 					return require("codecompanion.adapters").extend("copilot", {
 						schema = {
 							model = {
-								default = "claude-3.7-sonnet",
+								default = "gemini-2.5-pro",
 							},
 						},
 					})

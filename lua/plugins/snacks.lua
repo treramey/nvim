@@ -28,9 +28,6 @@ return {
 			},
 			indent = {
 				enabled = true,
-				animate = {
-					enabled = false,
-				},
 				filter = function(buf)
 					local b = vim.b[buf]
 					local bo = vim.bo[buf]
@@ -44,7 +41,17 @@ return {
 						and not excluded_filetypes[bo.filetype]
 				end,
 			},
-			input = { enabled = true },
+			input = {
+				enabled = true,
+				win = {
+					style = "input",
+					relative = "editor",
+					height = 1,
+					width = 60,
+					row = math.floor(((vim.o.lines - 1) * 0.33)), -- 1/3 down
+					col = math.floor((vim.o.columns - 60) * 0.5), -- center
+				},
+			},
 			lazygit = {
 				configure = false,
 				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),

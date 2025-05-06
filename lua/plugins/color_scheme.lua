@@ -82,13 +82,14 @@ return {
 						CodeCompanionVirtualText = { fg = colors.mauve },
 						SnacksPicker = { bg = colors.base, fg = colors.text },
 						MiniIconsBlue = { bg = colors.mantle, fg = colors.lavender },
-						SnacksPickerBoxBorder = {
-							fg = colors.blue,
-						},
-						SnacksPickerInputBorder = {
-							fg = colors.blue,
-						},
+
+						SnacksPickerBoxBorder = { fg = colors.blue },
+						SnacksPickerInputBorder = { fg = colors.blue },
 						SnacksPickerTitle = { fg = colors.blue },
+						SnacksInputIcon = { fg = colors.mauve },
+						SnacksInputNormal = { bg = colors.base, fg = colors.text },
+						SnacksInputBorder = { fg = colors.blue },
+						SnacksInputTitle = { fg = colors.blue },
 
 						-- C# type highlighting
 						-- ["@type.qualifier.c_sharp"] = { fg = colors.blue }, -- For namespaces and type qualifiers
