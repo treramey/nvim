@@ -5,20 +5,7 @@ return {
 		build = ":Copilot auth",
 		event = "InsertEnter",
 		opts = {
-			suggestion = {
-				enabled = false,
-				auto_trigger = true,
-				hide_during_completion = false,
-				debounce = 25,
-				keymap = {
-					accept = false,
-					accept_word = false,
-					accept_line = "<C-l>",
-					next = false,
-					prev = false,
-					dismiss = false,
-				},
-			},
+			suggestion = { enabled = false },
 			panel = { enabled = false },
 		},
 	},
