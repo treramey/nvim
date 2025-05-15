@@ -18,13 +18,13 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
 
-			-- Default handlers for LSP
-			local default_handlers = {
-				["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
-				["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
-			}
+			-- -- Default handlers for LSP
+			-- local default_handlers = {
+			-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
+			-- 	["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
+			-- }
 
-			local ts_ls_inlay_hints = {
+			local vtsls_inlay_hints = {
 				includeInlayEnumMemberValueHints = true,
 				includeInlayFunctionLikeReturnTypeHints = true,
 				includeInlayFunctionParameterTypeHints = true,
@@ -103,19 +103,15 @@ return {
 				sqlls = {},
 				svelte = {},
 				tailwindcss = {},
-				ts_ls = {
+				vtsls = {
 					on_attach = function(client, buffer_number)
 						require("twoslash-queries").attach(client, buffer_number)
 						return on_attach(client, buffer_number)
 					end,
 					settings = {
 						maxTsServerMemory = 12288,
-						typescript = {
-							inlayHints = ts_ls_inlay_hints,
-						},
-						javascript = {
-							inlayHints = ts_ls_inlay_hints,
-						},
+						typescript = { inlayHints = vtsls_inlay_hints },
+						javascript = { inlayHints = vtsls_inlay_hints },
 					},
 				},
 				yamlls = {},
@@ -180,6 +176,7 @@ return {
 				registries = {
 					"github:mason-org/mason-registry",
 					"github:syndim/mason-registry",
+					"github:Crashdummyy/mason-registry",
 				},
 			})
 

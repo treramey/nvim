@@ -11,13 +11,8 @@ local function _align()
 	return "%="
 end
 
----@param side "left" | "right"
----@return string
-local function _separator(side)
-	if side == "right" then
-		return "%#StatuslineSeparator#" .. ""
-	end
-	return "%#StatuslineSeparator#" .. ""
+local function _truncate()
+	return "%<"
 end
 
 -- https://github.com/tjdevries/lazy-require.nvim
@@ -67,11 +62,73 @@ local function get_mode()
 	return mode_info.hl .. " " .. mode .. " " .. _spacer(1)
 end
 
+local function get_filetype()
+	local disabled_modes = {
+		"t",
+		"!",
+	}
+	if vim.tbl_contains(disabled_modes, vim.fn.mode()) then
+		return ""
+	end
+	local icon, hl, _ = require("mini.icons").get("filetype", vim.bo.filetype)
+	hl = "%#" .. hl .. "#"
+	return hl .. icon .. _spacer(1)
+end
+
+local function get_path()
+	if vim.fn.mode() == "t" then
+		return ""
+	end
+	if is_truncated(100) then
+		return _spacer(1)
+	end
+	local path = vim.fn.expand("%:~:.:h")
+	local hl = "%#StatuslineTextAccent#"
+	local max_width = 30
+	if path == "." or path == "" then
+		return ""
+	elseif #path > max_width then
+		path = "…" .. string.sub(path, -max_width + 2)
+	end
+	return hl .. path .. "/"
+end
+
+local function get_filename()
+	if vim.fn.mode() == "t" then
+		return ""
+	end
+	local filename = vim.fn.expand("%:~:t")
+	local path = vim.fn.expand("%:~:.:h")
+	local hl = "%#StatuslineTextMain#"
+	if filename == "" then
+		return hl .. "[No Name]" .. _spacer(2)
+	end
+	if path == "." then
+		return hl .. filename .. _spacer(2)
+	end
+	return hl .. filename .. _spacer(2)
+end
+
+local function get_modification_status()
+	local buf_modified = vim.bo.modified
+	local buf_modifiable = vim.bo.modifiable
+	local buf_readonly = vim.bo.readonly
+	local hi_notsaved = "%#StatuslineNotSaved#"
+	local hi_readonly = "%#StatuslineReadOnly#"
+	if buf_modified then
+		return hi_notsaved .. "" .. _spacer(2)
+	elseif buf_modifiable == false or buf_readonly == true then
+		return hi_readonly .. "󰑇" .. _spacer(2)
+	else
+		return ""
+	end
+end
+
 local function get_lsp_status()
 	local clients = vim.lsp.get_clients({ bufnr = 0 })
 	local hl = "%#StatuslineLspOn#"
 	if #clients > 0 and clients[1].initialized then
-		return hl .. " " .. _spacer(1)
+		return hl .. "" .. _spacer(2)
 	else
 		return ""
 	end
@@ -83,7 +140,7 @@ local function get_formatter_status()
 
 	local formatters = conform.list_formatters(0)
 	if #formatters > 0 then
-		return hl .. " " .. _spacer(1)
+		return hl .. "" .. _spacer(2)
 	else
 		return ""
 	end
@@ -96,7 +153,7 @@ local function get_copilot_status()
 	if not ok then
 		return ""
 	end
-	return hl_copilot .. " " .. _spacer(2)
+	return hl_copilot .. " " .. _spacer(1)
 end
 
 -- local function get_harpoon_status()
@@ -185,7 +242,7 @@ local function get_harpoon_status()
 
 	local hl_main = "%#StatuslineActiveHarpoon#"
 	-- Return the status string with the  icon and the count.
-	return hl_main .. " " .. count .. _spacer(2)
+	return hl_main .. " " .. count .. _spacer(1)
 end
 
 local function get_diagnostics()
@@ -279,19 +336,21 @@ M.load = function()
 	end
 
 	return table.concat({
-		_align(),
-		_separator("left"),
 		get_mode(),
+		get_modification_status(),
+		get_filetype(),
+		get_path(),
+		get_filename(),
 		get_lsp_status(),
 		get_formatter_status(),
 		get_copilot_status(),
 		get_harpoon_status(),
+		_align(),
 		get_diagnostics(),
 		get_dotnet_solution(),
 		get_branch(),
 		get_scrollbar(),
-		_separator("right"),
-		_align(),
+		_truncate(),
 	})
 end
 
@@ -305,3 +364,14 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
 })
 
 return M
+
+-- local function get_recording()
+--   local hl_main = "%#StatuslineTextMain#"
+--   local hl_accent = "%#StatuslineTextAccent#"
+--   local noice = lazy_require "noice"
+--   local status = noice.api.status.mode.get()
+--   if status == nil then
+--     return ""
+--   end
+--   return hl_accent .. " " .. hl_main .. status .. _spacer(2)
+-- end

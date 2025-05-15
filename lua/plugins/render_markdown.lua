@@ -12,7 +12,7 @@ return {
 		opts = {
 			file_types = { "markdown", "copilot-chat", "codecompanion" },
 			code = {
-				sign = false,
+				sign = true,
 				width = "block",
 				right_pad = 1,
 			},
