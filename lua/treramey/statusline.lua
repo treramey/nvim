@@ -359,7 +359,7 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
 	group = "Statusline",
 	pattern = "*",
 	callback = function()
-		vim.o.statusline = "%!v:lua.require'user.statusline'.load()"
+		vim.o.statusline = "%!v:lua.require'treramey.statusline'.load()"
 	end,
 })
 

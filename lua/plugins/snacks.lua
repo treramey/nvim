@@ -206,6 +206,8 @@ return {
       { "<leader>_", function() Snacks.terminal() end, desc = "terminal" },
       { "<leader>ln", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle() end, desc = "Toggle Relative [L]ine [N]umbers" },
       { "<leader>tw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "[T]oggle line [W]rap" },
+      -- stylua: ignore end
+
 			{
 				"<leader>tt",
 				function()
@@ -244,7 +246,25 @@ return {
 				end,
 				desc = "Toggle [H]igh[L]ight Colors",
 			},
+      {
+      "<leader>ih",
+      function()
+        Snacks.toggle({
+          name = "Inlay Hints",
+          get = function()
+            return vim.lsp.inlay_hint.is_enabled()
+          end,
+          set = function(state)
+            if state then
+              vim.lsp.inlay_hint.enable(true)
+            else
+              vim.lsp.inlay_hint.enable(false)
+            end
+          end,
+        }):toggle()
+      end,
+      desc = "Toggle [I]nlay [H]ints",
+      },
 		},
-		-- stylua: ignore end
 	},
 }

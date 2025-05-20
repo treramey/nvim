@@ -7,7 +7,7 @@ return {
 		},
 		ft = "cs",
 		opts = function()
-			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
+			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
 
 			local on_attach = function(_, bufnr)
 				map_lsp_keybinds(bufnr)
@@ -77,6 +77,10 @@ return {
 					local cmd = commands[action]() .. "\r"
 					require("snacks").terminal.open(cmd)
 				end,
+				auto_bootstrap_namespace = {
+					type = "file_scoped",
+					enabled = true,
+				},
 				test_runner = {
 					viewmode = "float",
 					icons = {

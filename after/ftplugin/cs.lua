@@ -1,1 +1,1 @@
-require("user.lang.dotnet.commands").setup()
+require("treramey.lang.dotnet.commands").setup()

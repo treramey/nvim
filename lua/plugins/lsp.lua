@@ -16,7 +16,7 @@ return {
 			local mason = require("mason")
 			local mason_tool_installer = require("mason-tool-installer")
 			local mason_lspconfig = require("mason-lspconfig")
-			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
+			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
 
 			-- -- Default handlers for LSP
 			-- local default_handlers = {
@@ -203,7 +203,7 @@ return {
 			"neovim/nvim-lspconfig",
 		},
 		opts = function()
-			local map_lsp_keybinds = require("user.keymaps").map_lsp_keybinds
+			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
 			return {
 				on_attach = function(_, bufnr)
 					map_lsp_keybinds(bufnr)

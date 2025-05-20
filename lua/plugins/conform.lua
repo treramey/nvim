@@ -47,6 +47,10 @@ return {
 					"-",
 				},
 			},
+			csharpier = {
+				cmd = "dotnet",
+				args = { "csharpier", "format" },
+			},
 			injected = { options = { ignore_errors = false } },
 		},
 	},
