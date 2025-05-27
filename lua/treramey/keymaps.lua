@@ -48,6 +48,9 @@ end)
 -- Map Undotree to <leader>
 vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle [U]ndo[T]ree " })
 
+-- InspectTwoslashQueries
+vim.keymap.set("n", "<leader>ti", ":InspectTwoslashQueries<CR>", { desc = "[I]nspect [T]woslash Query" })
+
 -- Center buffer while navigating
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
