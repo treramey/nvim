@@ -84,10 +84,6 @@ vim.keymap.set("n", "U", "<C-r>")
 -- Turn off highlighted results
 vim.keymap.set("n", "<leader>no", "<cmd>noh<cr>")
 
-vim.keymap.set("n", "<leader>tw", function()
-	require("snacks").toggle.option("wrap")
-end, { desc = "[T]oggle [Wrap]" })
-
 -- Diagnostics
 -- Goto next diagnostic of any severity
 vim.keymap.set("n", "]d", function()
