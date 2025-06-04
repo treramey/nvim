@@ -1,69 +1,8 @@
 return {
 	{
-		"rcarriga/nvim-dap-ui",
-		keys = {
-      -- stylua: ignore start
-        {"<leader>du", function() require("dapui").toggle() end, desc = "Toggle UI" },
-        {"<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = { "n", "v" },},
-			-- stylua: ignore end
-		},
-		config = function()
-			require("dapui").setup({
-				icons = { expanded = "▾", collapsed = "▸", current_frame = "▸" },
-				mappings = {
-					expand = { "<CR>" },
-					open = "o",
-					remove = "d",
-					edit = "e",
-					repl = "r",
-					toggle = "t",
-				},
-				element_mappings = {},
-				expand_lines = true,
-				force_buffers = true,
-				layouts = {
-					{
-						elements = { { id = "scopes", size = 0.33 }, { id = "repl", size = 0.66 } },
-						size = 10,
-						position = "bottom",
-					},
-					{
-						elements = { "breakpoints", "console", "stacks", "watches" },
-						size = 45,
-						position = "right",
-					},
-				},
-				floating = {
-					max_height = nil,
-					max_width = nil,
-					border = "single",
-					mappings = { ["close"] = { "q", "<Esc>" } },
-				},
-				controls = {
-					enabled = vim.fn.exists("+winbar") == 1,
-					element = "repl",
-					icons = {
-						pause = "",
-						play = "",
-						step_into = "",
-						step_over = "",
-						step_out = "",
-						step_back = "",
-						run_last = "",
-						terminate = "",
-						disconnect = "",
-					},
-				},
-				render = { max_type_length = nil, max_value_lines = 100, indent = 1 },
-			})
-		end,
-	},
-	{
 		"mfussenegger/nvim-dap",
 		dependencies = {
-			"jbyuki/one-small-step-for-vimkind",
-			"nvim-neotest/nvim-nio",
-			"rcarriga/nvim-dap-ui",
+			{ "igorlfs/nvim-dap-view", opts = {} },
 			{
 				"Weissle/persistent-breakpoints.nvim",
 				event = { "BufReadPre", "BufNewFile" },
@@ -75,25 +14,30 @@ return {
 			},
 			{
 				"theHamsta/nvim-dap-virtual-text",
-				opts = {},
+				opts = {
+					winbar = {
+						controls = {
+							enabled = true,
+						},
+					},
+				},
 			},
 		},
 		config = function()
-			local dap, dapui = require("dap"), require("dapui")
+			local dap, dv = require("dap"), require("dap-view")
 			dap.set_log_level("TRACE")
 
-			dap.listeners.after.event_initialized.dapui_config = function()
-				dapui.open()
-				-- vim.cmd("colorscheme " .. vim.g.colors_name)
+			dap.listeners.before.attach["dap-view-config"] = function()
+				dv.open()
 			end
-			dap.listeners.before.launch.dapui_config = function()
-				dapui.open()
+			dap.listeners.before.launch["dap-view-config"] = function()
+				dv.open()
 			end
-			dap.listeners.before.event_terminated.dapui_config = function()
-				dapui.close()
+			dap.listeners.before.event_terminated["dap-view-config"] = function()
+				dv.close()
 			end
-			dap.listeners.before.event_exited.dapui_config = function()
-				dapui.close()
+			dap.listeners.before.event_exited["dap-view-config"] = function()
+				dv.close()
 			end
 
 			vim.fn.sign_define(

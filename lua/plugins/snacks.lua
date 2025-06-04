@@ -67,6 +67,14 @@ return {
 					frecency = true,
 					cwd_bonus = false,
 				},
+				sources = {
+					files = {
+						hidden = true,
+						ignored = true,
+						respect_gitignore = true,
+						exclude = { "!.editorconfig", "!**/launchSettings.json" },
+					},
+				},
 				formatters = {
 					file = {
 						filename_first = false,

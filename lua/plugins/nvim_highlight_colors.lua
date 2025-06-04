@@ -1,7 +1,7 @@
 return {
 	{
 		"brenoprata10/nvim-highlight-colors",
-		event = { "BufReadPre", "BufNewFile" },
+		ft = { "css", "scss", "sass", "html", "javascript", "typescript", "typescriptreact", "javascriptreact", "svelte", "vue", "json" },
 		opts = {
 			---Render style
 			---@usage 'background'|'foreground'|'virtual'

@@ -1,7 +1,7 @@
 return {
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPost" },
+		event = { "BufReadPre", "BufNewFile" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall", "Mason" },
 		dependencies = {
 			-- Plugin(s) and UI to automatically install LSPs to stdpath
@@ -198,7 +198,7 @@ return {
 	},
 	{ --ohhh the pain
 		"treramey/cfmlsp.nvim",
-		event = { "BufReadPost" },
+		event = { "BufReadPre", "BufReadPost", "BufNewFile" },
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},

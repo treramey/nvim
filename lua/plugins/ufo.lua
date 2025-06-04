@@ -1,7 +1,7 @@
 return {
 	{
 		"kevinhwang91/nvim-ufo",
-		event = "BufEnter",
+		event = { "BufReadPost", "BufNewFile" },
 		dependencies = {
 			"kevinhwang91/promise-async",
 		},

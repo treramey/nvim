@@ -48,8 +48,11 @@ return {
 				},
 			},
 			csharpier = {
-				cmd = "dotnet",
-				args = { "csharpier", "format" },
+				command = "csharpier",
+				args = function(self, ctx)
+					return { "format", "--write-stdout", ctx.filename }
+				end,
+				stdin = true,
 			},
 			injected = { options = { ignore_errors = false } },
 		},

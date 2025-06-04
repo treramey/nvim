@@ -71,7 +71,6 @@ return {
     -- stylua: ignore stop
 
 		init = function()
-      require("plugins.codecompanion.fidget-spinner"):init()
 			vim.api.nvim_create_autocmd("BufEnter", {
 				callback = function(opts)
 					if vim.bo[opts.buf].filetype == "codecompanion" then

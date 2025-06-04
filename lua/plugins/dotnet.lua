@@ -56,6 +56,12 @@ return {
 				picker = "snacks",
 				terminal = function(path, action, args)
 					local args_str = args or ""
+					local terminal_opts = {
+						win = {
+							position = "bottom",
+							height = 0.20,
+						},
+					}
 					local commands = {
 						run = function()
 							return string.format("dotnet run --project %s %s", path, args_str)
@@ -74,8 +80,8 @@ return {
 						end,
 					}
 
-					local cmd = commands[action]() .. "\r"
-					require("snacks").terminal.open(cmd)
+					local cmd = commands[action]()
+					Snacks.terminal.toggle(cmd, terminal_opts)
 				end,
 				auto_bootstrap_namespace = {
 					type = "file_scoped",
@@ -91,9 +97,13 @@ return {
 		end,
 		keys = {
       -- stylua: ignore start 
-      { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build" },
-      { "<leader>nB", function() require("easy-dotnet").build_quickfix() end, desc = "build solution" },
-      { "<leader>nr", function() require("easy-dotnet").run_default() end, desc = "run" },
+      { "<leader>nw", function() require("easy-dotnet").watch_default() end, desc = "watch solution" },
+      { "<leader>nb", function() require("easy-dotnet").build_default() end, desc = "build default" },
+      { "<leader>nB", function() require("easy-dotnet").build() end, desc = "build" },
+      { "<leader>ns", function() require("easy-dotnet").build_solution() end, desc = "build solution" },
+      { "<leader>nr", function() require("easy-dotnet").restore() end, desc = "restore packages" },
+      { "<leader>nq", function() require("easy-dotnet").build_default_quickfix() end, desc = "build default quickfix" },
+      { "<leader>nQ", function() require("easy-dotnet").build_quickfix() end, desc = "build quickfix" },
       { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },
       { "<leader>nx", function() require("easy-dotnet").clean() end, desc = "clean solution" },
       { "<leader>na", "<cmd>Dotnet new<cr>", desc = "new item" },

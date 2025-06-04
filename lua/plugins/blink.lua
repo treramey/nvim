@@ -75,6 +75,7 @@ return {
 					menu = {
 						border = "rounded",
 						draw = {
+							padding = 0,
 							treesitter = { "lsp" },
 							-- We don't need label_description now because label and label_description are already
 							-- combined together in label by colorful-menu.nvim.

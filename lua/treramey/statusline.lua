@@ -1,5 +1,15 @@
 local M = {}
-
+local state = {
+	cache = {
+		diagnostics = "",
+		last_update = 0,
+	},
+	spinner_chars = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+	codecompanion = {
+		status = nil, -- "thinking", "streaming"Add commentMore actions
+		spinner_index = 1,
+	},
+}
 ---@param n number
 ---@return string
 local function _spacer(n)
@@ -148,79 +158,16 @@ end
 
 local function get_copilot_status()
 	local hl_copilot = "%#StatuslineCopilot#"
-	local c = lazy_require("copilot.client")
-	local ok = not c.is_disabled() and c.buf_is_attached(vim.api.nvim_get_current_buf())
+	local ok, c = pcall(lazy_require, "copilot.client")
+	if not ok then
+		return ""
+	end
+	ok = not c.is_disabled() and c.buf_is_attached(vim.api.nvim_get_current_buf())
 	if not ok then
 		return ""
 	end
 	return hl_copilot .. " " .. _spacer(1)
 end
-
--- local function get_harpoon_status()
--- 	local function is_full_path(path)
--- 		return path and path:sub(1, 1) == "/"
--- 	end
---
--- 	local function get_full_path(root_dir, value)
--- 		return root_dir .. "/" .. value
--- 	end
---
--- 	local function extract_filename(fullpath)
--- 		if not fullpath then
--- 			return nil
--- 		end
--- 		local filename = fullpath:match(".+/([^/]+)%.%w+$")
--- 		return filename or fullpath
--- 	end
---
--- 	local hl_main = "%#StatuslineActiveHarpoon#"
--- 	local hl_accent = "%#StatuslineTextAccent#"
--- 	local harpoon_icons = {
--- 		indicators = { "[1]", "[2]", "[3]", "[4]", "[5]" },
--- 		active = "[]",
--- 	}
---
--- 	local harpoon = require("harpoon")
--- 	local root_dir = vim.loop.cwd()
--- 	local len = math.min(5, harpoon:list():length())
--- 	local status_line = {}
--- 	local current_file = vim.api.nvim_buf_get_name(0)
---
---
--- 	for i = 1, len do
--- 		local entry = harpoon:list():get(i)
--- 		if not entry or not entry.value then
--- 			goto continue
--- 		end
---
--- 		local full_path = is_full_path(entry.value) and entry.value or get_full_path(root_dir, entry.value)
--- 		local filename = extract_filename(full_path)
--- 		if not filename then
--- 			goto continue
--- 		end
---
--- 		local status_entry
--- 		if full_path == current_file then
--- 			-- status_entry = hl_main .. harpoon_icons.active .. " " .. filename
--- 			status_entry = hl_main .. harpoon_icons.indicators[i]
--- 		else
--- 			-- status_entry = hl_accent .. harpoon_icons.indicators[i] .. " " .. filename
--- 			status_entry = hl_accent .. harpoon_icons.indicators[i]
--- 		end
---
--- 		if status_entry then
--- 			table.insert(status_line, status_entry)
--- 		end
---
--- 		::continue::
--- 	end
---
--- 	if #status_line == 0 then
--- 		return ""
--- 	end
---
--- 	return table.concat(status_line, " ")
--- end
 
 local function get_harpoon_status()
 	local harpoon = require("harpoon")
@@ -246,6 +193,10 @@ local function get_harpoon_status()
 end
 
 local function get_diagnostics()
+	if state.cache.diagnostics and vim.loop.now() - state.cache.last_update < 100 then
+		return state.cache.diagnostics
+	end
+
 	local severities = {
 		{ name = "E", hl = "%#StatuslineDiagnosticError#" },
 		{ name = "W", hl = "%#StatuslineDiagnosticWarn#" },
@@ -264,7 +215,9 @@ local function get_diagnostics()
 		end
 	end
 
-	return result .. _spacer(diag_count)
+	local ret = result .. _spacer(diag_count)
+	state.cache.diagnostics = ret
+	return ret
 end
 
 local function get_dotnet_solution()
@@ -292,23 +245,24 @@ local function get_branch()
 	return hl_accent .. " " .. hl_main .. branch .. _spacer(2)
 end
 
+local function get_codecompanion_status()
+	if not state.codecompanion.status then
+		return ""
+	end
+	local index = state.codecompanion.spinner_index
+	local spinner_char = state.spinner_chars[index]
+	local status_text = state.codecompanion.status == "thinking" and " ai overlord is thinking"
+		or " ai overlord is responding"
+
+	return "%#StatuslineSpinner#" .. spinner_char .. "%#StatuslineTextAccent#" .. status_text .. _spacer(2)
+end
+
 local function get_scrollbar()
 	if is_truncated(75) then
 		return ""
 	end
 
-	local sbar_chars = {
-		"▔",
-		"🮂",
-		"🬂",
-		"🮃",
-		"▀",
-		"▄",
-		"▃",
-		"🬭",
-		"▂",
-		"▁",
-	}
+	local sbar_chars = { "▔", "🮂", "🬂", "🮃", "▀", "▄", "▃", "🬭", "▂", "▁" }
 
 	local cur_line = vim.api.nvim_win_get_cursor(0)[1]
 	local lines = vim.api.nvim_buf_line_count(0)
@@ -347,6 +301,7 @@ M.load = function()
 		get_harpoon_status(),
 		_align(),
 		get_diagnostics(),
+		get_codecompanion_status(),
 		get_dotnet_solution(),
 		get_branch(),
 		get_scrollbar(),
@@ -363,15 +318,102 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
 	end,
 })
 
-return M
+local global_timer = nil
 
--- local function get_recording()
---   local hl_main = "%#StatuslineTextMain#"
---   local hl_accent = "%#StatuslineTextAccent#"
---   local noice = lazy_require "noice"
---   local status = noice.api.status.mode.get()
---   if status == nil then
---     return ""
---   end
---   return hl_accent .. " " .. hl_main .. status .. _spacer(2)
--- end
+local function codecompanion_spinner()
+	global_timer = vim.loop.new_timer()
+	if global_timer == nil then
+		vim.notify("Failed to create global timer for statusline spinner", vim.log.levels.ERROR)
+		return
+	end
+	global_timer:start(
+		0,
+		100,
+		vim.schedule_wrap(function()
+			if state.codecompanion.status == nil then
+				global_timer:stop()
+				return
+			end
+			state.codecompanion.spinner_index = (state.codecompanion.spinner_index % #state.spinner_chars) + 1
+			vim.o.statusline = "%!v:lua.require'treramey.statusline'.load()"
+		end)
+	)
+end
+
+local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
+
+vim.api.nvim_create_autocmd({ "User" }, {
+	pattern = "CodeCompanionRequest*",
+	group = group,
+	callback = function(request)
+		if request.match == "CodeCompanionRequestStarted" then
+			state.codecompanion.status = "thinking"
+			codecompanion_spinner()
+		elseif request.match == "CodeCompanionRequestStreaming" then
+			state.codecompanion.status = "streaming"
+			codecompanion_spinner()
+		elseif request.match == "CodeCompanionRequestFinished" then
+			state.codecompanion.status = nil
+		end
+	end,
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+	callback = function()
+		if global_timer then
+			global_timer:stop()
+			global_timer:close()
+		end
+	end,
+})
+
+local global_timer = nil
+
+local function codecompanion_spinner()
+	global_timer = vim.loop.new_timer()
+	if global_timer == nil then
+		vim.notify("Failed to create global timer for statusline spinner", vim.log.levels.ERROR)
+		return
+	end
+	global_timer:start(
+		0,
+		100,
+		vim.schedule_wrap(function()
+			if state.codecompanion.status == nil then
+				global_timer:stop()
+				return
+			end
+			state.codecompanion.spinner_index = (state.codecompanion.spinner_index % #state.spinner_chars) + 1
+			vim.o.statusline = "%!v:lua.require'treramey.statusline'.load()"
+		end)
+	)
+end
+
+local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
+
+vim.api.nvim_create_autocmd({ "User" }, {
+	pattern = "CodeCompanionRequest*",
+	group = group,
+	callback = function(request)
+		if request.match == "CodeCompanionRequestStarted" then
+			state.codecompanion.status = "thinking"
+			codecompanion_spinner()
+		elseif request.match == "CodeCompanionRequestStreaming" then
+			state.codecompanion.status = "streaming"
+			codecompanion_spinner()
+		elseif request.match == "CodeCompanionRequestFinished" then
+			state.codecompanion.status = nil
+		end
+	end,
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+	callback = function()
+		if global_timer then
+			global_timer:stop()
+			global_timer:close()
+		end
+	end,
+})
+
+return M

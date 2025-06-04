@@ -1,13 +1,10 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		build = function()
-			require("nvim-treesitter.install").update({ with_sync = true })
-		end,
-		event = { "BufEnter" },
+		build = ":TSUpdate",
+		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			---@diagnostic disable: missing-fields
-
 			---@class ParserInfo
 			local parserConfig = require("nvim-treesitter.parsers").get_parser_configs()
 			-- Add cfml and boxlang filetypes
@@ -30,7 +27,6 @@ return {
 					vim.o.signcolumn = "yes"
 				end,
 			})
-
 			parserConfig.cfml = {
 				install_info = {
 					url = "https://github.com/cfmleditor/tree-sitter-cfml",
@@ -68,6 +64,7 @@ return {
 					"vimdoc",
 					"yaml",
 				},
+				auto_install = true,
 				sync_install = false,
 				highlight = {
 					enable = true,
@@ -79,10 +76,6 @@ return {
 				autopairs = {
 					enable = true,
 				},
-				--[[ context_commentstring = {
-					enable = true,
-					enable_autocmd = false,
-				}, ]]
 				incremental_selection = {
 					enable = true,
 					keymaps = {
