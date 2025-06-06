@@ -79,7 +79,7 @@ return {
 							treesitter = { "lsp" },
 							-- We don't need label_description now because label and label_description are already
 							-- combined together in label by colorful-menu.nvim.
-							columns = { { "kind_icon" }, { "label", gap = 1 }, { "kind" }, { "source_name" } },
+							columns = { { "kind_icon" }, { "label", gap = 1 }, { "kind" } },
 							components = {
 								label = {
 									text = function(ctx)
@@ -112,7 +112,6 @@ return {
 						enabled = true,
 					},
 				},
-
 				signature = {
 					enabled = true,
 					window = {
@@ -122,10 +121,6 @@ return {
 
 				sources = {
 					default = function(_)
-						if vim.bo.filetype == "lua" then
-							return { "lsp", "lazydev", "path", "snippets", "buffer", "codecompanion" }
-						end
-
 						local success, node = pcall(vim.treesitter.get_node)
 						if
 							success
@@ -160,17 +155,14 @@ return {
 				},
 			}
 
-			local catppuccin_colors = require("catppuccin.palettes").get_palette()
+			-- local catppuccin_colors = require("catppuccin.palettes").get_palette()
+			local colors = require("rose-pine.palette")
 
 			for _, kind in ipairs(require("blink.cmp.types").CompletionItemKind) do
 				local name = "BlinkCmpKind" .. kind
 				local hlinfo = vim.api.nvim_get_hl(0, { name = name })
 				if hlinfo then
-					vim.api.nvim_set_hl(
-						0,
-						name .. "Reversed",
-						{ fg = hlinfo.fg, bg = catppuccin_colors.base, reverse = true }
-					)
+					vim.api.nvim_set_hl(0, name .. "Reversed", { fg = hlinfo.fg, bg = colors.base, reverse = true })
 				end
 			end
 

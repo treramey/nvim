@@ -9,11 +9,23 @@ return {
 			timeout_ms = 500,
 			lsp_format = "fallback",
 		},
-		format_after_save = {
-			async = true,
-			timeout_ms = 500,
-			lsp_format = "fallback",
-		},
+		format_after_save = function(bufnr)
+			local ft = vim.bo[bufnr].filetype
+
+			if ft == "cfml" or ft == "cfm" or ft == "cfc" then
+				return {
+					async = true,
+					timeout_ms = 500,
+					lsp_format = "never",
+				}
+			else
+				return {
+					async = true,
+					timeout_ms = 500,
+					lsp_format = "fallback",
+				}
+			end
+		end,
 		formatters_by_ft = {
 			cs = { "csharpier" },
 			css = { "prettier" },

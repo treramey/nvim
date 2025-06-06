@@ -58,7 +58,7 @@ return {
 							if path == "" then
 								path = default_path
 							end
-							local ok, err = pcall(git_worktree.create_worktree, path, branch, "origin")
+							local ok, err = pcall(git_worktree.create_worktree, path, branch, "origin/" .. branch)
 							if not ok then
 								vim.notify("Failed to create worktree: " .. tostring(err), vim.log.levels.ERROR)
 							else
@@ -74,7 +74,7 @@ return {
 						if path == "" then
 							path = default_path
 						end
-						local ok, err = pcall(git_worktree.create_worktree, path, choice, "origin/" .. choice)
+						local ok, err = pcall(git_worktree.create_worktree, path, "origin/" .. choice)
 						if not ok then
 							vim.notify("Failed to create worktree: " .. tostring(err), vim.log.levels.ERROR)
 						else

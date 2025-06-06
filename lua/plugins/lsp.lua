@@ -16,7 +16,7 @@ return {
 			local mason = require("mason")
 			local mason_tool_installer = require("mason-tool-installer")
 			local mason_lspconfig = require("mason-lspconfig")
-			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds -- Has to load keymaps before pluginslsp
+			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds -- Has to load keymaps before plugins lsp
 
 			-- -- Default handlers for LSP
 			-- local default_handlers = {
@@ -43,6 +43,19 @@ return {
 			end
 
 			local util = require("lspconfig/util")
+
+			local configs = require("lspconfig.configs")
+
+			if not configs["harper-ls"] then
+				configs["harper-ls"] = {
+					default_config = {
+						cmd = { "harper-ls", "--stdio" },
+						filetypes = { "markdown", "text" },
+						root_dir = util.root_pattern(".git"),
+						single_file_support = true,
+					},
+				}
+			end
 
 			local servers = {
 				-- LSP Servers
@@ -71,6 +84,7 @@ return {
 						format = false,
 					},
 				},
+				["harper-ls"] = {},
 				html = {},
 				jsonls = {},
 				gopls = {
@@ -192,7 +206,7 @@ return {
 				},
 			})
 
-			-- Configure borderd for LspInfo ui
+			-- Configure border for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 		end,
 	},
