@@ -87,38 +87,50 @@ vim.keymap.set("n", "<leader>no", "<cmd>noh<cr>")
 -- Diagnostics
 -- Goto next diagnostic of any severity
 vim.keymap.set("n", "]d", function()
-	vim.diagnostic.jump({ count = 1, float = true })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = 1, float = true })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Goto previous diagnostic of any severity
 vim.keymap.set("n", "[d", function()
-	vim.diagnostic.jump({ count = -1, float = true })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = -1, float = true })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Goto next error diagnostic
 vim.keymap.set("n", "]e", function()
-	vim.diagnostic.jump({ count = 1, float = true, severity = vim.diagnostic.severity.ERROR })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = 1, float = true, severity = vim.diagnostic.severity.ERROR })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Goto previous error diagnostic
 vim.keymap.set("n", "[e", function()
-	vim.diagnostic.jump({ count = -1, float = true, severity = vim.diagnostic.severity.ERROR })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = -1, float = true, severity = vim.diagnostic.severity.ERROR })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Goto next warning diagnostic
 vim.keymap.set("n", "]w", function()
-	vim.diagnostic.jump({ count = 1, float = true, severity = vim.diagnostic.severity.WARN })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = 1, float = true, severity = vim.diagnostic.severity.WARN })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Goto previous warning diagnostic
 vim.keymap.set("n", "[w", function()
-	vim.diagnostic.jump({ count = -1, float = true, severity = vim.diagnostic.severity.WARN })
-	vim.api.nvim_feedkeys("zz", "n", false)
+	local success = pcall(vim.diagnostic.jump, { count = -1, float = true, severity = vim.diagnostic.severity.WARN })
+	if success then
+		vim.api.nvim_feedkeys("zz", "n", false)
+	end
 end)
 
 -- Open the diagnostic under the cursor in a float window
