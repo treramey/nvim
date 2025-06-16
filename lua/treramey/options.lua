@@ -52,6 +52,9 @@ vim.opt.undofile = true
 -- Enable 24-bit color
 vim.opt.termguicolors = true
 
+-- Hide the ~ characters at the end of buffer
+vim.opt.fillchars = { eob = " " }
+
 -- Enable the sign column to prevent the screen from jumping
 vim.opt.signcolumn = "yes"
 

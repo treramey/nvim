@@ -5,7 +5,7 @@ vim.api.nvim_create_autocmd({ "BufRead" }, {
 		vim.fn.jobstart({ "git", "-C", vim.loop.cwd(), "rev-parse" }, {
 			on_exit = function(_, return_code)
 				if return_code == 0 then
-					vim.api.nvim_del_augroup_by_name("LazyLoadGitPlugins")
+					pcall(vim.api.nvim_del_augroup_by_name, "LazyLoadGitPlugins")
 					vim.schedule(function()
 						require("lazy").load({ plugins = { "mini.diff", "mini-git" } })
 					end)

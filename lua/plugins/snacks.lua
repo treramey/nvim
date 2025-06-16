@@ -53,8 +53,7 @@ return {
 				},
 			},
 			lazygit = {
-				configure = false,
-				theme_path = vim.fs.normalize(vim.fn.expand("~/.config/lazygit/config.yml")),
+				configure = true,
 			},
 			notifier = {
 				enabled = true,
@@ -66,14 +65,6 @@ return {
 				matchers = {
 					frecency = true,
 					cwd_bonus = false,
-				},
-				sources = {
-					files = {
-						hidden = true,
-						ignored = true,
-						respect_gitignore = true,
-						exclude = { "!.editorconfig", "!**/launchSettings.json" },
-					},
 				},
 				formatters = {
 					file = {
@@ -194,10 +185,9 @@ return {
         -- LSP
       { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
       { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-
 			{ "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
-      { "<leader>sf", function() Snacks.picker.files() end, desc = "find files" },
+      { "<leader>sf", function() Snacks.picker.smart() end, desc = "find files" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
       { "<leader>sg", function() Snacks.picker.grep() end, desc = "live grep" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },

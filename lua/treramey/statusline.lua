@@ -6,10 +6,11 @@ local state = {
 	},
 	spinner_chars = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
 	codecompanion = {
-		status = nil, -- "thinking", "streaming"Add commentMore actions
+		status = nil, -- "thinking", "streaming"
 		spinner_index = 1,
 	},
 }
+
 ---@param n number
 ---@return string
 local function _spacer(n)
@@ -21,10 +22,16 @@ local function _align()
 	return "%="
 end
 
-local function _truncate()
-	return "%<"
+---@param side "left" | "right"
+---@return string
+local function _separator(side)
+	if side == "right" then
+		return "%#StatuslineSeparator#" .. ""
+	end
+	return "%#StatuslineSeparator#" .. ""
 end
 
+-- From TJDevries
 -- https://github.com/tjdevries/lazy-require.nvim
 local function lazy_require(require_path)
 	return setmetatable({}, {
@@ -72,73 +79,11 @@ local function get_mode()
 	return mode_info.hl .. " " .. mode .. " " .. _spacer(1)
 end
 
-local function get_filetype()
-	local disabled_modes = {
-		"t",
-		"!",
-	}
-	if vim.tbl_contains(disabled_modes, vim.fn.mode()) then
-		return ""
-	end
-	local icon, hl, _ = require("mini.icons").get("filetype", vim.bo.filetype)
-	hl = "%#" .. hl .. "#"
-	return hl .. icon .. _spacer(1)
-end
-
-local function get_path()
-	if vim.fn.mode() == "t" then
-		return ""
-	end
-	if is_truncated(100) then
-		return _spacer(1)
-	end
-	local path = vim.fn.expand("%:~:.:h")
-	local hl = "%#StatuslineTextAccent#"
-	local max_width = 30
-	if path == "." or path == "" then
-		return ""
-	elseif #path > max_width then
-		path = "…" .. string.sub(path, -max_width + 2)
-	end
-	return hl .. path .. "/"
-end
-
-local function get_filename()
-	if vim.fn.mode() == "t" then
-		return ""
-	end
-	local filename = vim.fn.expand("%:~:t")
-	local path = vim.fn.expand("%:~:.:h")
-	local hl = "%#StatuslineTextMain#"
-	if filename == "" then
-		return hl .. "[No Name]" .. _spacer(2)
-	end
-	if path == "." then
-		return hl .. filename .. _spacer(2)
-	end
-	return hl .. filename .. _spacer(2)
-end
-
-local function get_modification_status()
-	local buf_modified = vim.bo.modified
-	local buf_modifiable = vim.bo.modifiable
-	local buf_readonly = vim.bo.readonly
-	local hi_notsaved = "%#StatuslineNotSaved#"
-	local hi_readonly = "%#StatuslineReadOnly#"
-	if buf_modified then
-		return hi_notsaved .. "" .. _spacer(2)
-	elseif buf_modifiable == false or buf_readonly == true then
-		return hi_readonly .. "󰑇" .. _spacer(2)
-	else
-		return ""
-	end
-end
-
 local function get_lsp_status()
 	local clients = vim.lsp.get_clients({ bufnr = 0 })
 	local hl = "%#StatuslineLspOn#"
 	if #clients > 0 and clients[1].initialized then
-		return hl .. "" .. _spacer(2)
+		return hl .. " " .. _spacer(1)
 	else
 		return ""
 	end
@@ -228,8 +173,19 @@ local function get_dotnet_solution()
 	end
 	solution = solution:gsub("%.[^%.]+$", "")
 	local icon, hl, _ = require("mini.icons").get("filetype", "solution")
-	hl = "%#" .. hl .. "#"
-	return hl .. icon .. _spacer(1) .. hl_main .. solution .. _spacer(2)
+	local hl_base = "%#StatuslineSolution#"
+	return hl_base .. icon .. " " .. hl_main .. solution .. _spacer(2)
+end
+
+local function get_recording()
+	local hl_main = "%#StatuslineTextMain#"
+	local hl_icon = "%#StatuslineRec#"
+	local noice = lazy_require("noice")
+	local status = noice.api.status.mode.get()
+	if status == nil then
+		return ""
+	end
+	return hl_icon .. "󰻂 " .. hl_main .. status .. _spacer(2)
 end
 
 local function get_branch()
@@ -251,8 +207,7 @@ local function get_codecompanion_status()
 	end
 	local index = state.codecompanion.spinner_index
 	local spinner_char = state.spinner_chars[index]
-	local status_text = state.codecompanion.status == "thinking" and " ai overlord is thinking"
-		or " ai overlord is responding"
+	local status_text = state.codecompanion.status == "thinking" and " ai is thinking" or " ai is responding"
 
 	return "%#StatuslineSpinner#" .. spinner_char .. "%#StatuslineTextAccent#" .. status_text .. _spacer(2)
 end
@@ -278,7 +233,6 @@ M.setup = function()
 	vim.opt.showmode = false
 end
 
--- _truncate(),
 M.load = function()
 	local curr_ft = vim.bo.filetype
 	local disabled_filetypes = {
@@ -290,22 +244,21 @@ M.load = function()
 	end
 
 	return table.concat({
+		_align(),
+		_separator("left"),
 		get_mode(),
-		get_modification_status(),
-		get_filetype(),
-		get_path(),
-		get_filename(),
 		get_lsp_status(),
 		get_formatter_status(),
 		get_copilot_status(),
 		get_harpoon_status(),
-		_align(),
 		get_diagnostics(),
+		get_recording(),
 		get_codecompanion_status(),
 		get_dotnet_solution(),
 		get_branch(),
 		get_scrollbar(),
-		_truncate(),
+		_separator("right"),
+		_align(),
 	})
 end
 
@@ -315,55 +268,6 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
 	pattern = "*",
 	callback = function()
 		vim.o.statusline = "%!v:lua.require'treramey.statusline'.load()"
-	end,
-})
-
-local global_timer = nil
-
-local function codecompanion_spinner()
-	global_timer = vim.loop.new_timer()
-	if global_timer == nil then
-		vim.notify("Failed to create global timer for statusline spinner", vim.log.levels.ERROR)
-		return
-	end
-	global_timer:start(
-		0,
-		100,
-		vim.schedule_wrap(function()
-			if state.codecompanion.status == nil then
-				global_timer:stop()
-				return
-			end
-			state.codecompanion.spinner_index = (state.codecompanion.spinner_index % #state.spinner_chars) + 1
-			vim.o.statusline = "%!v:lua.require'treramey.statusline'.load()"
-		end)
-	)
-end
-
-local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
-
-vim.api.nvim_create_autocmd({ "User" }, {
-	pattern = "CodeCompanionRequest*",
-	group = group,
-	callback = function(request)
-		if request.match == "CodeCompanionRequestStarted" then
-			state.codecompanion.status = "thinking"
-			codecompanion_spinner()
-		elseif request.match == "CodeCompanionRequestStreaming" then
-			state.codecompanion.status = "streaming"
-			codecompanion_spinner()
-		elseif request.match == "CodeCompanionRequestFinished" then
-			state.codecompanion.status = nil
-		end
-	end,
-})
-
-vim.api.nvim_create_autocmd("VimLeavePre", {
-	callback = function()
-		if global_timer then
-			global_timer:stop()
-			global_timer:close()
-		end
 	end,
 })
 
