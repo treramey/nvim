@@ -11,13 +11,12 @@ return {
 		},
 		format_after_save = function(bufnr)
 			local ft = vim.bo[bufnr].filetype
+			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+				return
+			end
 
 			if ft == "cfml" or ft == "cfm" or ft == "cfc" then
-				return {
-					async = true,
-					timeout_ms = 500,
-					lsp_format = "never",
-				}
+				return
 			else
 				return {
 					async = true,
@@ -28,37 +27,16 @@ return {
 		end,
 		formatters_by_ft = {
 			cs = { "csharpier" },
-			css = { "prettier" },
-			go = { "gofmt" },
-			html = { "prettier", "rustywind" },
 			json = { "prettier" },
-			jsonc = { "prettier" },
 			lua = { "stylua" },
-			markdown = { "prettier" },
-			mdx = { "prettier" },
-			svg = { "xmlformat" },
 			javascript = { "biome" },
 			typescript = { "biome" },
-			typescriptreact = { "biome", "rustywind" },
-			svelte = { "prettier", "rustywind" },
-			xml = { "xmlformat" },
+			typescriptreact = { "biome" },
+			svelte = { "prettierd", "prettier " },
+			xml = { "csharpier" },
 			yaml = { "prettier" },
 		},
 		formatters = {
-			xmlformat = {
-				cmd = { "xmlformat" },
-				args = {
-					"--selfclose",
-					"--indent",
-					"1",
-					"--indent-char",
-					"\t",
-					"--preserve",
-					'"literal"',
-					"--blanks",
-					"-",
-				},
-			},
 			csharpier = {
 				command = "csharpier",
 				args = function(self, ctx)

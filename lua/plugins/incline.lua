@@ -3,6 +3,9 @@ return {
 		"b0o/incline.nvim",
 		event = "VeryLazy",
 		opts = {
+			hide = {
+				cursorline = true,
+			},
 			debounce_threshold = {
 				rising = 10,
 				falling = 200,

@@ -51,7 +51,7 @@ local rose_pine_config = {
 		EasyDotnetTestRunnerSolution = { fg = "pine" },
 		EasyDotnetTestRunnerProject = { fg = "rose" },
 		EasyDotnetTestRunnerTest = { fg = "iris" },
-		SnacksIndentScope = { fg = "overlay" },
+		SnacksIndentScope = { fg = "gold" },
 		SnacksDashboardSpecial = { fg = "gold" },
 
 		BlinkCmpSource = { fg = "text", bg = "base" },

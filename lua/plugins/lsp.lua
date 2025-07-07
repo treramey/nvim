@@ -59,19 +59,9 @@ return {
 
 			local servers = {
 				-- LSP Servers
-				astro = {},
 				bashls = {},
 				biome = {},
-				cssls = {
-					settings = {
-						css = {
-							validate = true,
-							lint = {
-								unknownAtRules = "ignore",
-							},
-						},
-					},
-				},
+				cssls = {},
 				gleam = {
 					settings = {
 						inlayHints = true,
@@ -80,9 +70,7 @@ return {
 				eslint = {
 					autostart = false,
 					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
-					settings = {
-						format = false,
-					},
+					settings = { format = false },
 				},
 				["harper-ls"] = {},
 				html = {},
@@ -105,7 +93,10 @@ return {
 							runtime = { version = "LuaJIT" },
 							workspace = {
 								checkThirdParty = false,
-								-- lazydev.nvim will handle library configuration
+								library = {
+									"${3rd}/luv/library",
+									unpack(vim.api.nvim_get_runtime_file("", true)),
+								},
 							},
 							telemetry = { enabled = false },
 						},
@@ -114,17 +105,39 @@ return {
 				marksman = {},
 				nil_ls = {},
 				pyright = {},
+				rust_analyzer = {
+					check = { command = "clippy", features = "all" },
+				},
 				sqlls = {},
 				svelte = {},
-				tailwindcss = {},
+				tailwindcss = {
+					filetypes = { "typescriptreact", "javascriptreact", "html", "svelte" },
+				},
 				vtsls = {
 					on_attach = function(client, buffer_number)
 						require("twoslash-queries").attach(client, buffer_number)
 						return on_attach(client, buffer_number)
 					end,
 					settings = {
-						maxTsServerMemory = 12288,
-						typescript = { inlayHints = vtsls_inlay_hints },
+						complete_function_calls = true,
+						vtsls = {
+							autoUseWorkspaceTsdk = true,
+							experimental = {
+								completion = {
+									enableServerSideFuzzyMatch = true,
+								},
+							},
+						},
+						typescript = {
+							updateImportOnFileMove = { enabled = "always" },
+							suggest = {
+								completeFunctionCalls = true,
+							},
+							tsserver = {
+								maxTsServerMemory = 12288,
+							},
+							inlayHints = vtsls_inlay_hints,
+						},
 						javascript = { inlayHints = vtsls_inlay_hints },
 					},
 				},
@@ -136,7 +149,6 @@ return {
 				stylua = {},
 				goimports = {},
 				csharpier = {},
-				xmlformatter = {},
 			}
 
 			local other_tools = {

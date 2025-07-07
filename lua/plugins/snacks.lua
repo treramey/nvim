@@ -27,7 +27,8 @@ return {
 				},
 			},
 			indent = {
-				enabled = true,
+				enabled = false,
+				only_scope = true,
 				filter = function(buf)
 					local b = vim.b[buf]
 					local bo = vim.bo[buf]
@@ -187,7 +188,7 @@ return {
       { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
 			{ "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
-      { "<leader>sf", function() Snacks.picker.smart() end, desc = "find files" },
+      { "<leader>sf", function() Snacks.picker.files() end, desc = "find files" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
       { "<leader>sg", function() Snacks.picker.grep() end, desc = "live grep" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
