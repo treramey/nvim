@@ -4,7 +4,7 @@ return {
 		lazy = false,
 		dependencies = {
 			"rafamadriz/friendly-snippets",
-			"fang2hou/blink-copilot",
+			-- "fang2hou/blink-copilot",
 			"xzbdmw/colorful-menu.nvim",
 			"catppuccin/nvim", -- to customise highlights
 			{ "xzbdmw/colorful-menu.nvim", opts = {} },
@@ -130,7 +130,8 @@ return {
 							return { "buffer" }
 						end
 
-						return { "snippets", "lsp", "easy-dotnet", "path", "buffer", "copilot", "codecompanion" }
+						-- return { "snippets", "lsp", "easy-dotnet", "path", "buffer", "copilot", "codecompanion" }
+						return { "snippets", "lsp", "easy-dotnet", "path", "buffer", "codecompanion" }
 					end,
 					providers = {
 						lazydev = {
@@ -145,24 +146,24 @@ return {
 							score_offset = 10000,
 							async = true,
 						},
-						copilot = {
-							name = "copilot",
-							module = "blink-copilot",
-							score_offset = 100,
-							async = true,
-						},
+						-- copilot = {
+						-- 	name = "copilot",
+						-- 	module = "blink-copilot",
+						-- 	score_offset = 100,
+						-- 	async = true,
+						-- },
 					},
 				},
 			}
 
 			-- local catppuccin_colors = require("catppuccin.palettes").get_palette()
-			local colors = require("rose-pine.palette")
+			local bg_color = vim.fn.synIDattr(vim.fn.hlID("Normal"), "bg")
 
 			for _, kind in ipairs(require("blink.cmp.types").CompletionItemKind) do
 				local name = "BlinkCmpKind" .. kind
 				local hlinfo = vim.api.nvim_get_hl(0, { name = name })
 				if hlinfo then
-					vim.api.nvim_set_hl(0, name .. "Reversed", { fg = hlinfo.fg, bg = colors.base, reverse = true })
+					vim.api.nvim_set_hl(0, name .. "Reversed", { fg = hlinfo.fg, bg = bg_color, reverse = true })
 				end
 			end
 
