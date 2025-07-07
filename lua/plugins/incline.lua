@@ -5,11 +5,11 @@ return {
 		opts = {
 			debounce_threshold = {
 				rising = 10,
-				falling = 1000,
+				falling = 200,
 			},
 			window = {
 				padding = 1,
-				margin = { horizontal = 0 },
+				margin = { horizontal = 0, vertical = 1 },
 				placement = {
 					horizontal = "right",
 					vertical = "top",
@@ -35,9 +35,6 @@ return {
 
 				local icon, hl, _ = require("mini.icons").get("filetype", vim.bo[props.buf].filetype)
 				local diagnostics = vim.diagnostic.get(props.buf)
-				local function get_hl_fg(hlgroup)
-					return vim.fn.synIDattr(vim.fn.hlID(hlgroup), "fg")
-				end
 
 				return {
 					{ "", group = "InclineSeparator" },
@@ -46,7 +43,7 @@ return {
 						" ",
 						icon,
 						" ",
-						guifg = hl and get_hl_fg(hl) or nil,
+						guifg = vim.fn.synIDattr(vim.fn.hlID(hl), "fg"),
 						guibg = palette.overlay,
 					} or "",
 					{
