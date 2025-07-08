@@ -138,7 +138,7 @@ local function get_harpoon_status()
 end
 
 local function get_diagnostics()
-	if state.cache.diagnostics and vim.loop.now() - state.cache.last_update < 100 then
+	if state.cache.diagnostics and vim.loop.now() - state.cache.last_update < 500 then
 		return state.cache.diagnostics
 	end
 
@@ -180,12 +180,11 @@ end
 local function get_recording()
 	local hl_main = "%#StatuslineTextMain#"
 	local hl_icon = "%#StatuslineRec#"
-	local noice = lazy_require("noice")
-	local status = noice.api.status.mode.get()
-	if status == nil then
+	local recording_reg = vim.fn.reg_recording()
+	if recording_reg == "" then
 		return ""
 	end
-	return hl_icon .. "󰻂 " .. hl_main .. status .. _spacer(2)
+	return hl_icon .. "󰻂 " .. hl_main .. "@" .. recording_reg .. _spacer(2)
 end
 
 local function get_branch()

@@ -15,7 +15,7 @@ return {
 				return
 			end
 
-			if ft == "cfml" or ft == "cfm" or ft == "cfc" then
+			if ft == "cfml" or ft == "cfm" or ft == "cfc" or ft == "cs" then
 				return
 			else
 				return {
@@ -27,12 +27,13 @@ return {
 		end,
 		formatters_by_ft = {
 			cs = { "csharpier" },
-			json = { "prettier" },
+			json = { "biome" },
 			lua = { "stylua" },
+			markdown = { "prettier" },
 			javascript = { "biome" },
 			typescript = { "biome" },
 			typescriptreact = { "biome" },
-			svelte = { "prettierd", "prettier " },
+			svelte = { "prettierd", "prettier" },
 			xml = { "csharpier" },
 			yaml = { "prettier" },
 		},

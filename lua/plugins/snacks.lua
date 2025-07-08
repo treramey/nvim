@@ -64,6 +64,8 @@ return {
 			picker = {
 				enabled = true,
 				matchers = {
+					smartcase = true,
+					ignorecase = true,
 					frecency = true,
 					cwd_bonus = false,
 				},
@@ -186,11 +188,12 @@ return {
         -- LSP
       { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
       { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-			{ "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
-			{ "<leader>B", function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
-      { "<leader>sf", function() Snacks.picker.files() end, desc = "find files" },
+			{ "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
+			{ "<leader>B",  function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
+      { "<leader>sf", function() Snacks.picker.files({ hidden = true }) end, desc = "find files" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
       { "<leader>sg", function() Snacks.picker.grep() end, desc = "live grep" },
+      { "<leader>sg", function() Snacks.picker.grep_word() end, mode = "x", desc = "grep selection" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
       { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
@@ -202,7 +205,7 @@ return {
 			{ "<leader>td", function() Snacks.toggle.diagnostics():toggle() end, desc = "[T]oggle [D]iagnostics" },
       { "<leader>dm", function() Snacks.toggle.dim():toggle() end, desc = "Toggle [D]im [M]ode" }, -- Same as <leader>zz but with different key
 			{ "<leader>zm", function() Snacks.toggle.zen():toggle() end, desc = "Toggle [Z]en [M]ode" },
-      { "<leader>_", function() Snacks.terminal() end, desc = "terminal" },
+      { "<leader>_",  function() Snacks.terminal() end, desc = "terminal" },
       { "<leader>ln", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle() end, desc = "Toggle Relative [L]ine [N]umbers" },
       { "<leader>tw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "[T]oggle line [W]rap" },
       -- stylua: ignore end

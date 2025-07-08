@@ -4,10 +4,26 @@ return {
 		cmd = "Copilot",
 		build = ":Copilot auth",
 		event = "InsertEnter",
-		opts = {
-			suggestion = { enabled = false },
-			panel = { enabled = false },
-		},
+		config = function()
+			require("copilot").setup({
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+					hide_during_completion = false,
+					debounce = 25,
+					keymap = {
+						accept = false,
+						accept_word = false,
+						accept_line = "<C-y>",
+						next = false,
+						prev = false,
+						dismiss = false,
+					},
+				},
+				panel = { enabled = false },
+				server_opts_overrides = {},
+			})
+		end,
 	},
 	{
 		"olimorris/codecompanion.nvim",
@@ -47,6 +63,52 @@ return {
 					},
 					diff = {
 						provider = "mini_diff",
+					},
+				},
+			},
+			prompt_library = {
+				["Alphabetize Buffer"] = {
+					strategy = "workflow",
+					description = "Alphabetize all lines in the current buffer using shell tools",
+					opts = {
+						placement = "replace",
+						auto_submit = true,
+						short_name = "alpha",
+					},
+					prompts = {
+						{
+							{
+								role = "system",
+								content = [[You are a text processing assistant with access to shell tools. Your task is to alphabetize the lines in the current buffer using the cmd_runner tool.
+
+You have access to the following tools:
+- cmd_runner: Execute shell commands
+- editor: Edit buffer content directly
+
+Use the cmd_runner tool to execute the `sort` command for reliable alphabetization. The workflow should:
+1. Get the current buffer content
+2. Use `sort -f` (case-insensitive) to alphabetize the lines
+3. Replace the buffer content with the sorted result
+
+Always use the tools available to you rather than trying to manually sort text.]],
+							},
+							{
+								role = "user",
+								content = function(context)
+									local lines = vim.api.nvim_buf_get_lines(context.bufnr, 0, -1, false)
+									local content = table.concat(lines, "\n")
+									return string.format(
+										[[Please alphabetize the content of buffer %d using the cmd_runner tool. The current content is:
+
+%s
+
+Use the sort command with case-insensitive sorting to alphabetize these lines, then replace the buffer content with the sorted result.]],
+										context.bufnr,
+										content
+									)
+								end,
+							},
+						},
 					},
 				},
 			},

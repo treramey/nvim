@@ -1,10 +1,5 @@
 -- Settings
 
-vim.opt_local.spell = true
-
-vim.opt_local.wrap = true
-vim.opt_local.textwidth = 80
-
 -- Disable some weird autoindenting
 -- https://github.com/plasticboy/vim-markdown/issues/126
 vim.opt_local.indentexpr = ""

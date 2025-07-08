@@ -5,11 +5,13 @@ vim.opt.rnu = true
 -- Disable showing the mode below the statusline
 vim.opt.showmode = false
 
+-- Hide default recording indicator (we show it in statusline)
+vim.opt.shortmess:append("q")
+
 -- Set tabs to 2 spaces
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.expandtab = true
-vim.opt.conceallevel = 2
 
 -- Enable auto indenting and set it to spaces
 vim.opt.smartindent = true
@@ -151,9 +153,8 @@ end
 -- but ensure it does happen on new lines (r option).
 vim.api.nvim_create_autocmd("BufEnter", {
 	pattern = "*",
-	command = "set formatoptions-=o",
-})
-vim.api.nvim_create_autocmd("BufEnter", {
-	pattern = "*",
-	command = "set formatoptions+=r",
+	callback = function()
+		vim.opt.formatoptions:remove("o")
+		vim.opt.formatoptions:append("r")
+	end,
 })

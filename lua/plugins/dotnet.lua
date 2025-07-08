@@ -1,10 +1,22 @@
+local function has_git_conflict_markers()
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	for _, line in ipairs(lines) do
+		if line:match("^<<<<<<<") or line:match("^=======") or line:match("^>>>>>>>") then
+			return true
+		end
+	end
+	return false
+end
+
 return {
 	{
-		enabled = vim.fn.executable("dotnet") == 1,
 		"seblj/roslyn.nvim",
 		dependencies = {
 			"williamboman/mason.nvim",
 		},
+		enabled = function()
+			return vim.fn.executable("dotnet") == 1 and not has_git_conflict_markers()
+		end,
 		ft = "cs",
 		opts = function()
 			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
@@ -48,7 +60,9 @@ return {
 	},
 	{
 		"GustavEikaas/easy-dotnet.nvim",
-		enabled = vim.fn.executable("dotnet") == 1,
+		enabled = function()
+			return vim.fn.executable("dotnet") == 1 and not has_git_conflict_markers()
+		end,
 		dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
 		ft = { "cs", "vb", "csproj", "sln", "slnx", "props", "csx", "targets" },
 		cmd = "Dotnet",
@@ -109,6 +123,7 @@ return {
       { "<leader>nQ", function() require("easy-dotnet").build_quickfix() end, desc = "build quickfix" },
       { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },
       { "<leader>nx", function() require("easy-dotnet").clean() end, desc = "clean solution" },
+      { "<leader>nn", "<cmd>Dotnet<cr>", desc = "open dotnet menu" },
       { "<leader>na", "<cmd>Dotnet new<cr>", desc = "new item" },
       { "<leader>nt", "<cmd>Dotnet testrunner<cr>", desc = "open test runner" },
 			-- stylua: ignore end
