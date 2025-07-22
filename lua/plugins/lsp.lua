@@ -174,15 +174,33 @@ return {
 			})
 
 			-- Iterate over our servers and set them up
+			-- for name, config in pairs(servers) do
+			-- 	local capabilities = require("blink.cmp").get_lsp_capabilities({})
+			-- 	require("lspconfig")[name].setup({
+			-- 		cmd = config.cmd,
+			-- 		capabilities = capabilities,
+			-- 		filetypes = config.filetypes,
+			-- 		handlers = vim.tbl_deep_extend("force", {}, config.handlers or {}),
+			-- 		autostart = config.autostart,
+			-- 		on_attach = on_attach,
+			-- 		settings = config.settings,
+			-- 		root_dir = config.root_dir,
+			-- 	})
+			-- end
+
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+
+			-- Setup each LSP server. We merge in any server-specific capabilities by passing
+			-- the existing config.capabilities to blink.cmp.get_lsp_capabilities.
 			for name, config in pairs(servers) do
-				local capabilities = require("blink.cmp").get_lsp_capabilities({})
 				require("lspconfig")[name].setup({
+					autostart = config.autostart,
 					cmd = config.cmd,
 					capabilities = capabilities,
 					filetypes = config.filetypes,
 					handlers = vim.tbl_deep_extend("force", {}, config.handlers or {}),
-					autostart = config.autostart,
-					on_attach = on_attach,
+					on_attach = config.on_attach or on_attach,
 					settings = config.settings,
 					root_dir = config.root_dir,
 				})
@@ -206,17 +224,18 @@ return {
 				},
 			})
 
-			mason_lspconfig.setup({
-				ensure_installed = {},
-				automatic_installation = true,
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						server.capabilities = require("blink.cmp").get_lsp_capabilities(server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
-					end,
-				},
-			})
+			-- mason_lspconfig.setup({
+			-- 	ensure_installed = {},
+			-- 	automatic_installation = true,
+			-- 	handlers = {
+			-- 		function(server_name)
+			-- 			local server = servers[server_name] or {}
+			-- 			server.capabilities = require("blink.cmp").get_lsp_capabilities(server.capabilities or {})
+			-- 			require("lspconfig")[server_name].setup(server)
+			-- 		end,
+			-- 	},
+			-- })
+			mason_lspconfig.setup()
 
 			-- Configure border for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"
