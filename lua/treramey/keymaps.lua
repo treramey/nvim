@@ -256,7 +256,7 @@ M.map_lsp_keybinds = function(buffer_number)
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
 
 	vim.keymap.set("n", "<leader>k", function()
-		vim.lsp.buf.signature_help()
+		vim.lsp.buf.signature_help({ border = "rounded" })
 	end, opts("LSP: Signature Documentation"))
 end
 

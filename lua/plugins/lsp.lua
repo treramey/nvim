@@ -4,13 +4,13 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall", "Mason" },
 		dependencies = {
-			-- Plugin(s) and UI to automatically install LSPs to stdpath
+			-- LSP installer plugins
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-
-			-- Progress/Status update for LSP
-			{ "j-hui/fidget.nvim", opts = {} },
+			"hrsh7th/cmp-nvim-lsp",
+			-- Progress indicator for LSP
+			{ "j-hui/fidget.nvim" },
 		},
 		config = function()
 			local mason = require("mason")
@@ -18,27 +18,18 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds -- Has to load keymaps before plugins lsp
 
-			-- -- Default handlers for LSP
-			-- local default_handlers = {
-			-- 	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
-			-- 	["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
-			-- }
-
 			local vtsls_inlay_hints = {
-				includeInlayEnumMemberValueHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayParameterNameHints = "all",
-				includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+				enumMemberValues = { enabled = true },
+				functionLikeReturnTypes = { enabled = true },
+				functionParameterTypes = { enabled = true },
+				parameterNames = { enabled = "all" },
+				parameterNameWhenArgumentMatchesNames = { enabled = true },
+				propertyDeclarationTypes = { enabled = true },
+				variableTypes = { enabled = true },
+				variableTypeWhenTypeMatchesNames = { enabled = true },
 			}
 
-			-- Function to run when neovim connects to a Lsp client
-			---@diagnostic disable-next-line: unused-local
 			local on_attach = function(_client, buffer_number)
-				-- Pass the current buffer to map lsp keybinds
 				map_lsp_keybinds(buffer_number)
 			end
 
@@ -158,7 +149,7 @@ return {
 				rustywind = {},
 			}
 
-			local manually_installed_servers = { "gleam" }
+			local manually_installed_servers = { "gleam", "rust_analyzer" }
 
 			local mason_tools_to_install =
 				vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters, other_tools))
@@ -174,21 +165,6 @@ return {
 				debounce_hours = 12,
 				ensure_installed = ensure_installed,
 			})
-
-			-- Iterate over our servers and set them up
-			-- for name, config in pairs(servers) do
-			-- 	local capabilities = require("blink.cmp").get_lsp_capabilities({})
-			-- 	require("lspconfig")[name].setup({
-			-- 		cmd = config.cmd,
-			-- 		capabilities = capabilities,
-			-- 		filetypes = config.filetypes,
-			-- 		handlers = vim.tbl_deep_extend("force", {}, config.handlers or {}),
-			-- 		autostart = config.autostart,
-			-- 		on_attach = on_attach,
-			-- 		settings = config.settings,
-			-- 		root_dir = config.root_dir,
-			-- 	})
-			-- end
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
@@ -226,26 +202,17 @@ return {
 				},
 			})
 
-			-- mason_lspconfig.setup({
-			-- 	ensure_installed = {},
-			-- 	automatic_installation = true,
-			-- 	handlers = {
-			-- 		function(server_name)
-			-- 			local server = servers[server_name] or {}
-			-- 			server.capabilities = require("blink.cmp").get_lsp_capabilities(server.capabilities or {})
-			-- 			require("lspconfig")[server_name].setup(server)
-			-- 		end,
-			-- 	},
-			-- })
 			mason_lspconfig.setup()
 
 			-- Configure border for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"
+
+			-- Note: borders are configured per-function in keymaps.lua
 		end,
 	},
 	{ --ohhh the pain
 		"treramey/cfmlsp.nvim",
-		event = { "BufReadPre", "BufReadPost", "BufNewFile" },
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},

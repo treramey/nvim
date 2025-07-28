@@ -56,6 +56,31 @@ local rose_pine_config = {
 
 		BlinkCmpSource = { fg = "text", bg = "base" },
 
+		CmpPmenu = { fg = "text", bg = "surface" },
+		CmpPmenuSel = { fg = "base", bg = "overlay" },
+		CmpPmenuBorder = { fg = "surface", bg = "surface" },
+		CmpPmenuSbar = { bg = "muted" },
+		CmpPmenuThumb = { bg = "subtle" },
+
+		CmpItemAbbr = { fg = "text" },
+		CmpItemAbbrMatch = { fg = "iris", bold = true },
+		CmpItemKind = { fg = "foam" },
+		CmpItemKindFunction = { fg = "text" },
+		CmpItemKindMethod = { fg = "text" },
+		CmpItemKindVariable = { fg = "gold" },
+		CmpItemKindKeyword = { fg = "iris" },
+		CmpItemKindSnippet = { fg = "text" },
+		CmpItemKindProperty = { fg = "iris" },
+		CmpItemKindField = { fg = "gold" },
+		CmpItemKindEnum = { fg = "pine" },
+		CmpItemKindInterface = { fg = "foam" },
+		CmpItemKindText = { fg = "text" },
+		CmpItemKindClass = { fg = "pine" },
+		CmpItemMenu = { fg = "muted" },
+
+		CmpDoc = { fg = "text", bg = "base" },
+		CmpDocBorder = { fg = "base", bg = "base" },
+
 		-- Wilder highlight groups
 		WilderText = { fg = "text", bg = "base" },
 		WilderMauve = { fg = "muted", bg = "base" },

@@ -77,7 +77,6 @@ return {
 		},
 	},
 	{ "echasnovski/mini-git", lazy = true, version = false, main = "mini.git", opts = {} },
-	{ "echasnovski/mini.pairs", version = false, event = "InsertEnter", opts = {} },
 	{
 		"echasnovski/mini.icons",
 		opts = {
