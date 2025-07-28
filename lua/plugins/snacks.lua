@@ -158,10 +158,19 @@ return {
 			toggle = { enabled = true },
 			words = { enabled = true },
 		},
+		config = function(_, opts)
+			local snacks = require("snacks")
+			snacks.setup(opts)
+			
+			-- Set vim.ui.input and vim.ui.select to use Snacks
+			vim.ui.input = snacks.input
+			vim.ui.select = snacks.picker.select
+		end,
 		init = function()
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "VeryLazy",
 				callback = function()
+					local Snacks = require("snacks")
 					local notify = Snacks.notifier.notify
 					---@diagnostic disable-next-line: duplicate-set-field
 					Snacks.notifier.notify = function(message, level, opts)
@@ -178,7 +187,7 @@ return {
 				pattern = "OilActionsPost",
 				callback = function(event)
 					if event.data.actions.type == "move" then
-						Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+						require("snacks").rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
 					end
 				end,
 			})

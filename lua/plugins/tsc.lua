@@ -6,7 +6,8 @@ return {
 		config = function()
 			require("tsc").setup({
 				auto_open_qflist = true,
-				pretty_errors = true,
+				pretty_errors = false,
+				flags = "--noEmit --pretty false",
 			})
 		end,
 	},

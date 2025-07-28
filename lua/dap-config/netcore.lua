@@ -83,7 +83,7 @@ M.register_net_dap = function()
 
 	dap.adapters.coreclr = {
 		type = "executable",
-		command = "/Users/TRamey/.local/bin/dotnet/netcoredbg/netcoredbg",
+		command = vim.fn.expand("~/.local/bin/dotnet/netcoredbg/netcoredbg"),
 		args = { "--interpreter=vscode" },
 	}
 end

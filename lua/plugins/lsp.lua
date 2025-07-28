@@ -145,7 +145,9 @@ return {
 			}
 
 			local formatters = {
+				biome = {},
 				prettierd = {},
+				prettier = {},
 				stylua = {},
 				goimports = {},
 				csharpier = {},
