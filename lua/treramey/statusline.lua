@@ -248,7 +248,7 @@ M.load = function()
 		get_mode(),
 		get_lsp_status(),
 		get_formatter_status(),
-		get_copilot_status(),
+		-- get_copilot_status(),
 		get_harpoon_status(),
 		get_diagnostics(),
 		get_recording(),

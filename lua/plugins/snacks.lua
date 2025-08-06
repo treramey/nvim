@@ -161,7 +161,6 @@ return {
 		config = function(_, opts)
 			local snacks = require("snacks")
 			snacks.setup(opts)
-			
 			-- Set vim.ui.input and vim.ui.select to use Snacks
 			vim.ui.input = snacks.input
 			vim.ui.select = snacks.picker.select
@@ -194,17 +193,10 @@ return {
 		end,
     -- stylua: ignore start
 		keys = {
-        -- LSP
-      { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
 			{ "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B",  function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
-      { "<leader>sf", function() Snacks.picker.files({ hidden = true }) end, desc = "find files" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
-      { "<leader>sg", function() Snacks.picker.grep() end, desc = "live grep" },
-      { "<leader>sg", function() Snacks.picker.grep_word() end, mode = "x", desc = "grep selection" },
 			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
-      { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
 			{ "<leader>og", function() Snacks.gitbrowse() end, desc = "[O]pen [G]it", mode = { "n", "v" } },
 			{ "<leader>dn", function() Snacks.notifier.hide() end, desc = "[D]ismiss All [N]otifications" },

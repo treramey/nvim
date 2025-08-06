@@ -54,8 +54,6 @@ local rose_pine_config = {
 		SnacksIndentScope = { fg = "gold" },
 		SnacksDashboardSpecial = { fg = "gold" },
 
-		BlinkCmpSource = { fg = "text", bg = "base" },
-
 		CmpPmenu = { fg = "text", bg = "surface" },
 		CmpPmenuSel = { fg = "base", bg = "overlay" },
 		CmpPmenuBorder = { fg = "surface", bg = "surface" },

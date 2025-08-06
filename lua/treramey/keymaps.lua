@@ -3,162 +3,172 @@ local conform = require("conform")
 local smart_splits = require("smart-splits")
 local twoslash = require("twoslash-queries")
 local snacks = require("snacks")
+local prelude = require("treramey.prelude")
+local copy_line_diagnostics_to_clipboard = prelude.copy_line_diagnostics_to_clipboard
+local open_link = prelude.open_link
 
 local M = {}
 
 -- Harpoon setup --
 harpoon:setup({})
 
--- Normal --
--- Disable Space bar since it'll be used as the leader key
-vim.keymap.set("n", "<space>", "<nop>")
+-- Normal Mode --
+vim.keymap.set("n", "<space>", "<nop>", { desc = "Disable space (leader) in normal mode" })
 
--- Window +  better navigation
-vim.keymap.set("n", "<C-h>", function()
-	smart_splits.move_cursor_left()
-end)
+vim.keymap.set("n", "<C-/>", "<nop>")
 
+-- Window and smart-splits navigation
 vim.keymap.set("n", "<C-j>", function()
 	smart_splits.move_cursor_down()
-end)
+end, { desc = "Navigate down" })
 
 vim.keymap.set("n", "<C-k>", function()
 	smart_splits.move_cursor_up()
-end)
+end, { desc = "Navigate up" })
 
 vim.keymap.set("n", "<C-l>", function()
 	smart_splits.move_cursor_right()
-end)
+end, { desc = "Navigate right" })
 
--- Select all and yank with Ctrl-a
--- vim.keymap.set("n", "<C-a>", "ggVGy", { desc = "Select all and yank" })
+vim.keymap.set("n", "<C-h>", function()
+	smart_splits.move_cursor_left()
+end, { desc = "Navigate left" })
 
 -- Swap between last two buffers
 vim.keymap.set("n", "<leader>'", "<C-^>", { desc = "Switch to last buffer" })
 
--- Save and quit
-vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { silent = false })
-vim.keymap.set("n", "<leader>q", "<cmd>q<cr>", { silent = false })
+-- Save and Quit
+vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { silent = false, desc = "Save current buffer" })
+vim.keymap.set("n", "<leader>q", "<cmd>q<cr>", { silent = false, desc = "Quit current buffer" })
 
 -- Map Oil to <leader>e
 vim.keymap.set("n", "<leader>e", function()
 	require("oil").toggle_float()
-end)
+end, { desc = "Toggle Oil file explorer" })
 
--- Map Undotree to <leader>
-vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle [U]ndo[T]ree " })
+-- Map Undotree
+vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle UndoTree" })
 
 -- InspectTwoslashQueries
 vim.keymap.set("n", "<leader>ti", ":InspectTwoslashQueries<CR>", { desc = "[I]nspect [T]woslash Query" })
 
 -- Center buffer while navigating
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "{", "{zz")
-vim.keymap.set("n", "}", "}zz")
-vim.keymap.set("n", "N", "Nzz")
-vim.keymap.set("n", "n", "nzz")
-vim.keymap.set("n", "G", "Gzz")
-vim.keymap.set("n", "gg", "ggzz")
-vim.keymap.set("n", "gd", "gdzz")
-vim.keymap.set("n", "<C-i>", "<C-i>zz")
-vim.keymap.set("n", "<C-o>", "<C-o>zz")
-vim.keymap.set("n", "%", "%zz")
-vim.keymap.set("n", "*", "*zz")
-vim.keymap.set("n", "#", "#zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center cursor" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center cursor" })
+vim.keymap.set("n", "{", "{zz", { desc = "Jump to previous paragraph and center" })
+vim.keymap.set("n", "}", "}zz", { desc = "Jump to next paragraph and center" })
+vim.keymap.set("n", "N", "Nzz", { desc = "Search previous and center" })
+vim.keymap.set("n", "n", "nzz", { desc = "Search next and center" })
+vim.keymap.set("n", "G", "Gzz", { desc = "Go to end of file and center" })
+vim.keymap.set("n", "gg", "ggzz", { desc = "Go to beginning of file and center" })
+vim.keymap.set("n", "gd", "gdzz", { desc = "Go to definition and center" })
+vim.keymap.set("n", "<C-i>", "<C-i>zz", { desc = "Jump forward in jump list and center" })
+vim.keymap.set("n", "<C-o>", "<C-o>zz", { desc = "Jump backward in jump list and center" })
+vim.keymap.set("n", "%", "%zz", { desc = "Jump to matching bracket and center" })
+vim.keymap.set("n", "*", "*zz", { desc = "Search for word under cursor and center" })
+vim.keymap.set("n", "#", "#zz", { desc = "Search backward for word under cursor and center" })
 
--- Press 'S' for quick find/replace for the word under the cursor
+-- Quick find/replace for word under cursor
 vim.keymap.set("n", "S", function()
 	local cmd = ":%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>"
 	local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
 	vim.api.nvim_feedkeys(keys, "n", false)
-end)
+end, { desc = "Quick find/replace word under cursor" })
 
--- Press 'H', 'L' to jump to start/end of a line (first/last char)
-vim.keymap.set("n", "L", "$")
-vim.keymap.set("n", "H", "^")
+-- Spectre for global find/replace
+vim.keymap.set("n", "<leader>S", function()
+	require("spectre").toggle()
+end, { desc = "Toggle Spectre for global find/replace" })
 
--- Press 'U' for redo
-vim.keymap.set("n", "U", "<C-r>")
+-- Spectre for word under cursor (visual)
+vim.keymap.set("n", "<leader>sw", function()
+	require("spectre").open_visual({ select_word = true })
+end, { desc = "Search current word using Spectre" })
 
--- Turn off highlighted results
-vim.keymap.set("n", "<leader>no", "<cmd>noh<cr>")
+-- Jump to start/end of line
+vim.keymap.set("n", "L", "$", { desc = "Jump to end of line" })
+vim.keymap.set("n", "H", "^", { desc = "Jump to beginning of line" })
 
--- Diagnostics
--- Goto next diagnostic of any severity
+-- Redo last change
+vim.keymap.set("n", "U", "<C-r>", { desc = "Redo last change" })
+
+-- Turn off highlighted search results
+vim.keymap.set("n", "<leader>no", "<cmd>noh<cr>", { desc = "Toggle search highlighting" })
+
+vim.keymap.set("n", "<leader>ts", function()
+	if twoslash.config.is_enabled then
+		vim.cmd("TwoslashQueriesDisable")
+		snacks.notify.info("Two Slash queries disabled")
+		return
+	end
+
+	vim.cmd(":TwoslashQueriesEnable")
+	snacks.notify.info("Two Slash queries enabled")
+end, { desc = "Toggle [T]wo [S]lash queries" })
+
+-- Diagnostics --
 vim.keymap.set("n", "]d", function()
-	local success = pcall(vim.diagnostic.jump, { count = 1, float = true })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = 1, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to next diagnostic and center" })
 
--- Goto previous diagnostic of any severity
 vim.keymap.set("n", "[d", function()
-	local success = pcall(vim.diagnostic.jump, { count = -1, float = true })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = -1, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to previous diagnostic and center" })
 
--- Goto next error diagnostic
 vim.keymap.set("n", "]e", function()
-	local success = pcall(vim.diagnostic.jump, { count = 1, float = true, severity = vim.diagnostic.severity.ERROR })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = 1, severity = vim.diagnostic.severity.ERROR, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to next error diagnostic and center" })
 
--- Goto previous error diagnostic
 vim.keymap.set("n", "[e", function()
-	local success = pcall(vim.diagnostic.jump, { count = -1, float = true, severity = vim.diagnostic.severity.ERROR })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = -1, severity = vim.diagnostic.severity.ERROR, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to previous error diagnostic and center" })
 
--- Goto next warning diagnostic
 vim.keymap.set("n", "]w", function()
-	local success = pcall(vim.diagnostic.jump, { count = 1, float = true, severity = vim.diagnostic.severity.WARN })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = 1, severity = vim.diagnostic.severity.WARN, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to next warning diagnostic and center" })
 
--- Goto previous warning diagnostic
 vim.keymap.set("n", "[w", function()
-	local success = pcall(vim.diagnostic.jump, { count = -1, float = true, severity = vim.diagnostic.severity.WARN })
-	if success then
+	local ok = pcall(vim.diagnostic.jump, { count = -1, severity = vim.diagnostic.severity.WARN, float = true })
+	if ok then
 		vim.api.nvim_feedkeys("zz", "n", false)
 	end
-end)
+end, { desc = "Go to previous warning diagnostic and center" })
 
--- Open the diagnostic under the cursor in a float window
+-- Diagnostic float and quickfix
 vim.keymap.set("n", "<leader>d", function()
-	vim.diagnostic.open_float({
-		border = "rounded",
-	})
-end)
+	vim.diagnostic.open_float({ border = "rounded" })
+end, { desc = "Open diagnostic float with rounded border" })
 
--- Navigate to next qflist item
-vim.keymap.set("n", "<leader>cn", ":cnext<cr>zz")
+vim.keymap.set("n", "<leader>cd", copy_line_diagnostics_to_clipboard, { desc = "[C]opy line [D]iagnostics" })
 
--- Navigate to previos qflist item
-vim.keymap.set("n", "<leader>cp", ":cprevious<cr>zz")
+vim.keymap.set("n", "<leader>ld", vim.diagnostic.setqflist, { desc = "Populate quickfix list with diagnostics" })
 
--- Open the qflist
-vim.keymap.set("n", "<leader>co", ":copen<cr>zz")
+-- Quickfix navigation
+vim.keymap.set("n", "<leader>cn", ":cnext<cr>zz", { desc = "Go to next quickfix item and center" })
+vim.keymap.set("n", "<leader>cp", ":cprevious<cr>zz", { desc = "Go to previous quickfix item and center" })
+vim.keymap.set("n", "<leader>co", ":copen<cr>zz", { desc = "Open quickfix list and center" })
+vim.keymap.set("n", "<leader>cc", ":cclose<cr>zz", { desc = "Close quickfix list" })
 
--- Close the qflist
-vim.keymap.set("n", "<leader>cc", ":cclose<cr>zz")
+-- Maximizer toggle and window resize
+vim.keymap.set("n", "<leader>m", ":MaximizerToggle<cr>", { desc = "Toggle window maximization" })
+vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "Equalize split window sizes" })
 
--- Map MaximizerToggle (szw/vim-maximizer) to leader-m
-vim.keymap.set("n", "<leader>m", ":MaximizerToggle<cr>")
-
--- Resize split windows to be equal size
-vim.keymap.set("n", "<leader>=", "<C-w>=")
-
--- Press leader f to format
+-- Format current buffer
 vim.keymap.set("n", "<leader>f", function()
 	conform.format({
 		async = true,
@@ -167,17 +177,16 @@ vim.keymap.set("n", "<leader>f", function()
 	})
 end, { desc = "Format the current buffer" })
 
--- Press leader rw to rotate open windows
-vim.keymap.set("n", "<leader>rw", ":RotateWindows<cr>", { desc = "[R]otate [W]indows" })
+-- Rotate open windows
+vim.keymap.set("n", "<leader>rw", ":RotateWindows<cr>", { desc = "Rotate open windows" })
 
--- Press gx to open the link under the cursor
-vim.keymap.set("n", "gx", ":sil !open <cWORD><cr>", { silent = true })
+-- Open link under cursor (supports markdown links and links in parens)
+vim.keymap.set("n", "gx", open_link, { silent = true, desc = "Open link under cursor (supports markdown and parens)" })
 
--- TSC autocommand keybind to run TypeScripts tsc
-vim.keymap.set("n", "<leader>tc", ":TSC<cr>", { desc = "[T]ypeScript [C]ompile" })
+-- Run TypeScript compiler
+vim.keymap.set("n", "<leader>tc", ":TSC<cr>", { desc = "Run TypeScript compile" })
 
--- Harpoon keybinds --
--- Open harpoon ui
+-- Harpoon keybinds (v2 API) --
 vim.keymap.set("n", "<leader>ho", function()
 	harpoon.ui:toggle_quick_menu(harpoon:list(), {
 		ui_max_width = 75,
@@ -185,134 +194,151 @@ vim.keymap.set("n", "<leader>ho", function()
 		title = " Harpoon ",
 		title_pos = "center",
 	})
-end)
+end, { desc = "Toggle Harpoon quick menu" })
 
--- Add current file to harpoon
 vim.keymap.set("n", "<leader>ha", function()
 	harpoon:list():add()
-end)
+end, { desc = "Add current file to Harpoon" })
 
--- Remove current file from harpoon
 vim.keymap.set("n", "<leader>hr", function()
 	harpoon:list():remove()
-end)
+end, { desc = "Remove current file from Harpoon" })
 
--- Remove all files from harpoon
 vim.keymap.set("n", "<leader>hc", function()
 	harpoon:list():clear()
-end)
+end, { desc = "Clear all Harpoon marks" })
 
--- Quickly jump to harpooned files
 vim.keymap.set("n", "<leader>1", function()
 	harpoon:list():select(1)
-end)
+end, { desc = "Navigate to Harpoon file 1" })
 
 vim.keymap.set("n", "<leader>2", function()
 	harpoon:list():select(2)
-end)
+end, { desc = "Navigate to Harpoon file 2" })
 
 vim.keymap.set("n", "<leader>3", function()
 	harpoon:list():select(3)
-end)
+end, { desc = "Navigate to Harpoon file 3" })
 
 vim.keymap.set("n", "<leader>4", function()
 	harpoon:list():select(4)
-end)
+end, { desc = "Navigate to Harpoon file 4" })
 
 vim.keymap.set("n", "<leader>5", function()
 	harpoon:list():select(5)
-end)
+end, { desc = "Navigate to Harpoon file 5" })
 
--- Telescope keybinds --
-vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
-vim.keymap.set("n", "<leader>sb", require("telescope.builtin").buffers, { desc = "[S]earch Open [B]uffers" })
-vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch TODOs" })
+-- Snacks picker keybinds --
+vim.keymap.set("n", "<leader>?", function()
+	snacks.picker.recent()
+end, { desc = "Find recently opened files" })
+
+vim.keymap.set("n", "<leader>sb", function()
+	snacks.picker.buffers()
+end, { desc = "Search open buffers" })
+
+vim.keymap.set("n", "<leader>sf", function()
+	snacks.picker.files({ hidden = true })
+end, { desc = "Find files (including hidden)" })
+
+vim.keymap.set("n", "<leader>sh", function()
+	snacks.picker.help()
+end, { desc = "Search help tags" })
+
+vim.keymap.set("n", "<leader>sg", function()
+	snacks.picker.grep()
+end, { desc = "Live grep search" })
+
+vim.keymap.set("v", "<leader>sg", function()
+	snacks.picker.grep_word()
+end, { desc = "Grep selection" })
+
+vim.keymap.set("n", "<leader>sw", function()
+	snacks.picker.grep_word()
+end, { desc = "Search current word" })
+
+vim.keymap.set("n", "<leader>sc", function()
+	snacks.picker.git_log_file()
+end, { desc = "[S]earch buffer [C]ommits" })
 
 vim.keymap.set("n", "<leader>/", function()
-	require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-		previewer = false,
-	}))
-end, { desc = "[/] Fuzzily search in current buffer]" })
+	snacks.picker.grep_buffers()
+end, { desc = "Fuzzily search in current buffer" })
 
-vim.keymap.set("n", "<leader>fl", ":TodoQuickFix<CR>", { desc = "[F]ind [L]ines with TODOs" })
+-- LSP Symbol search
+vim.keymap.set("n", "<leader>ss", function()
+	snacks.picker.lsp_symbols()
+end, { desc = "LSP document symbols" })
 
--- LSP Keybinds (exports a function to be used in ../../after/plugin/lsp.lua b/c we need a reference to the current buffer) --
+vim.keymap.set("n", "<leader>sS", function()
+	snacks.picker.lsp_workspace_symbols()
+end, { desc = "LSP workspace symbols" })
+
+-- TODO Comments
+vim.keymap.set("n", "<leader>st", function()
+	snacks.picker.todo_comments()
+end, { desc = "[S]earch [T]ODOs" })
+
+vim.keymap.set("n", "]t", function()
+	require("todo-comments").jump_next()
+end, { desc = "Jump to next TODO" })
+
+vim.keymap.set("n", "[t", function()
+	require("todo-comments").jump_prev()
+end, { desc = "Jump to previous TODO" })
+
+-- LSP Keybinds (per-buffer)
 M.map_lsp_keybinds = function(buffer_number)
-	local opts = function(desc)
-		return { buffer = buffer_number, desc = desc }
+	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP: Rename symbol", buffer = buffer_number })
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP: Code action", buffer = buffer_number })
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "LSP: Go to definition", buffer = buffer_number })
+	vim.keymap.set("n", "gr", function()
+		snacks.picker.lsp_references()
+	end, { desc = "LSP: Go to references", buffer = buffer_number })
+	vim.keymap.set("n", "gi", function()
+		snacks.picker.lsp_implementations()
+	end, { desc = "LSP: Go to implementations", buffer = buffer_number })
+
+	local signature_help = function()
+		return vim.lsp.buf.signature_help({ border = "rounded" })
 	end
 
-	vim.keymap.set("n", "K", function()
-		vim.lsp.buf.hover({ border = "rounded" })
-	end, opts("Hover Documentation"))
+	local hover = function()
+		return vim.lsp.buf.hover({ border = "rounded" })
+	end
 
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("LSP: [G]oto [D]efinition"))
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("LSP: [G]oto [D]eclaration"))
-	vim.keymap.set("n", "gi", snacks.picker.lsp_implementations, opts("LSP: [G]oto [I]mplementation"))
-	vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, opts("LSP: [T]ype [D]efinition"))
-	vim.keymap.set("n", "gr", snacks.picker.lsp_references, opts("LSP: [G]oto [R]eferences"))
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("LSP: [R]e[n]ame"))
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("LSP: [C]ode [A]ction"))
-
-	vim.keymap.set("n", "<leader>k", function()
-		vim.lsp.buf.signature_help({ border = "rounded" })
-	end, opts("LSP: Signature Documentation"))
+	vim.keymap.set("n", "K", hover, { desc = "LSP: Hover documentation", buffer = buffer_number })
+	vim.keymap.set("i", "<C-k>", signature_help, { desc = "LSP: Signature help", buffer = buffer_number })
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "LSP: Go to declaration", buffer = buffer_number })
+	vim.keymap.set("n", "td", vim.lsp.buf.type_definition, { desc = "LSP: Type definition", buffer = buffer_number })
 end
 
-vim.keymap.set("n", "<leader>ts", function()
-	if twoslash.config.is_enabled then
-		vim.cmd("TwoslashQueriesDisable")
-		Snacks.notify.info("Two Slash queries disabled")
-		return
-	end
-
-	vim.cmd(":TwoslashQueriesEnable")
-	Snacks.notify.info("Two Slash queries enabled")
-end, { desc = "Toggle [T]wo [S]lash queries" })
-
 -- Symbol Outline keybind
-vim.keymap.set("n", "<leader>so", ":SymbolsOutline<cr>")
+vim.keymap.set("n", "<leader>so", ":Outline<cr>", { desc = "Toggle symbol outline" })
 
--- nvim-ufo keybinds
-vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+-- Insert Mode --
+vim.keymap.set("i", "jj", "<esc>", { desc = "Exit insert mode (jj)" })
+vim.keymap.set("i", "JJ", "<esc>", { desc = "Exit insert mode (JJ)" })
 
--- toggle inlay hints
--- vim.keymap.set("n", "<leader>ih", function()
--- 	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
--- end)
+-- Visual Mode --
+vim.keymap.set("v", "<space>", "<nop>", { desc = "Disable space (leader) in visual mode" })
+vim.keymap.set("v", "L", "$<left>", { desc = "Move to end of line in visual mode" })
+vim.keymap.set("v", "H", "^", { desc = "Move to beginning of line in visual mode" })
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selected block down" })
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selected block up" })
 
--- Insert --
--- Map jj to <esc>
-vim.keymap.set("i", "jj", "<esc>")
-vim.keymap.set("i", "JJ", "<esc>")
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without overwriting register" })
 
--- Visual --
--- Disable Space bar since it'll be used as the leader key
-vim.keymap.set("v", "<space>", "<nop>")
-
--- Press 'H', 'L' to jump to start/end of a line (first/last char)
-vim.keymap.set("v", "L", "$<left>")
-vim.keymap.set("v", "H", "^")
-
--- Paste without losing the contents of the register
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
-
-vim.keymap.set("x", "<leader>p", '"_dP')
-
--- Reselect the last visual selection
+-- This keymap indents the selected visual block to the left and reselects it
 vim.keymap.set("x", "<<", function()
-	-- Move selected text up/down in visual mode
 	vim.cmd("normal! <<")
 	vim.cmd("normal! gv")
-end)
+end, { desc = "Indent left and reselect visual block" })
 
 vim.keymap.set("x", ">>", function()
 	vim.cmd("normal! >>")
 	vim.cmd("normal! gv")
-end)
+end, { desc = "Indent right and reselect visual block" })
 
 -- Terminal --
 -- Enter normal mode while in a terminal

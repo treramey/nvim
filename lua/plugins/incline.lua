@@ -41,14 +41,16 @@ return {
 
 				return {
 					{ "", group = "InclineSeparator" },
-					{ path, gui = "italic", group = "InclineAccent" },
-					icon and {
-						" ",
-						icon,
-						" ",
-						guifg = vim.fn.synIDattr(vim.fn.hlID(hl), "fg"),
-						guibg = palette.overlay,
-					} or "",
+					-- { path, gui = "italic", group = "InclineAccent" },
+					icon
+							and {
+								" ",
+								icon,
+								" ",
+								guifg = vim.fn.synIDattr(vim.fn.hlID(hl), "fg"),
+								guibg = palette.overlay,
+							}
+						or "",
 					{
 						filename,
 						guibg = palette.overlay,
