@@ -4,27 +4,6 @@ return {
 	cmd = { "ConformInfo" },
 	opts = {
 		notify_on_error = false,
-		default_format_opts = {
-			async = true,
-			timeout_ms = 500,
-			lsp_format = "fallback",
-		},
-		format_after_save = function(bufnr)
-			local ft = vim.bo[bufnr].filetype
-			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-				return
-			end
-
-			if ft == "cfml" or ft == "cfm" or ft == "cfc" or ft == "cs" then
-				return
-			else
-				return {
-					async = true,
-					timeout_ms = 500,
-					lsp_format = "fallback",
-				}
-			end
-		end,
 		formatters_by_ft = {
 			cs = { "csharpier" },
 			json = { "biome" },
@@ -40,12 +19,19 @@ return {
 		formatters = {
 			csharpier = {
 				command = "csharpier",
-				args = function(self, ctx)
-					return { "format", "--write-stdout", ctx.filename }
-				end,
-				stdin = true,
+				args = { "format", "$FILENAME" },
+				stdin = false,
 			},
-			injected = { options = { ignore_errors = false } },
 		},
+		format_after_save = function(buffer_number)
+			if vim.g.disable_autoformat or vim.b[buffer_number].disable_autoformat then
+				return
+			end
+			return {
+				async = true,
+				timeout_ms = 500,
+				lsp_format = "fallback",
+			}
+		end,
 	},
 }
