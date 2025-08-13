@@ -4,14 +4,14 @@ return {
 		event = "LspAttach",
 		config = function()
 			require("fidget").setup({
-				notification = {
-					window = {
-						winblend = 0,
-					},
-				},
 				progress = {
 					display = {
 						progress_icon = { pattern = "dots_negative" },
+					},
+				},
+				notification = {
+					window = {
+						winblend = 0,
 					},
 				},
 			})

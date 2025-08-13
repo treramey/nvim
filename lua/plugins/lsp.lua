@@ -9,8 +9,6 @@ return {
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			"hrsh7th/cmp-nvim-lsp",
-			-- Progress indicator for LSP
-			{ "j-hui/fidget.nvim" },
 		},
 		config = function()
 			local mason = require("mason")
@@ -201,7 +199,7 @@ return {
 				},
 			})
 
-			mason_lspconfig.setup()
+			mason_lspconfig.setup({})
 
 			-- Configure border for LspInfo ui
 			require("lspconfig.ui.windows").default_options.border = "rounded"

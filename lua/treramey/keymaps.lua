@@ -75,15 +75,17 @@ vim.keymap.set("n", "S", function()
 	vim.api.nvim_feedkeys(keys, "n", false)
 end, { desc = "Quick find/replace word under cursor" })
 
--- Spectre for global find/replace
+-- Grug-far for global find/replace
 vim.keymap.set("n", "<leader>S", function()
-	require("spectre").toggle()
-end, { desc = "Toggle Spectre for global find/replace" })
-
--- Spectre for word under cursor (visual)
-vim.keymap.set("n", "<leader>sw", function()
-	require("spectre").open_visual({ select_word = true })
-end, { desc = "Search current word using Spectre" })
+	local grug = require("grug-far")
+	local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+	grug.open({
+		transient = true,
+		prefills = {
+			filesFilter = ext and ext ~= "" and "*." .. ext or nil,
+		},
+	})
+end, { desc = "Open grug-far for search and replace" })
 
 -- Jump to start/end of line
 vim.keymap.set("n", "L", "$", { desc = "Jump to end of line" })
