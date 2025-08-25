@@ -5,6 +5,7 @@
         "Snacks"
     ],
     "diagnostics.disable": [
-        "missing-fields"
+        "missing-fields",
+        "empty-block"
     ]
 }

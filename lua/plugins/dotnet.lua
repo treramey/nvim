@@ -115,11 +115,10 @@ return {
 		keys = {
       -- stylua: ignore start 
       { "<leader>nw", function() require("easy-dotnet").watch_default() end, desc = "watch solution" },
-      { "<leader>nb", function() require("easy-dotnet").build_default() end, desc = "build default" },
-      { "<leader>nB", function() require("easy-dotnet").build() end, desc = "build" },
+      { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build default quickfix" },
+      { "<leader>nB", function() require("easy-dotnet").build_default() end, desc = "build default" },
       { "<leader>ns", function() require("easy-dotnet").build_solution() end, desc = "build solution" },
       { "<leader>nr", function() require("easy-dotnet").restore() end, desc = "restore packages" },
-      { "<leader>nq", function() require("easy-dotnet").build_default_quickfix() end, desc = "build default quickfix" },
       { "<leader>nQ", function() require("easy-dotnet").build_quickfix() end, desc = "build quickfix" },
       { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },
       { "<leader>nx", function() require("easy-dotnet").clean() end, desc = "clean solution" },

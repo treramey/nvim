@@ -16,13 +16,6 @@ return {
 			xml = { "csharpier" },
 			yaml = { "prettier" },
 		},
-		formatters = {
-			csharpier = {
-				command = "csharpier",
-				args = { "format", "$FILENAME" },
-				stdin = false,
-			},
-		},
 		format_after_save = function(buffer_number)
 			if vim.g.disable_autoformat or vim.b[buffer_number].disable_autoformat then
 				return
