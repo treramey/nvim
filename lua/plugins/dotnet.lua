@@ -10,20 +10,33 @@ end
 
 return {
 	{
-		"seblj/roslyn.nvim",
+		"seblyng/roslyn.nvim",
 		dependencies = {
 			"williamboman/mason.nvim",
+			"j-hui/fidget.nvim",
 		},
 		enabled = function()
 			return vim.fn.executable("dotnet") == 1 and not has_git_conflict_markers()
 		end,
 		ft = "cs",
-		opts = function()
-			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
+		opts = {
+			broad_search = true,
+			silent = true,
+			on_attach = function(_, bufnr)
+				require("treramey.keymaps").map_lsp_keybinds(bufnr)
+			end,
+		},
+		config = function(_, opts)
+			require("roslyn").setup(opts)
 
-			local on_attach = function(_, bufnr)
-				map_lsp_keybinds(bufnr)
-			end
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+					if client and client.name == "roslyn" then
+						require("treramey.keymaps").map_lsp_keybinds(args.buf)
+					end
+				end,
+			})
 
 			vim.api.nvim_create_autocmd({ "LspAttach", "InsertLeave" }, {
 				pattern = "*",
@@ -33,25 +46,106 @@ return {
 						return
 					end
 
-					local buffers = vim.lsp.get_buffers_by_client_id(clients[1].id)
-					for _, buf in ipairs(buffers) do
-						vim.lsp.util._refresh("textDocument/diagnostic", { bufnr = buf })
-						vim.lsp.codelens.refresh()
+					for _, client in ipairs(clients) do
+						local buffers = vim.lsp.get_buffers_by_client_id(client.id)
+						for _, buf in ipairs(buffers) do
+							vim.diagnostic.reset(vim.lsp.diagnostic.get_namespace(client.id), buf)
+							vim.lsp.codelens.refresh({ bufnr = buf })
+						end
+					end
+				end,
+			})
+		end,
+		init = function()
+			local restore_handles = {}
+
+			vim.keymap.set("n", "<leader>ns", function()
+				if not vim.g.roslyn_nvim_selected_solution then
+					return vim.notify("No solution file found")
+				end
+
+				local projects = require("roslyn.sln.api").projects(vim.g.roslyn_nvim_selected_solution)
+				if not projects or #projects == 0 then
+					return vim.notify("No projects found in solution")
+				end
+
+				local files = vim.iter(projects)
+					:map(function(it)
+						return vim.fs.dirname(it)
+					end)
+					:filter(function(dir)
+						return dir and vim.fn.isdirectory(dir) == 1
+					end)
+					:totable()
+
+				if #files == 0 then
+					return vim.notify("No valid project directories found")
+				end
+
+				Snacks.picker.files({ dirs = files })
+			end)
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "RoslynRestoreProgress",
+				callback = function(ev)
+					local token = ev.data.params[1]
+					local handle = restore_handles[token]
+					if handle then
+						handle:report({
+							title = ev.data.params[2].state,
+							message = ev.data.params[2].message,
+						})
+					else
+						restore_handles[token] = require("fidget.progress").handle.create({
+							title = ev.data.params[2].state,
+							message = ev.data.params[2].message,
+							lsp_client = {
+								name = "roslyn",
+							},
+						})
 					end
 				end,
 			})
 
-			vim.lsp.config("roslyn", {
-				on_attach = on_attach,
-				settings = {
-					["csharp|inlay_hints"] = {
-						csharp_enable_inlay_hints_for_implicit_object_creation = true,
-						csharp_enable_inlay_hints_for_implicit_variable_types = true,
-					},
-					["csharp|code_lens"] = {
-						dotnet_enable_references_code_lens = true,
-					},
-				},
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "RoslynRestoreResult",
+				callback = function(ev)
+					local handle = restore_handles[ev.data.token]
+					restore_handles[ev.data.token] = nil
+
+					if handle then
+						handle.message = ev.data.err and ev.data.err.message or "Restore completed"
+						handle:finish()
+					end
+				end,
+			})
+
+			local init_handles = {}
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "RoslynOnInit",
+				callback = function(ev)
+					init_handles[ev.data.client_id] = require("fidget.progress").handle.create({
+						title = "Initializing Roslyn",
+						message = ev.data.type == "solution"
+								and string.format("Initializing Roslyn for %s", ev.data.target)
+							or "Initializing Roslyn for project",
+						lsp_client = {
+							name = "roslyn",
+						},
+					})
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "RoslynInitialized",
+				callback = function(ev)
+					local handle = init_handles[ev.data.client_id]
+					init_handles[ev.data.client_id] = nil
+
+					if handle then
+						handle.message = "Roslyn initialized"
+						handle:finish()
+					end
+				end,
 			})
 		end,
 		keys = {
@@ -117,7 +211,7 @@ return {
       { "<leader>nw", function() require("easy-dotnet").watch_default() end, desc = "watch solution" },
       { "<leader>nb", function() require("easy-dotnet").build_default_quickfix() end, desc = "build default quickfix" },
       { "<leader>nB", function() require("easy-dotnet").build_default() end, desc = "build default" },
-      { "<leader>ns", function() require("easy-dotnet").build_solution() end, desc = "build solution" },
+      -- { "<leader>ns", function() require("easy-dotnet").build_solution() end, desc = "build solution" },
       { "<leader>nr", function() require("easy-dotnet").restore() end, desc = "restore packages" },
       { "<leader>nQ", function() require("easy-dotnet").build_quickfix() end, desc = "build quickfix" },
       { "<leader>nR", function() require("easy-dotnet").run_solution() end, desc = "run solution" },

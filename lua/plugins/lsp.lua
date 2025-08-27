@@ -16,17 +16,6 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds -- Has to load keymaps before plugins lsp
 
-			local vtsls_inlay_hints = {
-				enumMemberValues = { enabled = true },
-				functionLikeReturnTypes = { enabled = true },
-				functionParameterTypes = { enabled = true },
-				parameterNames = { enabled = "all" },
-				parameterNameWhenArgumentMatchesNames = { enabled = true },
-				propertyDeclarationTypes = { enabled = true },
-				variableTypes = { enabled = true },
-				variableTypeWhenTypeMatchesNames = { enabled = true },
-			}
-
 			local on_attach = function(_client, buffer_number)
 				map_lsp_keybinds(buffer_number)
 			end
@@ -101,34 +90,6 @@ return {
 				svelte = {},
 				tailwindcss = {
 					filetypes = { "typescriptreact", "javascriptreact", "html", "svelte" },
-				},
-				vtsls = {
-					on_attach = function(client, buffer_number)
-						require("twoslash-queries").attach(client, buffer_number)
-						return on_attach(client, buffer_number)
-					end,
-					settings = {
-						complete_function_calls = true,
-						vtsls = {
-							autoUseWorkspaceTsdk = true,
-							experimental = {
-								completion = {
-									enableServerSideFuzzyMatch = true,
-								},
-							},
-						},
-						typescript = {
-							updateImportOnFileMove = { enabled = "always" },
-							suggest = {
-								completeFunctionCalls = true,
-							},
-							tsserver = {
-								maxTsServerMemory = 12288,
-							},
-							inlayHints = vtsls_inlay_hints,
-						},
-						javascript = { inlayHints = vtsls_inlay_hints },
-					},
 				},
 				yamlls = {},
 			}

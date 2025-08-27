@@ -240,8 +240,35 @@ vim.keymap.set("n", "<leader>sb", function()
 end, { desc = "Search open buffers" })
 
 vim.keymap.set("n", "<leader>sf", function()
-	snacks.picker.files({ hidden = true })
-end, { desc = "Find files (including hidden)" })
+	if vim.g.roslyn_nvim_selected_solution then
+		local ok, projects = pcall(require("roslyn.sln.api").projects, vim.g.roslyn_nvim_selected_solution)
+		if ok and projects and #projects > 0 then
+			local dirs = {}
+			local seen = {}
+
+			for _, project in ipairs(projects) do
+				local dir = vim.fs.dirname(project)
+				if dir and not seen[dir] and vim.fn.isdirectory(dir) == 1 then
+					dirs[#dirs + 1] = dir
+					seen[dir] = true
+				end
+			end
+
+			if #dirs > 0 then
+				snacks.picker.files({
+					dirs = dirs,
+					hidden = true,
+				})
+				return
+			end
+		end
+	end
+
+	-- Fallback to regular file picker
+	snacks.picker.files({
+		hidden = true,
+	})
+end, { desc = "Find files (solution-aware)" })
 
 vim.keymap.set("n", "<leader>sh", function()
 	snacks.picker.help()
