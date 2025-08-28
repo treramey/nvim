@@ -7,7 +7,7 @@ return {
 			require("typescript-tools").setup({
 				on_attach = function(client, buffer_number)
 					require("twoslash-queries").attach(client, buffer_number)
-					require("dmmulroy.keymaps").map_lsp_keybinds(buffer_number)
+					require("treramey.keymaps").map_lsp_keybinds(buffer_number)
 				end,
 				settings = {
 					tsserver_path = "~/.bun/bin/tsgo",

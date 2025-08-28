@@ -19,15 +19,14 @@ return {
 			return vim.fn.executable("dotnet") == 1 and not has_git_conflict_markers()
 		end,
 		ft = "cs",
-		opts = {
-			broad_search = true,
-			silent = true,
-			on_attach = function(_, bufnr)
-				require("treramey.keymaps").map_lsp_keybinds(bufnr)
-			end,
-		},
-		config = function(_, opts)
-			require("roslyn").setup(opts)
+		config = function()
+			require("roslyn").setup({
+				broad_search = true,
+				silent = true,
+				on_attach = function(_, buffer_number)
+					require("treramey.keymaps").map_lsp_keybinds(buffer_number)
+				end,
+			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
