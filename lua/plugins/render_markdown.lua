@@ -8,7 +8,7 @@ vim.api.nvim_create_autocmd("FileType", {
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
 		opts = {
 			file_types = { "markdown", "copilot-chat", "codecompanion" },
 			code = {

@@ -20,7 +20,13 @@ end
 M.register_net_dap = function()
 	local dap = require("dap")
 	local dotnet = require("easy-dotnet")
+	local mason_path = vim.fn.stdpath("data") .. "/mason/packages/netcoredbg/netcoredbg"
 
+	local netcoredbg_adapter = {
+		type = "executable",
+		command = mason_path,
+		args = { "--interpreter=vscode" },
+	}
 	local function file_exists(path)
 		local stat = vim.loop.fs_stat(path)
 		return stat and stat.type == "file"
@@ -81,11 +87,8 @@ M.register_net_dap = function()
 		debug_dll = nil
 	end
 
-	dap.adapters.coreclr = {
-		type = "executable",
-		command = vim.fn.expand("~/.local/bin/dotnet/netcoredbg/netcoredbg"),
-		args = { "--interpreter=vscode" },
-	}
+	dap.adapters.netcoredbg = netcoredbg_adapter -- needed for normal debugging
+	dap.adapters.coreclr = netcoredbg_adapter -- needed for unit test debugging
 end
 
 return M

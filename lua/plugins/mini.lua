@@ -10,7 +10,7 @@ return {
 		end,
 	},
 	{
-		"echasnovski/mini.comment",
+		"nvim-mini/mini.comment",
 		event = "VeryLazy",
 		opts = {},
 		config = function()
@@ -59,14 +59,14 @@ return {
 		end,
 	},
 	{
-		"echasnovski/mini.ai",
+		"nvim-mini/mini.ai",
 		version = false,
 		config = function()
 			require("mini.ai").setup({})
 		end,
 	},
 	{
-		"echasnovski/mini.diff",
+		"nvim-mini/mini.diff",
 		version = false,
 
 		opts = {
@@ -76,9 +76,9 @@ return {
 			},
 		},
 	},
-	{ "echasnovski/mini-git", lazy = true, version = false, main = "mini.git", opts = {} },
+	{ "nvim-mini/mini-git", lazy = true, version = false, main = "mini.git", opts = {} },
 	{
-		"echasnovski/mini.icons",
+		"nvim-mini/mini.icons",
 		opts = {
 			file = {
 				["init.lua"] = { glyph = "󰢱", hl = "MiniIconsAzure" },
