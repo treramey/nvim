@@ -50,6 +50,7 @@ return {
 					DapUIStepBack = { fg = "foam" },
 					DapUIStepOut = { fg = "foam" },
 					DapUIStop = { fg = "love" },
+					DapBreakpoint = { fg = "love" },
 					DapUIPlayPause = { fg = "pine" },
 					DapUIRestart = { fg = "pine" },
 					DapUIUnavailable = { fg = "muted" },

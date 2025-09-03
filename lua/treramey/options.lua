@@ -31,6 +31,9 @@ vim.opt.wrap = false
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Disable autoformatting for specific filetypes
+vim.g.disable_autoformat_filetypes = { "cf", "cfml", "coldfusion" }
+
 -- Better splitting
 vim.opt.splitbelow = true
 vim.opt.splitright = true

@@ -14,11 +14,15 @@ return {
 		dependencies = {
 			"williamboman/mason.nvim",
 			"j-hui/fidget.nvim",
+			{
+				"tris203/rzls.nvim",
+				config = true,
+			},
 		},
 		enabled = function()
 			return vim.fn.executable("dotnet") == 1 and not has_git_conflict_markers()
 		end,
-		ft = "cs",
+		ft = { "cs", "razor" },
 		config = function()
 			require("roslyn").setup({
 				broad_search = true,
@@ -28,12 +32,52 @@ return {
 				end,
 			})
 
+			-- Use one of the methods in the Integration section to compose the command.
+			local mason_registry = require("mason-registry")
+
+			local rzls_path = vim.fn.expand("$MASON/packages/rzls/libexec")
+			local cmd = {
+				"roslyn",
+				"--stdio",
+				"--logLevel=Information",
+				"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
+				"--razorSourceGenerator=" .. vim.fs.joinpath(rzls_path, "Microsoft.CodeAnalysis.Razor.Compiler.dll"),
+				"--razorDesignTimePath="
+					.. vim.fs.joinpath(rzls_path, "Targets", "Microsoft.NET.Sdk.Razor.DesignTime.targets"),
+				"--extension",
+				vim.fs.joinpath(rzls_path, "RazorExtension", "Microsoft.VisualStudioCode.RazorExtension.dll"),
+			}
+
+			vim.lsp.config("roslyn", {
+				cmd = cmd,
+				handlers = require("rzls.roslyn_handlers"),
+				settings = {
+					["csharp|inlay_hints"] = {
+						csharp_enable_inlay_hints_for_implicit_object_creation = true,
+						csharp_enable_inlay_hints_for_implicit_variable_types = true,
+
+						csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+						csharp_enable_inlay_hints_for_types = true,
+						dotnet_enable_inlay_hints_for_indexer_parameters = true,
+						dotnet_enable_inlay_hints_for_literal_parameters = true,
+						dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+						dotnet_enable_inlay_hints_for_other_parameters = true,
+						dotnet_enable_inlay_hints_for_parameters = true,
+						dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+						dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+						dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+					},
+					["csharp|code_lens"] = {
+						dotnet_enable_references_code_lens = true,
+					},
+				},
+			})
+
+			vim.lsp.enable("roslyn")
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
-					local client = vim.lsp.get_client_by_id(args.data.client_id)
-					if client and client.name == "roslyn" then
-						require("treramey.keymaps").map_lsp_keybinds(args.buf)
-					end
+					require("treramey.keymaps").map_lsp_keybinds(args.buf)
 				end,
 			})
 
@@ -57,32 +101,6 @@ return {
 		end,
 		init = function()
 			local restore_handles = {}
-
-			vim.keymap.set("n", "<leader>ns", function()
-				if not vim.g.roslyn_nvim_selected_solution then
-					return vim.notify("No solution file found")
-				end
-
-				local projects = require("roslyn.sln.api").projects(vim.g.roslyn_nvim_selected_solution)
-				if not projects or #projects == 0 then
-					return vim.notify("No projects found in solution")
-				end
-
-				local files = vim.iter(projects)
-					:map(function(it)
-						return vim.fs.dirname(it)
-					end)
-					:filter(function(dir)
-						return dir and vim.fn.isdirectory(dir) == 1
-					end)
-					:totable()
-
-				if #files == 0 then
-					return vim.notify("No valid project directories found")
-				end
-
-				Snacks.picker.files({ dirs = files })
-			end)
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "RoslynRestoreProgress",
 				callback = function(ev)
@@ -145,6 +163,13 @@ return {
 						handle:finish()
 					end
 				end,
+			})
+
+			vim.filetype.add({
+				extension = {
+					razor = "razor",
+					cshtml = "razor",
+				},
 			})
 		end,
 		keys = {

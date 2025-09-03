@@ -106,6 +106,8 @@ return {
 			local other_tools = {
 				netcoredbg = {},
 				rustywind = {},
+				roslyn = {},
+				rzls = {},
 			}
 
 			local manually_installed_servers = { "gleam", "rust_analyzer" }
