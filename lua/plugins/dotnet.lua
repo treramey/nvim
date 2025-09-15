@@ -80,24 +80,6 @@ return {
 					require("treramey.keymaps").map_lsp_keybinds(args.buf)
 				end,
 			})
-
-			vim.api.nvim_create_autocmd({ "LspAttach", "InsertLeave" }, {
-				pattern = "*",
-				callback = function()
-					local clients = vim.lsp.get_clients({ name = "roslyn" })
-					if not clients or #clients == 0 then
-						return
-					end
-
-					for _, client in ipairs(clients) do
-						local buffers = vim.lsp.get_buffers_by_client_id(client.id)
-						for _, buf in ipairs(buffers) do
-							vim.diagnostic.reset(vim.lsp.diagnostic.get_namespace(client.id), buf)
-							vim.lsp.codelens.refresh({ bufnr = buf })
-						end
-					end
-				end,
-			})
 		end,
 		init = function()
 			local restore_handles = {}
