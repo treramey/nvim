@@ -1,12 +1,10 @@
-local M = {}
+_G.tools = _G.tools or {}
 
-M.is_git_directory = function()
-	local result = vim.fn.system("git rev-parse --is-inside-work-tree")
-	if vim.v.shell_error == 0 and result:find("true") then
-		return true
-	else
-		return false
-	end
+tools.hl_str = function(group, str)
+	return string.format("%%#%s#%s%%*", group, str)
 end
 
-return M
+tools.root = function()
+	local git_path = vim.fn.finddir(".git", ".;")
+	return vim.fn.fnamemodify(git_path, ":h")
+end
