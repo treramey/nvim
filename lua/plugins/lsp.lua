@@ -20,20 +20,12 @@ return {
 				map_lsp_keybinds(buffer_number)
 			end
 
-			local util = require("lspconfig/util")
-
-			local configs = require("lspconfig.configs")
-
-			if not configs["harper-ls"] then
-				configs["harper-ls"] = {
-					default_config = {
-						cmd = { "harper-ls", "--stdio" },
-						filetypes = { "markdown", "text" },
-						root_dir = util.root_pattern(".git"),
-						single_file_support = true,
-					},
-				}
-			end
+			-- Define custom harper-ls config using vim.lsp.config
+			vim.lsp.config("harper-ls", {
+				cmd = { "harper-ls", "--stdio" },
+				filetypes = { "markdown", "text" },
+				root_markers = { ".git" },
+			})
 
 			local servers = {
 				-- LSP Servers
@@ -56,7 +48,7 @@ return {
 				gopls = {
 					cmd = { "gopls" },
 					filetypes = { "go", "gomod", "gowork", "gotmpl" },
-					root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+					root_markers = { "go.work", "go.mod", ".git" },
 					settings = {
 						completeUnimported = true,
 						usePlaceholders = true,
@@ -130,19 +122,19 @@ return {
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
-			-- Setup each LSP server. We merge in any server-specific capabilities by passing
-			-- the existing config.capabilities to blink.cmp.get_lsp_capabilities.
+			-- Setup each LSP server using vim.lsp.config and vim.lsp.enable
 			for name, config in pairs(servers) do
-				require("lspconfig")[name].setup({
-					autostart = config.autostart,
-					cmd = config.cmd,
-					capabilities = capabilities,
-					filetypes = config.filetypes,
-					handlers = vim.tbl_deep_extend("force", {}, config.handlers or {}),
-					on_attach = config.on_attach or on_attach,
-					settings = config.settings,
-					root_dir = config.root_dir,
-				})
+				-- Configure the server
+				vim.lsp.config(
+					name,
+					vim.tbl_deep_extend("force", {
+						capabilities = capabilities,
+						on_attach = config.on_attach or on_attach,
+					}, config)
+				)
+
+				-- Enable the server for filetype-based activation
+				vim.lsp.enable(name)
 			end
 
 			-- Setup mason so it can manage 3rd party LSP servers
@@ -164,25 +156,25 @@ return {
 
 			mason_lspconfig.setup({})
 
-			-- Configure border for LspInfo ui
-			require("lspconfig.ui.windows").default_options.border = "rounded"
+			-- Note: LspInfo UI borders are now configured via vim.lsp settings
+			-- or through the specific UI functions that support border configuration
 
 			-- Note: borders are configured per-function in keymaps.lua
 		end,
 	},
-	{ --ohhh the pain
-		"treramey/cfmlsp.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		dependencies = {
-			"neovim/nvim-lspconfig",
-		},
-		opts = function()
-			local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
-			return {
-				on_attach = function(_, bufnr)
-					map_lsp_keybinds(bufnr)
-				end,
-			}
-		end,
-	},
+	-- { --ohhh the pain
+	-- 	"hannaeckert/cfmlsp.nvim",
+	-- 	event = { "BufReadPre", "BufNewFile" },
+	-- 	dependencies = {
+	-- 		"neovim/nvim-lspconfig",
+	-- 	},
+	-- 	opts = function()
+	-- 		local map_lsp_keybinds = require("treramey.keymaps").map_lsp_keybinds
+	-- 		return {
+	-- 			on_attach = function(_, bufnr)
+	-- 				map_lsp_keybinds(bufnr)
+	-- 			end,
+	-- 		}
+	-- 	end,
+	-- },
 }

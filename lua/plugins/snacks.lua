@@ -27,7 +27,7 @@ return {
 				},
 			},
 			indent = {
-				enabled = false,
+				enabled = true,
 				only_scope = true,
 				filter = function(buf)
 					local b = vim.b[buf]
@@ -185,13 +185,6 @@ return {
 			toggle = { enabled = true },
 			words = { enabled = true },
 		},
-		config = function(_, opts)
-			local snacks = require("snacks")
-			snacks.setup(opts)
-			-- Set vim.ui.input and vim.ui.select to use Snacks
-			vim.ui.input = snacks.input
-			vim.ui.select = snacks.picker.select
-		end,
 		init = function()
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "VeryLazy",
@@ -223,8 +216,10 @@ return {
 			{ "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
 			{ "<leader>B",  function() Snacks.scratch.select() end, desc = "Select Scratch [B]uffer" },
 			{ "<leader>bd", function() Snacks.bufdelete() end, desc = "[B]uffer [D]elete" },
-			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
 			{ "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
+			{ "<leader>gb", function() Snacks.git.blame_line() end, desc = "[G]it [B]lame Line" },
+      { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
+      { "<leader>gl", function() Snacks.picker.git_log_line() end, desc = "Git Log Line" },
 			{ "<leader>og", function() Snacks.gitbrowse() end, desc = "[O]pen [G]it", mode = { "n", "v" } },
 			{ "<leader>dn", function() Snacks.notifier.hide() end, desc = "[D]ismiss All [N]otifications" },
 			{ "<leader>nh", function() Snacks.notifier.show_history() end, desc = "[N]otification [H]istory" },

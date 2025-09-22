@@ -31,6 +31,7 @@ return {
 				StatuslineDiagnosticWarn = { fg = "gold", bg = "none" },
 				StatuslineDiagnosticInfo = { fg = "foam", bg = "none" },
 				StatuslineDiagnosticHint = { fg = "iris", bg = "none" },
+				StatuslineActiveHarpoon = { fg = "rose", bg = "none" },
 				StatuslineNotSaved = { fg = "gold", bg = "none" },
 				StatuslineReadOnly = { fg = "love", bg = "none" },
 				StatuslineFilepath = { fg = "muted", bg = "none", italic = true },
@@ -75,6 +76,11 @@ return {
 				DartVisibleLabel = { fg = "gold", bg = "surface", bold = true },
 				DartVisibleLabelModified = { fg = "gold", bg = "text", bold = true },
 				DartPickLabel = { fg = "gold", bg = "none", bold = true },
+				WilderText = { fg = "text", bg = "none" },
+				WilderMauve = { fg = "foam", bg = "none" },
+				RenderMarkdownCode = { bg = "base" },
+				RenderMarkdownCodeInline = { bg = "overlay" },
+				RenderMarkdownInlineHighlight = { link = "RenderMarkdownCodeInline" },
 			},
 		})
 		vim.cmd("colorscheme rose-pine")

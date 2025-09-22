@@ -27,13 +27,7 @@ return {
 			require("roslyn").setup({
 				broad_search = true,
 				silent = true,
-				on_attach = function(_, buffer_number)
-					require("treramey.keymaps").map_lsp_keybinds(buffer_number)
-				end,
 			})
-
-			-- Use one of the methods in the Integration section to compose the command.
-			local mason_registry = require("mason-registry")
 
 			local rzls_path = vim.fn.expand("$MASON/packages/rzls/libexec")
 			local cmd = {

@@ -32,7 +32,7 @@ return {
 				keymap = {
 					accept = false,
 					accept_word = false,
-					accept_line = "<C-'>",
+					accept_line = "<C-y>",
 					next = false,
 					prev = false,
 					dismiss = false,
@@ -58,7 +58,7 @@ return {
 					model = "claude-sonnet-4",
 					roles = {
 						llm = " Copilot",
-						user = " adriankarlen",
+						user = " treramey",
 					},
 				},
 			},

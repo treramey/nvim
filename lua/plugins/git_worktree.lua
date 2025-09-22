@@ -27,18 +27,31 @@ return {
 						for line in handle:lines() do
 							local branch = line:gsub("origin/", "")
 							if branch ~= "origin" and branch ~= "" then
-								table.insert(branches, branch)
+								table.insert(branches, {
+									text = branch,
+									value = branch,
+								})
 							end
 						end
 						handle:close()
 					end
 
 					-- Add option to create new branch
-					table.insert(branches, 1, "Create New Branch")
+					table.insert(branches, 1, {
+						text = "Create New Branch",
+						value = "create_new",
+					})
 					return branches
 				end
 
-				vim.ui.select(get_branches(), {
+				local snacks = require("snacks")
+				local branches = get_branches()
+				local items = {}
+				for _, branch in ipairs(branches) do
+					table.insert(items, branch.text)
+				end
+
+				snacks.picker.select(items, {
 					prompt = "Create Worktree from Branch:",
 				}, function(choice)
 					if not choice then
@@ -96,9 +109,10 @@ return {
 							local branch = line:match("%[([^%]]+)%]")
 							if path and branch then
 								table.insert(worktrees, {
-									path = path,
+									text = branch .. " (" .. path .. ")",
+									value = path,
 									branch = branch,
-									display = branch .. " (" .. path .. ")",
+									path = path,
 								})
 							end
 						end
@@ -107,13 +121,14 @@ return {
 					return worktrees
 				end
 
+				local snacks = require("snacks")
 				local worktrees = get_worktrees()
-				local displays = {}
+				local items = {}
 				for _, wt in ipairs(worktrees) do
-					table.insert(displays, wt.display)
+					table.insert(items, wt.text)
 				end
 
-				vim.ui.select(displays, {
+				snacks.picker.select(items, {
 					prompt = "Switch Git Worktree:",
 				}, function(choice)
 					if not choice then
@@ -122,9 +137,9 @@ return {
 
 					-- Find the worktree that matches the display choice
 					for _, wt in ipairs(worktrees) do
-						if wt.display == choice then
+						if wt.text == choice then
 							local git_worktree = require("git-worktree")
-							git_worktree.switch_worktree(wt.path)
+							git_worktree.switch_worktree(wt.value)
 							break
 						end
 					end
@@ -144,9 +159,10 @@ return {
 							local branch = line:match("%[([^%]]+)%]")
 							if path and branch and branch ~= "main" and branch ~= "master" then
 								table.insert(worktrees, {
-									path = path,
+									text = branch .. " (" .. path .. ")",
+									value = path,
 									branch = branch,
-									display = branch .. " (" .. path .. ")",
+									path = path,
 								})
 							end
 						end
@@ -161,12 +177,13 @@ return {
 					return
 				end
 
-				local displays = {}
+				local snacks = require("snacks")
+				local items = {}
 				for _, wt in ipairs(worktrees) do
-					table.insert(displays, wt.display)
+					table.insert(items, wt.text)
 				end
 
-				vim.ui.select(displays, {
+				snacks.picker.select(items, {
 					prompt = "Delete Git Worktree:",
 				}, function(choice)
 					if not choice then
@@ -175,9 +192,9 @@ return {
 
 					-- Find the worktree that matches the display choice
 					for _, wt in ipairs(worktrees) do
-						if wt.display == choice then
+						if wt.text == choice then
 							local git_worktree = require("git-worktree")
-							git_worktree.delete_worktree(wt.path)
+							git_worktree.delete_worktree(wt.value)
 							break
 						end
 					end
