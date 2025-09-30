@@ -9,6 +9,7 @@ return {
 			json = { "biome" },
 			lua = { "stylua" },
 			markdown = { "prettier" },
+			python = { "isort", "black" },
 			javascript = { "biome" },
 			typescript = { "biome" },
 			typescriptreact = { "biome" },
