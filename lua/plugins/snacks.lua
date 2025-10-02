@@ -54,7 +54,7 @@ return {
 				},
 			},
 			lazygit = {
-				configure = true,
+				configure = false,
 			},
 			notifier = {
 				enabled = true,
@@ -116,7 +116,6 @@ return {
 
 				layouts = {
 					select = {
-						preview = false,
 						layout = {
 							backdrop = false,
 							width = 0.6,

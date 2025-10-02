@@ -166,12 +166,13 @@ local function get_formatter_status()
 end
 
 local function get_copilot_status()
-	local ok, c = require("sidekick.status").get()
-	if not ok then
+	local status = require("sidekick.status").get()
+
+	if not status or status.kind == "Inactive" then
 		return ""
 	end
-	ok = not c.is_disabled() and c.buf_is_attached(vim.api.nvim_get_current_buf())
-	if not ok then
+
+	if vim.g.sidekick_nes == false or vim.b.sidekick_nes == false then
 		return ""
 	end
 

@@ -20,13 +20,6 @@ return {
 				map_lsp_keybinds(buffer_number)
 			end
 
-			-- Define custom harper-ls config using vim.lsp.config
-			vim.lsp.config("harper-ls", {
-				cmd = { "harper-ls", "--stdio" },
-				filetypes = { "markdown", "text" },
-				root_markers = { ".git" },
-			})
-
 			local servers = {
 				-- LSP Servers
 				bashls = {},
@@ -42,7 +35,15 @@ return {
 					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
 					settings = { format = false },
 				},
-				["harper-ls"] = {},
+				["harper-ls"] = {
+					cmd = { "harper-ls", "--stdio" },
+					filetypes = { "markdown", "text" },
+					root_markers = { ".git" },
+				},
+				["copilot-language-server"] = {
+					cmd = { "copilot-language-server", "--stdio" },
+					root_markers = { ".git" },
+				},
 				html = {},
 				jsonls = {},
 				gopls = {
@@ -157,11 +158,6 @@ return {
 			mason_lspconfig.setup({})
 
 			vim.lsp.inline_completion.enable()
-
-			vim.lsp.config("copilot", {
-				cmd = { "copilot-language-server", "--stdio" },
-				root_markers = { ".git" },
-			})
 		end,
 	},
 	-- { --ohhh the pain

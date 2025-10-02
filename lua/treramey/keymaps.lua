@@ -188,13 +188,6 @@ vim.keymap.set("n", "gx", open_link, { silent = true, desc = "Open link under cu
 -- Run TypeScript compiler
 vim.keymap.set("n", "<leader>tc", ":TSC<cr>", { desc = "Run TypeScript compile" })
 
--- Accept inline completion (Copilot or LSP)
-vim.keymap.set("i", "<Tab>", function()
-	if not vim.lsp.inline_completion.get() then
-		return "<C-f>"
-	end
-end, { expr = true, desc = "Accept the current inline completion" })
-
 -- Harpoon keybinds (v2 API) --
 vim.keymap.set("n", "<leader>ho", function()
 	harpoon.ui:toggle_quick_menu(harpoon:list(), {
@@ -247,29 +240,29 @@ vim.keymap.set("n", "<leader>sb", function()
 end, { desc = "Search open buffers" })
 
 vim.keymap.set("n", "<leader>sf", function()
-	if vim.g.roslyn_nvim_selected_solution then
-		local ok, projects = pcall(require("roslyn.sln.api").projects, vim.g.roslyn_nvim_selected_solution)
-		if ok and projects and #projects > 0 then
-			local dirs = {}
-			local seen = {}
-
-			for _, project in ipairs(projects) do
-				local dir = vim.fs.dirname(project)
-				if dir and not seen[dir] and vim.fn.isdirectory(dir) == 1 then
-					dirs[#dirs + 1] = dir
-					seen[dir] = true
-				end
-			end
-
-			if #dirs > 0 then
-				snacks.picker.files({
-					dirs = dirs,
-					hidden = true,
-				})
-				return
-			end
-		end
-	end
+	-- if vim.g.roslyn_nvim_selected_solution then
+	-- 	local ok, projects = pcall(require("roslyn.sln.api").projects, vim.g.roslyn_nvim_selected_solution)
+	-- 	if ok and projects and #projects > 0 then
+	-- 		local dirs = {}
+	-- 		local seen = {}
+	--
+	-- 		for _, project in ipairs(projects) do
+	-- 			local dir = vim.fs.dirname(project)
+	-- 			if dir and not seen[dir] and vim.fn.isdirectory(dir) == 1 then
+	-- 				dirs[#dirs + 1] = dir
+	-- 				seen[dir] = true
+	-- 			end
+	-- 		end
+	--
+	-- 		if #dirs > 0 then
+	-- 			snacks.picker.files({
+	-- 				dirs = dirs,
+	-- 				hidden = true,
+	-- 			})
+	-- 			return
+	-- 		end
+	-- 	end
+	-- end
 
 	-- Fallback to regular file picker
 	snacks.picker.files({
