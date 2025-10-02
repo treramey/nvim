@@ -166,7 +166,7 @@ local function get_formatter_status()
 end
 
 local function get_copilot_status()
-	local ok, c = pcall(lazy_require, "copilot.client")
+	local ok, c = require("sidekick.status").get()
 	if not ok then
 		return ""
 	end
@@ -174,6 +174,7 @@ local function get_copilot_status()
 	if not ok then
 		return ""
 	end
+
 	return tools.hl_str("StatuslineCopilot", " " .. _spacer(1))
 end
 

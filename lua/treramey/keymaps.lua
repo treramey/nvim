@@ -188,6 +188,13 @@ vim.keymap.set("n", "gx", open_link, { silent = true, desc = "Open link under cu
 -- Run TypeScript compiler
 vim.keymap.set("n", "<leader>tc", ":TSC<cr>", { desc = "Run TypeScript compile" })
 
+-- Accept inline completion (Copilot or LSP)
+vim.keymap.set("i", "<Tab>", function()
+	if not vim.lsp.inline_completion.get() then
+		return "<C-f>"
+	end
+end, { expr = true, desc = "Accept the current inline completion" })
+
 -- Harpoon keybinds (v2 API) --
 vim.keymap.set("n", "<leader>ho", function()
 	harpoon.ui:toggle_quick_menu(harpoon:list(), {

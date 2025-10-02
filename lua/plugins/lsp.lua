@@ -8,7 +8,7 @@ return {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-			"hrsh7th/cmp-nvim-lsp",
+			"saghen/blink.cmp",
 		},
 		config = function()
 			local mason = require("mason")
@@ -120,7 +120,7 @@ return {
 			})
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+			capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
 
 			-- Setup each LSP server using vim.lsp.config and vim.lsp.enable
 			for name, config in pairs(servers) do
@@ -156,10 +156,12 @@ return {
 
 			mason_lspconfig.setup({})
 
-			-- Note: LspInfo UI borders are now configured via vim.lsp settings
-			-- or through the specific UI functions that support border configuration
+			vim.lsp.inline_completion.enable()
 
-			-- Note: borders are configured per-function in keymaps.lua
+			vim.lsp.config("copilot", {
+				cmd = { "copilot-language-server", "--stdio" },
+				root_markers = { ".git" },
+			})
 		end,
 	},
 	-- { --ohhh the pain
