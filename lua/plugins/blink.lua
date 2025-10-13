@@ -12,12 +12,11 @@ return {
 		"saghen/blink.cmp",
 		dependencies = {
 			"rafamadriz/friendly-snippets",
+			"alexandre-abrioux/blink-cmp-npm.nvim",
 			"rcarriga/cmp-dap",
 		},
-		version = "1.*",
-
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
+		event = "VeryLazy",
+		version = "*",
 		opts = {
 			keymap = {
 				preset = "none",
@@ -27,19 +26,29 @@ return {
 				["<Up>"] = { "select_prev", "fallback" },
 				["<Down>"] = { "select_next", "fallback" },
 				["<CR>"] = { "select_and_accept", "fallback" },
-				["<C-a>"] = {
-					function(cmp)
-						if vim.b[vim.api.nvim_get_current_buf()].nes_state then
-							cmp.hide()
-							return require("copilot-lsp.nes").apply_pending_nes()
-						end
-						if cmp.snippet_active() then
-							return cmp.accept()
-						else
-							return cmp.select_and_accept()
-						end
-					end,
+				-- ["<C-a>"] = {
+				-- 	function(cmp)
+				-- 		if vim.b[vim.api.nvim_get_current_buf()].nes_state then
+				-- 			cmp.hide()
+				-- 			return require("copilot-lsp.nes").apply_pending_nes()
+				-- 		end
+				-- 		if cmp.snippet_active() then
+				-- 			return cmp.accept()
+				-- 		else
+				-- 			return cmp.select_and_accept()
+				-- 		end
+				-- 	end,
+				-- 	"snippet_forward",
+				-- 	"fallback",
+				-- },
+				["<Tab>"] = {
 					"snippet_forward",
+					function()
+						return require("sidekick").nes_jump_or_apply()
+					end,
+					function()
+						return vim.lsp.inline_completion.get()
+					end,
 					"fallback",
 				},
 			},
@@ -89,11 +98,16 @@ return {
 			sources = {
 				default = function()
 					if is_dap_buffer() then
-						return { "lsp", "path", "snippets", "buffer", "easy-dotnet", "dadbod", "dap" }
+						return { "lazydev", "lsp", "npm", "easy-dotnet", "dadbod", "path", "snippets", "buffer", "dap" }
 					end
-					return { "lsp", "path", "snippets", "buffer", "easy-dotnet", "dadbod" }
+					return { "lazydev", "lsp", "npm", "easy-dotnet", "dadbod", "path", "snippets", "buffer" }
 				end,
 				providers = {
+					lazydev = {
+						name = "LazyDev",
+						module = "lazydev.integrations.blink",
+						score_offset = 100,
+					},
 					dadbod = { name = "Dadbod", module = "vim_dadbod_completion.blink" },
 					snippets = { min_keyword_length = 2 },
 					dap = { name = "dap", module = "blink.compat.source" },
@@ -103,6 +117,17 @@ return {
 						module = "easy-dotnet.completion.blink",
 						score_offset = 10000,
 						async = true,
+					},
+					npm = {
+						name = "npm",
+						module = "blink-cmp-npm",
+						async = true,
+						score_offset = 100,
+						opts = {
+							ignore = {},
+							only_semantic_versions = true,
+							only_latest_version = false,
+						},
 					},
 				},
 			},

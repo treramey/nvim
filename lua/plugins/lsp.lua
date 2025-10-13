@@ -1,7 +1,7 @@
 return {
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
+		lazy = false,
 		cmd = { "LspInfo", "LspInstall", "LspUninstall", "Mason" },
 		dependencies = {
 			-- LSP installer plugins
@@ -38,10 +38,6 @@ return {
 				["harper-ls"] = {
 					cmd = { "harper-ls", "--stdio" },
 					filetypes = { "markdown", "text" },
-					root_markers = { ".git" },
-				},
-				["copilot-language-server"] = {
-					cmd = { "copilot-language-server", "--stdio" },
 					root_markers = { ".git" },
 				},
 				html = {},
@@ -94,6 +90,8 @@ return {
 				stylua = {},
 				goimports = {},
 				csharpier = {},
+				black = {},
+				isort = {},
 			}
 
 			local other_tools = {
@@ -157,7 +155,12 @@ return {
 
 			mason_lspconfig.setup({})
 
-			vim.lsp.inline_completion.enable()
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					require("treramey.keymaps").map_lsp_keybinds(args.buf)
+				end,
+			})
+			-- vim.lsp.inline_completion.enable()
 		end,
 	},
 	-- { --ohhh the pain

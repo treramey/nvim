@@ -34,7 +34,7 @@ return {
 				"roslyn",
 				"--stdio",
 				"--logLevel=Information",
-				"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
+				"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.log.get_filename()),
 				"--razorSourceGenerator=" .. vim.fs.joinpath(rzls_path, "Microsoft.CodeAnalysis.Razor.Compiler.dll"),
 				"--razorDesignTimePath="
 					.. vim.fs.joinpath(rzls_path, "Targets", "Microsoft.NET.Sdk.Razor.DesignTime.targets"),
@@ -68,12 +68,6 @@ return {
 			})
 
 			vim.lsp.enable("roslyn")
-
-			vim.api.nvim_create_autocmd("LspAttach", {
-				callback = function(args)
-					require("treramey.keymaps").map_lsp_keybinds(args.buf)
-				end,
-			})
 		end,
 		init = function()
 			local restore_handles = {}
@@ -163,7 +157,12 @@ return {
 		config = function()
 			local dotnet = require("easy-dotnet")
 			dotnet.setup({
-
+				lsp = {
+					enabled = false, -- Enable builtin roslyn lsp
+					roslynator_enabled = true, -- Automatically enable roslynator analyzer
+					analyzer_assemblies = {}, -- Any additional roslyn analyzers you might use like SonarAnalyzer.CSharp
+					config = {},
+				},
 				picker = "snacks",
 				terminal = function(path, action, args)
 					local args_str = args or ""

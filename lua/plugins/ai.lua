@@ -1,14 +1,8 @@
 return {
 	{
 		"folke/sidekick.nvim",
-		event = "VeryLazy",
+		lazy = false,
 		opts = {
-			nes = {
-				debounce = 75,
-				trigger = {
-					events = { "InsertEnter", "TextChangedI", "TextChanged", "User SidekickNesDone", "InsertLeave" },
-				},
-			},
 			cli = {
 				mux = {
 					backend = "tmux",
@@ -18,35 +12,41 @@ return {
 		},
 		keys = {
 			{
-				"<Tab>",
+				"<tab>",
 				function()
 					if require("sidekick").nes_jump_or_apply() then
-						return -- jumped or applied
+						return
 					end
-
 					if vim.lsp.inline_completion.get() then
 						return
 					end
-
-					return "<Tab>"
+					return "<tab>"
 				end,
-				mode = { "i", "n" },
 				expr = true,
 				desc = "Goto/Apply Next Edit Suggestion",
 			},
 			{
-				"<leader>ac",
+				"<leader>aa",
 				function()
-					require("sidekick.cli").toggle({ name = "claude", focus = true })
+					require("sidekick.cli").toggle({ focus = true })
 				end,
-				desc = "Sidekick Claude Toggle",
+				desc = "Sidekick Toggle CLI",
+				mode = { "n", "v" },
+			},
+			{
+				"<leader>ao",
+				function()
+					require("sidekick.cli").toggle({ name = "opencode", focus = true })
+				end,
+				desc = "toggle opencode",
+				mode = { "n", "v" },
 			},
 			{
 				"<leader>ap",
 				function()
 					require("sidekick.cli").prompt()
 				end,
-				desc = "Sidekick Ask Prompt",
+				desc = "ask prompt",
 				mode = { "n", "v" },
 			},
 		},
