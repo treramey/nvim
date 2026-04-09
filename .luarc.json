@@ -1,0 +1,11 @@
+{
+    "diagnostics.globals": [
+        "Util",
+        "on_success",
+        "Snacks"
+    ],
+    "diagnostics.disable": [
+        "missing-fields",
+        "empty-block"
+    ]
+}

@@ -1,0 +1,42 @@
+{
+  "Property": {
+    "prefix": "prop",
+    "body": [
+      "public ${1:int} ${2:PropertyName} { get; set; }"
+    ],
+    "description": "Basic C# property"
+  },
+  "Private Property": {
+    "prefix": "proppriv",
+    "body": [
+      "private ${1:int} ${2:PropertyName} { get; set; }"
+    ],
+    "description": "Private C# property"
+  },
+  "Protected Property": {
+    "prefix": "propprot",
+    "body": [
+      "protected ${1:int} ${2:PropertyName} { get; set; }"
+    ],
+    "description": "Protected C# property"
+  },
+  "Read-only Property": {
+    "prefix": "propro",
+    "body": [
+      "public ${1:int} ${2:PropertyName} { get; }"
+    ],
+    "description": "Read-only C# property"
+  },
+  "Property with backing field": {
+    "prefix": "propfull",
+    "body": [
+      "private ${1:int} _${2/(.*)/${1:/downcase}/};",
+      "public ${1:int} ${2:PropertyName}",
+      "{",
+      "    get { return _${2/(.*)/${1:/downcase}/}; }",
+      "    set { _${2/(.*)/${1:/downcase}/} = value; }",
+      "}"
+    ],
+    "description": "C# property with backing field"
+  }
+}
