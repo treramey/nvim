@@ -18,7 +18,7 @@ vim.keymap.set("n", "<leader>q", function()
   if vim.wo.diff then
     require("treramey.merge_diff").close()
   else
-    vim.cmd("q")
+    vim.cmd("confirm q")
   end
 end, { silent = false, desc = "Quit current buffer (close merge diff in diff mode)" })
 

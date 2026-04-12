@@ -51,8 +51,11 @@ return {
             end
 
             -- Fall back to ts_context_commentstring or default commentstring
-            local cs = require("ts_context_commentstring").calculate_commentstring()
-            return cs or vim.bo.commentstring or "<!-- %s -->"
+            local ok, cs = pcall(require("ts_context_commentstring").calculate_commentstring)
+            if ok and cs then
+              return cs
+            end
+            return vim.bo.commentstring or "<!-- %s -->"
           end,
           pad_comment_parts = true,
         },

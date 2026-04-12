@@ -60,6 +60,7 @@ return {
         "sql",
         "toml",
         "razor",
+        "bicep",
       }
 
       vim.api.nvim_create_autocmd("FileType", {

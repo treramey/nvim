@@ -28,6 +28,7 @@ return {
       svelte = { "oxfmt", "prettierd", stop_after_first = true },
       xml = { "xmlformatter" },
       sql = { "sleek" },
+      cs = { "csharpier" },
     },
     formatters = {
       xmlformatter = {
@@ -72,6 +73,10 @@ return {
       sleek = {
         command = "sleek",
         args = "--indent-spaces=2 --lines-between-queries=3",
+      },
+      csharpier = {
+        command = "csharpier",
+        args = { "format", "--write-stdout", "--stdin-path", "$FILENAME" },
       },
     },
   },
