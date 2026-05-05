@@ -106,8 +106,8 @@ function M.apply()
 
 		-- EasyDotnet
 		EasyDotnetDebuggerFloatVariable = { fg = p.text, bg = p.overlay },
-		EasyDotnetDebuggerVirtualException = { fg = p.love, italic = true },
-		EasyDotnetDebuggerVirtualVariable = { fg = p.iris, italic = true },
+		EasyDotnetDebuggerVirtualException = { fg = p.love, bg = p.surface, italic = true },
+		EasyDotnetDebuggerVirtualVariable = { fg = p.iris, bg = p.surface, italic = true },
 		EasyDotnetTestRunnerProject = { fg = p.rose },
 		EasyDotnetTestRunnerSolution = { fg = p.pine },
 		EasyDotnetTestRunnerTest = { fg = p.iris },

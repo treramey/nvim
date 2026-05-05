@@ -13,22 +13,15 @@ return {
       silent = true,
     },
     init = function()
-      -- Roslyn LSP + mise workaround
+      -- Roslyn LSP + mise setup
       --
-      -- Problem: mise installs each .NET SDK in isolation (~/.local/share/mise/installs/dotnet/<ver>/).
-      -- The Roslyn LS binary (Mason) is compiled for net10.0, so it needs the .NET 10 runtime.
-      -- But projects targeting net9.0 need net9.0 targeting packs (Microsoft.NETCore.App.Ref,
-      -- Microsoft.AspNetCore.App.Ref) which only exist in the .NET 9 SDK install.
+      -- Mise (isolated=false) keeps all .NET SDKs under a single DOTNET_ROOT at
+      -- ~/.local/share/mise/dotnet-root/, so net8/9/10 targeting packs live there.
       --
-      -- Additionally, .NET 10 has a muxer bug (dotnet/sdk#51693) where subprocesses resolve
-      -- their SDK root relative to their binary path, ignoring DOTNET_ROOT. Setting
-      -- DOTNET_ROOT_X64 works around this.
-      --
-      -- Fix (3 parts):
-      --   1. DOTNET_ROOT + DOTNET_ROOT_X64 → dotnet/10 so Roslyn can start
-      --   2. Set rollForward: "latestMajor" in project global.json so 10.x SDK resolves 9.x projects
-      --
-      -- See: dotnet/sdk#51693, NixOS/nixpkgs#464575, roslyn.nvim#293
+      -- DOTNET_ROOT is set in cmd_env so Roslyn still resolves the SDK when nvim
+      -- is launched outside a mise-activated shell. DOTNET_ROOT_X64 works around
+      -- the .NET 10 muxer bug (dotnet/sdk#51693) where subprocesses resolve the
+      -- SDK root relative to their binary path and ignore DOTNET_ROOT.
       local mise_dotnet_root = vim.fn.expand("~/.local/share/mise/dotnet-root")
       vim.lsp.config("roslyn", {
         cmd_env = {
@@ -127,18 +120,6 @@ return {
     config = function()
       local dotnet = require("easy-dotnet")
 
-      local bin_path = vim.fn.stdpath("data") .. "/lazy/netcoredbg-macOS-arm64.nvim/netcoredbg/netcoredbg"
-
-      if vim.fn.has("win32") == 1 then
-        bin_path = vim.fn.stdpath("data") .. "/mason/packages/netcoredbg/netcoredbg.exe"
-      elseif not (vim.fn.has("macunix") == 1 and vim.fn.has("arm64") == 1) then
-        bin_path = vim.fn.stdpath("data") .. "/mason/packages/netcoredbg/netcoredbg"
-      end
-
-      if vim.fn.executable(bin_path) ~= 1 then
-        vim.notify("[easy-dotnet] Debugger binary not found: " .. bin_path, vim.log.levels.WARN)
-      end
-
       local parsers = require("easy-dotnet.parsers")
 
       local function find_project_path()
@@ -148,10 +129,12 @@ return {
       dotnet.setup({
         picker = "snacks",
         debugger = {
-          bin_path = bin_path,
-          mappings = { open_variable_viewer = { lhs = "T", desc = "open variable viewer" } },
           apply_value_converters = true,
+          mappings = {
+            open_variable_viewer = { lhs = "T", desc = "Open variable viewer" },
+          },
         },
+        server = { log_level = "Verbose" },
         lsp = {
           enabled = false,
           roslynator_enabled = false,
