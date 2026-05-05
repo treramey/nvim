@@ -7,7 +7,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   "stevearc/oil.nvim",
-  dependencies = { "echasnovski/mini.icons" },
+  dependencies = { "nvim-mini/mini.nvim" },
   opts = function()
     -- helper function to parse output
     local function parse_output(proc)
@@ -16,8 +16,8 @@ return {
       if result.code == 0 then
         for line in vim.gsplit(result.stdout, "\n", { plain = true, trimempty = true }) do
           -- Remove trailing slash
-          line = line:gsub("/$", "")
-          ret[line] = true
+          local normalized = line:gsub("/$", "")
+          ret[normalized] = true
         end
       end
       return ret

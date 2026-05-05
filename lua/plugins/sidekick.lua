@@ -20,7 +20,7 @@ return {
     {
       "<c-.>",
       function()
-        require("sidekick.cli").toggle()
+        require("sidekick.cli").toggle({ name = "claude" })
       end,
       desc = "Sidekick Toggle",
       mode = { "n", "t", "i", "x" },
@@ -28,7 +28,7 @@ return {
     {
       "<leader>aa",
       function()
-        require("sidekick.cli").toggle()
+        require("sidekick.cli").toggle({ name = "claude" })
       end,
       desc = "Sidekick Toggle CLI",
     },
@@ -42,14 +42,14 @@ return {
     {
       "<leader>ad",
       function()
-        require("sidekick.cli").close()
+        require("sidekick.cli").close({ name = "claude" })
       end,
       desc = "Detach a CLI Session",
     },
     {
       "<leader>at",
       function()
-        require("sidekick.cli").send({ msg = "{this}" })
+        require("sidekick.cli").send({ name = "claude", msg = "{this}" })
       end,
       mode = { "x", "n" },
       desc = "Send This",
@@ -57,14 +57,14 @@ return {
     {
       "<leader>af",
       function()
-        require("sidekick.cli").send({ msg = "{file}" })
+        require("sidekick.cli").send({ name = "claude", msg = "{file}" })
       end,
       desc = "Send File",
     },
     {
       "<leader>av",
       function()
-        require("sidekick.cli").send({ msg = "{selection}" })
+        require("sidekick.cli").send({ name = "claude", msg = "{selection}" })
       end,
       mode = { "x" },
       desc = "Send Visual Selection",
@@ -72,7 +72,7 @@ return {
     {
       "<leader>ap",
       function()
-        require("sidekick.cli").prompt()
+        require("sidekick.cli").prompt({ name = "claude" })
       end,
       mode = { "n", "x" },
       desc = "Sidekick Select Prompt",

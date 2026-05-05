@@ -20,3 +20,11 @@ end, {})
 vim.api.nvim_create_user_command("CFP", function()
 	vim.cmd(":CopyFilePathToClipboard")
 end, {})
+
+vim.api.nvim_create_user_command("CopyFullFilePathToClipboard", function()
+	vim.fn.setreg("+", vim.fn.expand("%:p"))
+end, {})
+
+vim.api.nvim_create_user_command("FP", function()
+	vim.cmd(":CopyFullFilePathToClipboard")
+end, {})

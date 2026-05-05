@@ -214,10 +214,6 @@ vim.keymap.set("n", "<leader>5", function()
 end, { desc = "Navigate to Harpoon file 5" })
 
 -- Snacks picker keybinds --
-vim.keymap.set("n", "<leader>?", function()
-  require("snacks").picker.recent()
-end, { desc = "Find recently opened files" })
-
 vim.keymap.set("n", "<leader>sb", function()
   require("snacks").picker.buffers()
 end, { desc = "Search open buffers" })
@@ -227,10 +223,6 @@ vim.keymap.set("n", "<leader>sf", function()
     hidden = true,
   })
 end, { desc = "Find files" })
-
-vim.keymap.set("n", "<leader>sh", function()
-  require("snacks").picker.help()
-end, { desc = "Search help tags" })
 
 vim.keymap.set("n", "<leader>sg", function()
   require("snacks").picker.grep()
@@ -243,14 +235,6 @@ end, { desc = "Grep selection" })
 vim.keymap.set("n", "<leader>sw", function()
   require("snacks").picker.grep_word()
 end, { desc = "Search current word" })
-
-vim.keymap.set("n", "<leader>sc", function()
-  require("snacks").picker.git_log_file()
-end, { desc = "[S]earch buffer [C]ommits" })
-
-vim.keymap.set("n", "<leader>/", function()
-  require("snacks").picker.grep_buffers()
-end, { desc = "Fuzzily search in current buffer" })
 
 -- LSP Symbol search
 vim.keymap.set("n", "<leader>ss", function()
@@ -337,5 +321,39 @@ vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]])
 
 -- Reenable default <space> functionality to prevent input delay
 vim.keymap.set("t", "<space>", "<space>")
+
+-- Toggles --
+vim.keymap.set("n", "<leader>cl", function()
+  vim.wo.cursorline = not vim.wo.cursorline
+end, { desc = "Toggle [C]ursor [L]ine" })
+
+vim.keymap.set("n", "<leader>td", function()
+  vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, { desc = "[T]oggle [D]iagnostics" })
+
+vim.keymap.set("n", "<leader>ln", function()
+  vim.wo.relativenumber = not vim.wo.relativenumber
+end, { desc = "Toggle Relative [L]ine [N]umbers" })
+
+vim.keymap.set("n", "<leader>tw", function()
+  vim.wo.wrap = not vim.wo.wrap
+end, { desc = "[T]oggle line [W]rap" })
+
+vim.keymap.set("n", "<leader>Tt", function()
+  require("treesitter-context").toggle()
+end, { desc = "[T]oggle [T]reesitter Context" })
+
+vim.keymap.set("n", "<leader>hl", function()
+  local hc = require("nvim-highlight-colors")
+  if hc.is_active() then
+    hc.turnOff()
+  else
+    hc.turnOn()
+  end
+end, { desc = "Toggle [H]igh[L]ight Colors" })
+
+vim.keymap.set("n", "<leader>ih", function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = "Toggle [I]nlay [H]ints" })
 
 return M

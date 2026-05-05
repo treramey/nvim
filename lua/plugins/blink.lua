@@ -9,7 +9,7 @@ return {
       "L3MON4D3/LuaSnip",
       "rcarriga/cmp-dap",
       "xzbdmw/colorful-menu.nvim",
-      "echasnovski/mini.icons",
+      "nvim-mini/mini.nvim",
       { "saghen/blink.compat", version = "*", opts = { impersonate_nvim_cmp = true } },
     },
     version = "v1.*",
@@ -179,6 +179,14 @@ return {
         },
       },
       fuzzy = { implementation = "prefer_rust" },
+      cmdline = {
+        completion = {
+          menu = { auto_show = true },
+          list = { selection = { preselect = false, auto_insert = true } },
+          ghost_text = { enabled = true },
+        },
+        keymap = { preset = "cmdline" },
+      },
       snippets = {
         preset = "luasnip",
       },
