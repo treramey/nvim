@@ -14,6 +14,25 @@ return {
 
     local Hooks = require("git-worktree.hooks")
     Hooks.register(Hooks.type.SWITCH, Hooks.builtins.update_current_buffer_on_switch)
+
+    local function write_cd_on_exit(path)
+      local target = vim.env.NVIM_CD_ON_EXIT
+      if not target or target == "" or not path or path == "" then
+        return
+      end
+      local fd = io.open(target, "w")
+      if fd then
+        fd:write(path)
+        fd:close()
+      end
+    end
+
+    Hooks.register(Hooks.type.SWITCH, function(path)
+      write_cd_on_exit(path)
+    end)
+    Hooks.register(Hooks.type.CREATE, function(path)
+      write_cd_on_exit(path)
+    end)
   end,
   keys = {
     {
