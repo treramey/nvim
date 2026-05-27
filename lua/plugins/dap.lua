@@ -16,8 +16,8 @@ return {
             size = 0.35,
             position = "below",
             terminal = {
-              size = 0.3,
-              position = "below",
+              size = 0.5,
+              position = "right",
               hide = {},
             },
           },
@@ -67,10 +67,18 @@ return {
         end)
       end
 
-      local function style_hover()
+      local function style_hover(attempt)
+        attempt = attempt or 1
+
         vim.schedule(function()
           local ok, state = pcall(require, "dap-view.state")
           if not ok or not state.hover_winnr or not vim.api.nvim_win_is_valid(state.hover_winnr) then
+            if attempt < 40 then
+              vim.defer_fn(function()
+                style_hover(attempt + 1)
+              end, 25)
+            end
+
             return
           end
 
@@ -102,59 +110,6 @@ return {
         style_hover()
       end
 
-      local function style_variable_float(float)
-        if not float or not float.win or not vim.api.nvim_win_is_valid(float.win) then
-          return
-        end
-
-        local width = math.min(math.floor(vim.o.columns * 0.68), 118)
-        local height = math.min(math.floor(vim.o.lines * 0.58), 28)
-        pcall(vim.api.nvim_win_set_config, float.win, {
-          relative = "editor",
-          row = math.floor((vim.o.lines - height) / 2),
-          col = math.floor((vim.o.columns - width) / 2),
-          width = width,
-          height = height,
-          style = "minimal",
-          border = "rounded",
-          title = " Variable viewer ",
-          title_pos = "left",
-          zindex = 60,
-        })
-
-        vim.wo[float.win].cursorline = true
-        vim.wo[float.win].number = false
-        vim.wo[float.win].relativenumber = false
-        vim.wo[float.win].wrap = false
-        vim.wo[float.win].winblend = 0
-        vim.wo[float.win].winhighlight = table.concat({
-          "Normal:DapVariableNormal",
-          "NormalFloat:DapVariableNormal",
-          "FloatBorder:DapVariableBorder",
-          "FloatTitle:DapVariableTitle",
-          "CursorLine:Visual",
-        }, ",")
-
-        if float.buf and vim.api.nvim_buf_is_valid(float.buf) then
-          vim.bo[float.buf].filetype = "dap-variable-viewer"
-        end
-      end
-
-      local function setup_easy_dotnet_variable_float()
-        local ok, variable_float = pcall(require, "easy-dotnet.netcoredbg.debugger-float")
-        if not ok or variable_float._treramey_styled then
-          return
-        end
-
-        local original_show = variable_float.show
-        variable_float.show = function(...)
-          local float = original_show(...)
-          style_variable_float(float)
-          return float
-        end
-        variable_float._treramey_styled = true
-      end
-
       -- Keymaps for controlling the debugger
       local function terminate_session()
         pcall(dap.terminate)
@@ -166,7 +121,9 @@ return {
       dap.listeners.after.event_initialized["q-terminate"] = function()
         vim.keymap.set("n", "q", terminate_session, { desc = "Terminate debug session" })
       end
-      local function unbind_q() pcall(vim.keymap.del, "n", "q") end
+      local function unbind_q()
+        pcall(vim.keymap.del, "n", "q")
+      end
       dap.listeners.before.event_terminated["q-terminate"] = unbind_q
       dap.listeners.before.event_exited["q-terminate"] = unbind_q
       dap.listeners.after.disconnect["q-terminate"] = unbind_q
@@ -188,7 +145,6 @@ return {
       vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Step over" })
       vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Step into" })
       vim.keymap.set("n", "<leader>du", dap.step_out, { desc = "Step out" })
-      -- vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle breakpoint" })
       vim.keymap.set("n", "<leader>db", function() require("persistent-breakpoints.api").toggle_breakpoint() end, { desc = "Toggle Breakpoint" })
       vim.keymap.set("n", "<leader>dB", function() require("persistent-breakpoints.api").set_conditional_breakpoint(vim.fn.input("Condition: ")) end, { desc = "Conditional Breakpoint" })
       vim.keymap.set("n", "<leader>dx", function() require("persistent-breakpoints.api").clear_all_breakpoints() end, { desc = "Clear all breakpoints" })
@@ -206,8 +162,7 @@ return {
         return vim.json.decode(json.json_strip_comments(str))
       end
 
-      require("easy-dotnet.netcoredbg").register_dap_variables_viewer()
-      setup_easy_dotnet_variable_float()
+      require("treramey.dotnet").setup_dap_integration()
 
       -- Fix winfixbuf conflict between nvim-dap-view and easy-dotnet
       -- Proactively ensure we're in a suitable window for source display

@@ -1,4 +1,5 @@
 return {
+  --[[
   {
     "seblyng/roslyn.nvim",
     dependencies = {
@@ -11,6 +12,9 @@ return {
     opts = {
       broad_search = true,
       silent = true,
+      extensions = {
+        razor = { enabled = false },
+      },
     },
     init = function()
       -- Roslyn LSP + mise setup
@@ -109,6 +113,7 @@ return {
     end,
     lazy = false,
   },
+  --]]
   {
     "GustavEikaas/easy-dotnet.nvim",
     enabled = function()
@@ -118,79 +123,7 @@ return {
     cmd = "Dotnet",
     event = "VeryLazy",
     config = function()
-      local dotnet = require("easy-dotnet")
-
-      local parsers = require("easy-dotnet.parsers")
-
-      local function find_project_path()
-        return parsers.sln_parser.find_solution_file() or parsers.csproj_parser.find_project_file()
-      end
-
-      dotnet.setup({
-        picker = "snacks",
-        debugger = {
-          apply_value_converters = true,
-          mappings = {
-            open_variable_viewer = { lhs = "T", desc = "Open variable viewer" },
-          },
-        },
-        server = { log_level = "Verbose" },
-        lsp = {
-          enabled = false,
-          roslynator_enabled = false,
-        },
-        notifications = {
-          handler = function(start_event)
-            local handle = require("fidget.progress").handle.create({
-              title = start_event.job.name,
-              message = "Running...",
-              lsp_client = { name = "easy-dotnet" },
-            })
-            return function(finished_event)
-              if handle then
-                handle.message = finished_event.result.msg
-                handle:finish()
-              end
-            end
-          end,
-        },
-        terminal = function(path, action, args)
-          args = args or ""
-          -- stylua: ignore
-          local commands = {
-            run = function() return string.format("dotnet run --project %s %s", path, args) end,
-            test = function() return string.format("dotnet test %s %s", path, args) end,
-            restore = function() return string.format("dotnet restore %s %s", path, args) end,
-            build = function() return string.format("dotnet build %s %s", path, args) end,
-            watch = function() return string.format("dotnet watch --project %s %s", path, args) end,
-          }
-          Snacks.terminal.toggle(commands[action](), { win = { position = "bottom", height = 0.35 } })
-        end,
-        auto_bootstrap_namespace = { type = "file_scoped", enabled = true },
-        test_runner = { viewmode = "vsplit", vsplit_width = 70, icons = { project = "󰗀" } },
-      })
-
-      vim.api.nvim_create_user_command("DotnetListPackages", function()
-        local path = find_project_path() or "."
-        Snacks.terminal.toggle("dotnet list " .. path .. " package --include-transitive; read", {
-          win = { style = "float", width = 0.8, height = 0.8, border = "rounded" },
-        })
-      end, { desc = "List packages with transitive deps" })
-
-      vim.api.nvim_create_user_command("DotnetLaunchSettings", function()
-        local files = vim.fs.find("launchSettings.json", { type = "file", limit = math.huge })
-        if #files == 0 then
-          vim.notify("[easy-dotnet] No launchSettings.json found", vim.log.levels.WARN)
-        elseif #files == 1 then
-          vim.cmd("edit " .. vim.fn.fnameescape(files[1]))
-        else
-          vim.ui.select(files, { prompt = "Select launchSettings.json" }, function(choice)
-            if choice then
-              vim.cmd("edit " .. vim.fn.fnameescape(choice))
-            end
-          end)
-        end
-      end, { desc = "Open launchSettings.json" })
+      require("treramey.dotnet").setup_easy_dotnet()
     end,
     keys = {
       -- stylua: ignore start

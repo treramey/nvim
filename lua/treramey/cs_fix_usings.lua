@@ -1,9 +1,9 @@
 vim.api.nvim_create_user_command("CSFixUsings", function()
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local clients = vim.lsp.get_clients({ name = "roslyn" })
+	local clients = vim.lsp.get_clients({ name = "easy_dotnet" })
 	if not clients or vim.tbl_isempty(clients) then
-		vim.notify("Couldn't find client", vim.log.levels.ERROR, { title = "Roslyn" })
+		vim.notify("Couldn't find client", vim.log.levels.ERROR, { title = "easy-dotnet" })
 		return
 	end
 
@@ -24,7 +24,7 @@ vim.api.nvim_create_user_command("CSFixUsings", function()
 
 	client:request("codeAction/resolve", action, function(err, resolved_action)
 		if err then
-			vim.notify("Fix using directives failed", vim.log.levels.ERROR, { title = "Roslyn" })
+			vim.notify("Fix using directives failed", vim.log.levels.ERROR, { title = "easy-dotnet" })
 			return
 		end
 		vim.lsp.util.apply_workspace_edit(resolved_action.edit, client.offset_encoding)

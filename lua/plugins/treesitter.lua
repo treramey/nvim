@@ -27,6 +27,8 @@ return {
       vim.filetype.add({
         extension = {
           jsonc = "json",
+          bicep = "bicep",
+          bicepparam = "bicep-params",
         },
       })
 

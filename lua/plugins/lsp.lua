@@ -19,6 +19,9 @@ return {
       local servers = {
         -- LSP Servers
         bashls = {},
+        bicep = {
+          cmd = { "bicep-lsp" },
+        },
         biome = {},
         cssls = {},
         eslint = {
@@ -92,7 +95,7 @@ return {
       local other_tools = {
         netcoredbg = {},
         rustywind = {},
-        roslyn = {},
+        -- roslyn = {},
       }
 
       local manually_installed_servers = {}
