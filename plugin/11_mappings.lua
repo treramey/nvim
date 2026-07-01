@@ -225,6 +225,22 @@ local jump_todo = function(backward)
   end
 end
 
+local lsp_goto_or_pick = function(scope)
+  return function()
+    vim.lsp.buf[scope] {
+      on_list = function(data)
+        if #data.items > 1 then
+          return require("mini.extra").pickers.lsp { scope = scope }
+        end
+        local item = data.items[1]
+        item.path = item.filename
+        require("mini.pick").default_choose(item)
+        vim.cmd "normal! zz"
+      end,
+    }
+  end
+end
+
 -- =============================================================================
 -- mini.clue leader group labels
 -- =============================================================================
@@ -303,7 +319,7 @@ nmap_leader("lD", copy_line_diagnostics_to_clipboard, "copy line diagnostics")
 nmap_leader("lf", function()
   Config.format()
 end, "format")
-nmap_leader("li", '<Cmd>Pick lsp scope="implementation"<CR>', "implementation")
+nmap_leader("li", lsp_goto_or_pick "implementation", "implementation")
 nmap_leader("lh", function()
   return vim.lsp.buf.hover { border = "rounded" }
 end, "hover")
@@ -327,7 +343,7 @@ nmap("gd", function()
   end)
 end, "LSP: Go to definition")
 nmap("gr", '<Cmd>Pick lsp scope="references"<CR>', "LSP: Go to references")
-nmap("gi", '<Cmd>Pick lsp scope="implementation"<CR>', "LSP: Go to implementations")
+nmap("gi", lsp_goto_or_pick "implementation", "LSP: Go to implementations")
 nmap("K", function()
   return vim.lsp.buf.hover { border = "rounded" }
 end, "LSP: Hover documentation")
