@@ -2,10 +2,25 @@ local M = {}
 
 local gh = Config.gh
 
-M.default_slug = "rose-pine"
+M.default_slug = "rose-pine-main"
 M.state_file = vim.fn.stdpath "state" .. "/theme-switcher/theme"
 M.trigger_file = vim.fn.expand "~/.cache/nvim-theme-trigger"
 M.omarchy_theme_file = vim.fn.expand "~/.config/omarchy/current/theme.name"
+
+-- The catalog below is keyed by nvim-native slugs. Omarchy theme names (and
+-- legacy state-file slugs) are translated here as they enter — Omarchy's
+-- "rose-pine" is the light Dawn variant.
+M.omarchy_aliases = {
+  ["rose-pine"] = "rose-pine-dawn",
+  ["rose-pine-dark"] = "rose-pine-main",
+}
+
+local function normalize(slug)
+  if slug == nil then
+    return nil
+  end
+  return M.omarchy_aliases[slug] or slug
+end
 
 M.themes = {
   ["catppuccin-latte"] = {
@@ -118,7 +133,7 @@ M.themes = {
     colorscheme = "tokyonight-night",
     background = "dark",
   },
-  ["rose-pine-dark"] = {
+  ["rose-pine-main"] = {
     src = gh "rose-pine/neovim",
     name = "rose-pine",
     colorscheme = "rose-pine",
@@ -277,7 +292,7 @@ M.themes = {
       }
     end,
   },
-  ["rose-pine"] = {
+  ["rose-pine-dawn"] = {
     src = gh "rose-pine/neovim",
     name = "rose-pine",
     colorscheme = "rose-pine-dawn",
@@ -439,7 +454,7 @@ function M.pack_specs()
 end
 
 function M.current_slug()
-  local slug = read_first_line(M.trigger_file) or read_first_line(M.state_file) or M.default_slug
+  local slug = normalize(read_first_line(M.trigger_file) or read_first_line(M.state_file)) or M.default_slug
   if M.resolve_theme(slug) then
     return slug
   end
@@ -448,6 +463,7 @@ end
 
 function M.apply_slug(slug, opts)
   opts = opts or {}
+  slug = normalize(slug)
   local theme = M.resolve_theme(slug)
   if not theme then
     local msg = "Unknown Neovim theme: " .. tostring(slug)
@@ -504,7 +520,7 @@ function M.watch_file(path)
       timer:stop()
       timer:start(75, 0, function()
         vim.schedule(function()
-          local slug = read_first_line(path)
+          local slug = normalize(read_first_line(path))
           if slug and slug ~= vim.g.colors_name_slug then
             M.apply_slug(slug, { persist = true, notify = false })
           end
