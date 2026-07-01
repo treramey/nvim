@@ -62,7 +62,7 @@ function M.open_terminal(command, opts)
     vim.api.nvim_win_set_height(0, math.max(8, math.floor(vim.o.lines * (opts.height or 0.35))))
   end
 
-  vim.fn.termopen { "bash", "-lc", command }
+  vim.fn.jobstart({ "bash", "-lc", command }, { term = true })
   vim.cmd "startinsert"
 end
 

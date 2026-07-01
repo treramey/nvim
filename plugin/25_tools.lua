@@ -23,10 +23,13 @@ local open_tool_update = function()
 
   -- Keep external LSPs, formatters, and CLIs managed by mise while Neovim uses
   -- native vim.lsp/vim.pack for runtime configuration and plugin management.
-  vim.fn.termopen { "bash", "-lc", update_script .. [[
+  vim.fn.jobstart(
+    { "bash", "-lc", update_script .. [[
 printf '\nPress enter to close... '
 read -r _
-]] }
+]] },
+    { term = true }
+  )
 
   vim.cmd "startinsert"
 end

@@ -57,7 +57,7 @@ local function setup_mini_files_integration()
             MiniFiles.synchronize()
           end)
         end)
-      end, { buffer = args.data.buf_id, desc = "Create file from dotnet template" })
+      end, { buf = args.data.buf_id, desc = "Create file from dotnet template" })
     end,
   })
 end
