@@ -1,17 +1,22 @@
 local M = {}
+local notify = require "treramey.notify"
 
 function M.setup_env()
   -- Mise (isolated=false) keeps all .NET SDKs under a single DOTNET_ROOT.
-  local mise_dotnet_root = vim.fn.expand("~/.local/share/mise/dotnet-root")
+  local mise_dotnet_root = vim.fn.expand "~/.local/share/mise/dotnet-root"
+  local dotnet_tools = vim.fn.expand "~/.dotnet/tools"
   vim.env.DOTNET_ROOT = mise_dotnet_root
   vim.env.DOTNET_ROOT_X64 = mise_dotnet_root
   vim.env.PATH = mise_dotnet_root .. ":" .. vim.env.PATH
+  if vim.fn.isdirectory(dotnet_tools) == 1 then
+    vim.env.PATH = dotnet_tools .. ":" .. vim.env.PATH
+  end
   vim.env.TMPDIR = vim.env.TMPDIR and vim.fn.resolve(vim.env.TMPDIR) or nil
 end
 
 function M.find_project_path()
   local matches = vim.fs.find(function(name)
-    return name:match("%.slnx?$") or name:match("%.[cf]sproj$")
+    return name:match "%.slnx?$" or name:match "%.[cf]sproj$"
   end, { path = vim.fn.getcwd(), upward = true, limit = 1 })
 
   return matches[1]
@@ -32,68 +37,77 @@ function M.command_for(path, action, args)
   return commands[action] and commands[action]()
 end
 
-local function notify_with_fidget(start_event)
-  local handle = require("fidget.progress").handle.create({
-    title = start_event.job.name,
-    message = "Running...",
-    lsp_client = { name = "easy-dotnet" },
-  })
+function M.open_terminal(command, opts)
+  opts = opts or {}
 
-  return function(finished_event)
-    if handle then
-      handle.message = finished_event.result.msg
-      handle:finish()
-    end
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].bufhidden = "wipe"
+  vim.bo[buf].filetype = "terminal"
+
+  if opts.float then
+    local width = math.floor(vim.o.columns * (opts.width or 0.8))
+    local height = math.floor(vim.o.lines * (opts.height or 0.8))
+    vim.api.nvim_open_win(buf, true, {
+      relative = "editor",
+      row = math.floor((vim.o.lines - height) / 2),
+      col = math.floor((vim.o.columns - width) / 2),
+      width = width,
+      height = height,
+      style = "minimal",
+      border = opts.border or "rounded",
+    })
+  else
+    vim.cmd "botright split"
+    vim.api.nvim_win_set_buf(0, buf)
+    vim.api.nvim_win_set_height(0, math.max(8, math.floor(vim.o.lines * (opts.height or 0.35))))
   end
+
+  vim.fn.termopen { "bash", "-lc", command }
+  vim.cmd "startinsert"
 end
 
 function M.easy_dotnet_options()
   return {
-    picker = "snacks",
+    picker = "basic",
+    managed_terminal = {
+      auto_hide = true,
+      auto_hide_delay = 1000,
+      mappings = {
+        next_tab = { lhs = "<Tab>", desc = "Next terminal tab" },
+        prev_tab = { lhs = "<S-Tab>", desc = "Previous terminal tab" },
+        new_terminal = { lhs = "+", desc = "New user terminal" },
+        close_terminal = { lhs = "X", desc = "Close current terminal tab" },
+        hide_panel = { lhs = "q", desc = "Hide terminal panel" },
+      },
+    },
     debugger = {
       apply_value_converters = true,
+      console = "integratedTerminal",
+      engine = "netcoredbg",
+      auto_register_dap = true,
       mappings = {
         open_variable_viewer = { lhs = "T", desc = "Open variable viewer" },
       },
     },
-    server = { log_level = "Verbose" },
+    server = { use_visual_studio = false, log_level = "Verbose" },
+    projx_lsp = { enabled = true },
     lsp = {
-      enabled = true,
+      enabled = false,
       roslynator_enabled = false,
-      config = {
-        settings = {
-          ["csharp|inlay_hints"] = {
-            csharp_enable_inlay_hints_for_implicit_object_creation = true,
-            csharp_enable_inlay_hints_for_implicit_variable_types = true,
-            csharp_enable_inlay_hints_for_lambda_parameter_types = true,
-            csharp_enable_inlay_hints_for_types = true,
-            dotnet_enable_inlay_hints_for_indexer_parameters = true,
-            dotnet_enable_inlay_hints_for_literal_parameters = true,
-            dotnet_enable_inlay_hints_for_object_creation_parameters = true,
-            dotnet_enable_inlay_hints_for_other_parameters = true,
-            dotnet_enable_inlay_hints_for_parameters = true,
-            dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
-            dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
-            dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
-          },
-          ["csharp|code_lens"] = {
-            dotnet_enable_references_code_lens = true,
-          },
-        },
-      },
+      easy_dotnet_analyzer_enabled = false,
+      easy_dotnet_extension_enabled = false,
     },
     notifications = {
-      handler = notify_with_fidget,
+      handler = notify.dotnet_job_handler,
     },
-    terminal = function(path, action, args)
-      local command = M.command_for(path, action, args)
-      if not command then
-        vim.notify(string.format("[easy-dotnet] Unknown action: %s", tostring(action)), vim.log.levels.ERROR)
-        return
-      end
-      Snacks.terminal.toggle(command, { win = { position = "bottom", height = 0.35 } })
-    end,
-    auto_bootstrap_namespace = { type = "file_scoped", enabled = true },
+    auto_bootstrap_namespace = {
+      type = "file_scoped",
+      enabled = true,
+      use_clipboard_json = {
+        behavior = "prompt",
+        register = "+",
+      },
+    },
     test_runner = { viewmode = "vsplit", vsplit_width = 70, icons = { project = "󰗀" } },
   }
 end
@@ -101,8 +115,11 @@ end
 function M.create_user_commands()
   vim.api.nvim_create_user_command("DotnetListPackages", function()
     local path = M.find_project_path() or "."
-    Snacks.terminal.toggle("dotnet list " .. path .. " package --include-transitive; read", {
-      win = { style = "float", width = 0.8, height = 0.8, border = "rounded" },
+    M.open_terminal("dotnet list " .. vim.fn.shellescape(path) .. " package --include-transitive; read", {
+      float = true,
+      width = 0.8,
+      height = 0.8,
+      border = "rounded",
     })
   end, { desc = "List packages with transitive deps", force = true })
 
@@ -221,7 +238,7 @@ local function has_project_file(path)
   end
 
   local matches = vim.fs.find(function(name)
-    return name:match("%.[cf]sproj$")
+    return name:match "%.[cf]sproj$"
   end, { path = dir, upward = true, limit = 1 })
 
   return matches[1] ~= nil
@@ -241,7 +258,7 @@ local function guard_easy_dotnet_scope_listener()
     return
   end
 
-  local dap = require("dap")
+  local dap = require "dap"
   local original = dap.listeners.after.event_stopped["easy-dotnet-scopes"]
   if type(original) ~= "function" then
     return
@@ -393,7 +410,12 @@ local function guard_netcoredbg_exception_jump()
     end
   end
 
-  require("dap").listeners.after.stackTrace["netcoredbg-exception-smart-jump"] = function(session, err, response, request)
+  require("dap").listeners.after.stackTrace["netcoredbg-exception-smart-jump"] = function(
+    session,
+    err,
+    response,
+    request
+  )
     local pending_thread_id = pending_exception_threads[session]
     if not pending_thread_id or not request or request.threadId ~= pending_thread_id or request.startFrame ~= 0 then
       return
