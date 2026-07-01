@@ -230,6 +230,7 @@ end
 -- =============================================================================
 
 Config.leader_group_clues = {
+  { mode = "n", keys = "<Leader>a", desc = "+agent" },
   { mode = "n", keys = "<Leader>b", desc = "+buffer" },
   { mode = "n", keys = "<Leader>c", desc = "+quickfix" },
   { mode = "n", keys = "<Leader>e", desc = "+explore" },
@@ -405,6 +406,11 @@ nmap("<C-\\>", "<Cmd>lua require('smart-splits').move_cursor_previous()<CR>", "n
 --   previous/next paragraph: { and }
 --   first non-blank / end of line: ^ and $
 
+-- Agent -------------------------------------------------------------------------
+-- Eager require so :SendPathToAgent is registered at startup, not on first keypress.
+local send_path_to_agent = require "treramey.send_path_to_agent"
+nmap_leader("ap", send_path_to_agent.send_path_to_agent, "send path to agent")
+
 -- Buffer ----------------------------------------------------------------------
 nmap_leader("ba", "<Cmd>b#<CR>", "alternate")
 nmap_leader("bd", "<Cmd>lua MiniBufremove.delete()<CR>", "delete")
@@ -479,6 +485,7 @@ nmap_leader("xR", "<Cmd>lua MiniSessions.restart()<CR>", "restart")
 -- =============================================================================
 -- Simplified leader layout
 -- =============================================================================
+-- <Leader>a  agent (claude/pi tmux pane)
 -- <Leader>b  buffers
 -- <Leader>c  quickfix/location lists
 -- <Leader>e  explore, notifications
