@@ -102,17 +102,20 @@ vim.api.nvim_create_user_command("RotateWindows", function()
   local num_eligible_windows = vim.tbl_count(windows_to_rotate)
   if num_eligible_windows == 0 then
     return
-  elseif num_eligible_windows == 1 then
+  end
+  if num_eligible_windows == 1 then
     vim.api.nvim_err_writeln "There is no other window to rotate with."
     return
-  elseif num_eligible_windows == 2 then
-    local first_window = windows_to_rotate[1]
-    local second_window = windows_to_rotate[2]
-    vim.api.nvim_win_set_buf(first_window.window_number, second_window.buffer_number)
-    vim.api.nvim_win_set_buf(second_window.window_number, first_window.buffer_number)
-  else
-    vim.api.nvim_err_writeln("You can only swap 2 open windows. Found " .. num_eligible_windows .. ".")
   end
+  if num_eligible_windows > 2 then
+    vim.api.nvim_err_writeln("You can only swap 2 open windows. Found " .. num_eligible_windows .. ".")
+    return
+  end
+
+  local first_window = windows_to_rotate[1]
+  local second_window = windows_to_rotate[2]
+  vim.api.nvim_win_set_buf(first_window.window_number, second_window.buffer_number)
+  vim.api.nvim_win_set_buf(second_window.window_number, first_window.buffer_number)
 end, { desc = "Rotate open windows" })
 
 -- =============================================================================

@@ -516,30 +516,32 @@ function M.watch_file(path)
 
   local timer = vim.uv.new_timer()
   local on_change = function()
-    if timer then
-      timer:stop()
-      timer:start(75, 0, function()
-        vim.schedule(function()
-          local slug = normalize(read_first_line(path))
-          if slug and slug ~= vim.g.colors_name_slug then
-            M.apply_slug(slug, { persist = true, notify = false })
-          end
-        end)
-      end)
+    if not timer then
+      return
     end
+    timer:stop()
+    timer:start(75, 0, function()
+      vim.schedule(function()
+        local slug = normalize(read_first_line(path))
+        if slug and slug ~= vim.g.colors_name_slug then
+          M.apply_slug(slug, { persist = true, notify = false })
+        end
+      end)
+    end)
   end
 
   local ok = event:start(path, {}, on_change)
-  if ok then
-    table.insert(M._watchers, event)
-    if timer then
-      table.insert(M._watchers, timer)
-    end
-  else
+  if not ok then
     event:close()
     if timer then
       timer:close()
     end
+    return
+  end
+
+  table.insert(M._watchers, event)
+  if timer then
+    table.insert(M._watchers, timer)
   end
 end
 

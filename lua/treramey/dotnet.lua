@@ -127,15 +127,17 @@ function M.create_user_commands()
     local files = vim.fs.find("launchSettings.json", { type = "file", limit = math.huge })
     if #files == 0 then
       vim.notify("[easy-dotnet] No launchSettings.json found", vim.log.levels.WARN)
-    elseif #files == 1 then
-      vim.cmd("edit " .. vim.fn.fnameescape(files[1]))
-    else
-      vim.ui.select(files, { prompt = "Select launchSettings.json" }, function(choice)
-        if choice then
-          vim.cmd("edit " .. vim.fn.fnameescape(choice))
-        end
-      end)
+      return
     end
+    if #files == 1 then
+      vim.cmd("edit " .. vim.fn.fnameescape(files[1]))
+      return
+    end
+    vim.ui.select(files, { prompt = "Select launchSettings.json" }, function(choice)
+      if choice then
+        vim.cmd("edit " .. vim.fn.fnameescape(choice))
+      end
+    end)
   end, { desc = "Open launchSettings.json", force = true })
 end
 

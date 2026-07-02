@@ -81,15 +81,16 @@ local update_steps = function()
     { label = "Refreshing mise shims", cmd = { "mise", "reshim" } },
   }
 
-  if vim.fn.executable "dotnet" == 1 then
-    for _, tool in ipairs(dotnet_global_tools) do
-      table.insert(steps, {
-        label = "Updating " .. tool[1],
-        cmd = vim.list_extend({ "dotnet", "tool", "update", "--global" }, tool),
-      })
-    end
-  else
+  if vim.fn.executable "dotnet" ~= 1 then
     table.insert(last_log, "Skipped .NET global tools: dotnet is not executable.")
+    return steps
+  end
+
+  for _, tool in ipairs(dotnet_global_tools) do
+    table.insert(steps, {
+      label = "Updating " .. tool[1],
+      cmd = vim.list_extend({ "dotnet", "tool", "update", "--global" }, tool),
+    })
   end
 
   return steps
