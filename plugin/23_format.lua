@@ -1,19 +1,22 @@
--- Formatting without plugins ==================================================
--- Uses buffer-local 'formatprg' set per filetype (see after/ftplugin/).
--- Runs program over stdin, applies output only on exit 0, falls back to LSP.
+-- Formatting via conform.nvim =================================================
+-- The Formatter Registry: one row per filetype in `formatters_by_ft`. Project
+-- formatters (oxfmt/biome/prettierd) gate on project config and the first
+-- available one wins; falls back to LSP when none applies.
+
+local add, gh, later = vim.pack.add, Config.gh, Config.later
 
 local H = {}
 
 -- Helpers =====================================================================
 
-H.buf_dir = function()
-  return vim.fn.expand "%:p:h"
+H.has_config = function(names, file)
+  return vim.fs.find(names, { path = file, upward = true, stop = vim.uv.os_homedir() })[1] ~= nil
 end
 
--- Check if package.json has a field, e.g. "prettier".
-H.pkg_has = function(field)
-  ---@diagnostic disable-next-line: param-type-mismatch
-  local pkg = vim.fs.find("package.json", { path = H.buf_dir(), upward = true, type = "file" })[1]
+-- Check if package.json (searched upward from `file`) has a field,
+-- e.g. "prettier" — prettier config can live there instead of an rc file.
+H.pkg_has = function(field, file)
+  local pkg = vim.fs.find("package.json", { path = file, upward = true, stop = vim.uv.os_homedir(), type = "file" })[1]
   if not pkg then
     return false
   end
@@ -25,13 +28,16 @@ H.pkg_has = function(field)
   return false
 end
 
-H.stdout_to_lines = function(stdout)
-  local lines = vim.split(stdout or "", "\n", { plain = true })
-  if lines[#lines] == "" then
-    table.remove(lines)
-  end
-  return lines
-end
+H.prettier_config = {
+  ".prettierrc",
+  ".prettierrc.json",
+  ".prettierrc.js",
+  ".prettierrc.cjs",
+  ".prettierrc.mjs",
+  "prettier.config.js",
+  "prettier.config.cjs",
+  "prettier.config.mjs",
+}
 
 H.autoformat_disabled = function(bufnr)
   if vim.bo[bufnr].buftype ~= "" then
@@ -43,97 +49,84 @@ H.autoformat_disabled = function(bufnr)
   return vim.tbl_contains(vim.g.disable_autoformat_filetypes or {}, vim.bo[bufnr].filetype)
 end
 
--- Prepare cmd for formatters that need filename for EditorConfig resolution
-H.fixup_cmd = function(cmd, bufname)
-  if bufname == "" then
-    return cmd
+H.format_after_save_opts = function(bufnr)
+  if H.autoformat_disabled(bufnr) then
+    return
   end
-
-  -- shfmt ignores EditorConfig on stdin unless --filename is provided
-  if cmd[1]:match "shfmt$" then
-    if cmd[#cmd] == "-" then
-      table.remove(cmd)
-    end
-    table.insert(cmd, "--filename")
-    table.insert(cmd, bufname)
-  end
-
-  return cmd
-end
-
--- Check if any LSP client supports formatting.
-H.has_lsp_formatter = function(bufnr)
-  bufnr = bufnr or 0
-  local clients = vim.lsp.get_clients { bufnr = bufnr }
-  for _, client in ipairs(clients) do
-    if client:supports_method "textDocument/formatting" then
-      return true
-    end
-  end
-  return false
+  return { async = true, timeout_ms = 500, lsp_format = "fallback" }
 end
 
 -- Public API ==================================================================
 
--- Detect and set buffer-local 'formatprg' for prettier projects.
-Config.set_formatprg = function()
-  local file = vim.fn.expand "%:p"
-  if file == "" then
-    return
-  end
-
-  local escaped_file = vim.fn.shellescape(file)
-  if H.pkg_has '"prettier"' then
-    vim.bo.formatprg = "prettierd --stdin-filepath " .. escaped_file
-  end
-end
-
--- Format current buffer via 'formatprg', or fall back to LSP.
 Config.format = function()
-  local prg = vim.bo.formatprg
-  if prg == "" then
-    if not H.has_lsp_formatter() then
-      return
-    end
-    return vim.lsp.buf.format { timeout_ms = 1000 }
-  end
-
-  local bufname = vim.api.nvim_buf_get_name(0)
-  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  local cmd = vim.fn.shellsplit(vim.fn.expandcmd(prg))
-  cmd = H.fixup_cmd(cmd, bufname)
-
-  local cwd = bufname ~= "" and vim.fs.dirname(bufname) or nil
-  local ok, out = pcall(function()
-    return vim.system(cmd, { stdin = table.concat(lines, "\n"), text = true, cwd = cwd }):wait()
-  end)
-
-  if not ok then
-    return vim.notify(string.format("[%s] %s", cmd[1] or "format", out), vim.log.levels.ERROR)
-  end
-  if out.code ~= 0 then
-    return vim.notify(string.format("[%s] %s", cmd[1], out.stderr or "format failed"), vim.log.levels.ERROR)
-  end
-
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, H.stdout_to_lines(out.stdout))
+  require("conform").format()
 end
 
--- Format on save ==============================================================
-
-if vim.g.format_on_save == nil then
-  vim.g.format_on_save = true
-end
-
-Config.new_autocmd("BufWritePre", "*", function(args)
-  if H.autoformat_disabled(args.buf) then
-    return
+vim.api.nvim_create_user_command("ConformDisable", function(args)
+  if args.bang then
+    -- ConformDisable! disables formatting just for this buffer
+    vim.b.disable_autoformat = true
+  else
+    vim.g.disable_autoformat = true
   end
+end, { desc = "Disable autoformat-on-save", bang = true })
 
-  local enabled = vim.b[args.buf].format_on_save
-  if enabled == nil then
-    enabled = vim.g.format_on_save
-  end
-  if enabled then
-    Config.format()
-  end
-end, "Format on save")
+vim.api.nvim_create_user_command("ConformEnable", function()
+  vim.b.disable_autoformat = false
+  vim.g.disable_autoformat = false
+end, { desc = "Re-enable autoformat-on-save" })
+
+-- Setup =======================================================================
+
+later(function()
+  add { gh "stevearc/conform.nvim" }
+
+  require("conform").setup {
+    notify_on_error = false,
+    default_format_opts = {
+      async = true,
+      timeout_ms = 500,
+      lsp_format = "fallback",
+    },
+    format_after_save = H.format_after_save_opts,
+    formatters_by_ft = {
+      go = { "gofmt" },
+      lua = { "stylua" },
+      sh = { "shfmt" },
+      zsh = { "shfmt" },
+      svg = { "xmlformat" },
+      xml = { "xmlformat" },
+      astro = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      javascript = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      javascriptreact = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      typescript = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      typescriptreact = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      svelte = { "oxfmt", "prettierd", stop_after_first = true },
+      json = { "biome", "prettierd", stop_after_first = true },
+      jsonc = { "biome", "prettierd", stop_after_first = true },
+      markdown = { "prettierd" },
+      scss = { "prettierd" },
+      yaml = { "prettierd" },
+    },
+    formatters = {
+      xmlformat = { args = { "--indent", "4", "--selfclose", "-" } },
+      oxfmt = {
+        condition = function(_, ctx)
+          return H.has_config({ ".oxfmtrc.json", ".oxfmtrc.jsonc" }, ctx.filename)
+        end,
+      },
+      biome = {
+        condition = function(_, ctx)
+          return H.has_config({ "biome.json", "biome.jsonc" }, ctx.filename)
+        end,
+      },
+      prettierd = {
+        condition = function(_, ctx)
+          return H.has_config(H.prettier_config, ctx.filename) or H.pkg_has('"prettier"', ctx.filename)
+        end,
+      },
+    },
+  }
+
+  vim.o.formatexpr = 'v:lua.require"conform".formatexpr()'
+end)
