@@ -78,6 +78,7 @@ later(function()
   }
 
   dotnet.setup_easy_dotnet()
+  dotnet.setup_dap_integration()
   setup_dotnet_keymaps()
   setup_mini_files_integration()
 end)

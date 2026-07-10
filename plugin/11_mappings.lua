@@ -228,12 +228,35 @@ local jump_todo = function(backward)
   end
 end
 
+-- Display LSP location items as "file.cs:12 │ dir │ line text" so the file
+-- name survives right-edge clipping on deep namespace paths. Matching still
+-- runs on the original "path│lnum│col│text" string, only display changes.
+local lsp_show_filename_first = function(buf_id, items, query)
+  local shown = vim.tbl_map(function(item)
+    if type(item) ~= "table" or type(item.path) ~= "string" then
+      return item
+    end
+    local new = vim.tbl_extend("force", {}, item)
+    local line_text = string.match(new.text or "", "^.-│%d+│%d+│%s*(.*)$")
+    local name = vim.fn.fnamemodify(new.path, ":t")
+    local dir = vim.fn.fnamemodify(new.path, ":p:.:h")
+    new.text = string.format("%s:%s │ %s", name, new.lnum or 1, dir)
+    if line_text ~= nil and line_text ~= "" then
+      new.text = new.text .. " │ " .. line_text
+    end
+    return new
+  end, items)
+  require("mini.pick").default_show(buf_id, shown, query, { show_icons = true })
+end
+
+local lsp_pick_opts = { source = { show = lsp_show_filename_first } }
+
 local lsp_goto_or_pick = function(scope)
   return function()
     vim.lsp.buf[scope] {
       on_list = function(data)
         if #data.items > 1 then
-          return require("mini.extra").pickers.lsp { scope = scope }
+          return require("mini.extra").pickers.lsp({ scope = scope }, lsp_pick_opts)
         end
         local item = data.items[1]
         item.path = item.filename
@@ -242,6 +265,10 @@ local lsp_goto_or_pick = function(scope)
       end,
     }
   end
+end
+
+local lsp_pick_references = function()
+  require("mini.extra").pickers.lsp({ scope = "references" }, lsp_pick_opts)
 end
 
 -- =============================================================================
@@ -256,7 +283,7 @@ Config.leader_group_clues = {
   { mode = "n", keys = "<Leader>g", desc = "+git" },
   { mode = "n", keys = "<Leader>l", desc = "+language" },
   { mode = "n", keys = "<Leader>m", desc = "+map" },
-  { mode = "n", keys = "<Leader>n", desc = "+notifications" },
+  { mode = "n", keys = "<Leader>n", desc = "+notifications/noh" },
   { mode = "n", keys = "<Leader>o", desc = "+other" },
   { mode = "n", keys = "<Leader>s", desc = "+search" },
   { mode = "n", keys = "<Leader>x", desc = "+session" },
@@ -307,7 +334,6 @@ end, "Quick search/replace word under cursor")
 nmap("L", "$", "Jump to end of line")
 nmap("H", "^", "Jump to beginning of line")
 nmap("U", "<C-r>", "Redo last change")
-nmap_leader("os", "<Cmd>noh<CR>", "clear search highlighting")
 
 -- Window / other --------------------------------------------------------------
 nmap_leader("=", "<C-w>=", "Equalize split window sizes")
@@ -328,24 +354,14 @@ nmap_leader("lh", function()
 end, "hover")
 nmap_leader("ll", "<Cmd>lua vim.lsp.codelens.run()<CR>", "lens")
 nmap_leader("lr", vim.lsp.buf.rename, "rename")
-nmap_leader("lR", '<Cmd>Pick lsp scope="references"<CR>', "references")
-nmap_leader("ls", function()
-  vim.lsp.buf.definition()
-  vim.schedule(function()
-    vim.cmd "normal! zz"
-  end)
-end, "source definition")
+nmap_leader("lR", lsp_pick_references, "references")
+nmap_leader("ls", lsp_goto_or_pick "definition", "source definition")
 nmap_leader("lt", vim.lsp.buf.type_definition, "type definition")
 nmap_leader("lc", "<Cmd>lua Config.tsc()<CR>", "typecheck project")
 
 -- Direct LSP ------------------------------------------------------------------
-nmap("gd", function()
-  vim.lsp.buf.definition()
-  vim.schedule(function()
-    vim.cmd "normal! zz"
-  end)
-end, "LSP: Go to definition")
-nmap("gr", '<Cmd>Pick lsp scope="references"<CR>', "LSP: Go to references")
+nmap("gd", lsp_goto_or_pick "definition", "LSP: Go to definition")
+nmap("gr", lsp_pick_references, "LSP: Go to references")
 nmap("gi", lsp_goto_or_pick "implementation", "LSP: Go to implementations")
 nmap("K", function()
   return vim.lsp.buf.hover { border = "rounded" }
@@ -452,6 +468,7 @@ nmap_leader("ef", explore_at_file, "file directory")
 nmap_leader("nh", function()
   require("treramey.notify").show_history()
 end, "notifications")
+nmap_leader("no", "<Cmd>noh<CR>", "clear search highlighting")
 
 -- Quickfix / location ---------------------------------------------------------
 nmap_leader("cn", "<Cmd>cnext<CR>zz", "quickfix next")
@@ -511,7 +528,7 @@ nmap_leader("xR", "<Cmd>lua MiniSessions.restart()<CR>", "restart")
 -- <Leader>g  git
 -- <Leader>l  language, LSP, diagnostics, format, typecheck
 -- <Leader>m  minimap
--- <Leader>n  notifications
+-- <Leader>n  notifications, clear search highlighting
 -- <Leader>o  other/toggles
 -- <Leader>s  search/pickers
 -- <Leader>x  sessions
