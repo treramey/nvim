@@ -1,9 +1,9 @@
 {
   "plugins": {
     "aether": {
-      "rev": "12ea122b3c3cc9e4866243b87da88cb5fefcfe21",
+      "rev": "02af9ba1ef9d6f136a6b20404d39f2a4e3857e16",
       "src": "https://github.com/bjarneo/aether.nvim",
-      "version": "'v2'"
+      "version": "'v3'"
     },
     "bamboo.nvim": {
       "rev": "1309bc88bffcf1bedc3e84e7fa9004de93da774a",
