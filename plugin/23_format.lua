@@ -122,7 +122,11 @@ later(function()
       },
       prettierd = {
         condition = function(_, ctx)
-          return H.has_config(H.prettier_config, ctx.filename) or H.pkg_has('"prettier"', ctx.filename)
+          local ft = vim.bo[ctx.buf].filetype
+          return ft == "json"
+            or ft == "jsonc"
+            or H.has_config(H.prettier_config, ctx.filename)
+            or H.pkg_has('"prettier"', ctx.filename)
         end,
       },
     },

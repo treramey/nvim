@@ -118,10 +118,6 @@ now(function()
   }
 end)
 
-now(function()
-  require("mini.tabline").setup()
-end)
-
 now_if_args(function()
   local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
   local process_items = function(items, base)
@@ -408,7 +404,11 @@ later(function()
 end)
 
 later(function()
-  require("mini.pick").setup {
+  local pick = require "mini.pick"
+  pick.setup {
+    mappings = {
+      choose_marked = "<C-q>",
+    },
     window = {
       config = function()
         local height = math.floor(0.3 * vim.o.lines)
@@ -423,6 +423,38 @@ later(function()
       end,
     },
   }
+
+  -- MiniPick only accepts a complete (`phase == -1`) terminal paste. Buffer
+  -- streamed bracketed paste so terminal shortcuts like Cmd+V work as expected.
+  local paste = vim.paste
+  local paste_chunks
+  vim.paste = function(lines, phase)
+    if phase == -1 then
+      paste_chunks = nil
+      return paste(lines, phase)
+    end
+
+    if phase == 1 then
+      if not pick.is_picker_active() then
+        return paste(lines, phase)
+      end
+      paste_chunks = {}
+    elseif paste_chunks == nil then
+      return paste(lines, phase)
+    end
+
+    paste_chunks[#paste_chunks + 1] = table.concat(lines, "\n")
+    if phase ~= 3 then
+      return true
+    end
+
+    local text = table.concat(paste_chunks)
+    paste_chunks = nil
+    if not pick.is_picker_active() then
+      return false
+    end
+    return paste({ text }, -1)
+  end
 end)
 
 later(function()

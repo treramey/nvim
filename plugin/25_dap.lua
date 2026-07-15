@@ -58,7 +58,7 @@ local function setup_dap_view()
       size = 0.35,
       position = "below",
       terminal = {
-        size = 0.5,
+        size = 0.4,
         position = "right",
         hide = {},
       },
