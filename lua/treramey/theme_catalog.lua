@@ -383,6 +383,11 @@ local themes = {
       }
     end,
   },
+  ["solitude"] = {
+    src = "https://github.com/ficcdaf/ashen.nvim",
+    colorscheme = "ashen",
+    background = "dark",
+  },
   ["tokyo-night"] = {
     src = "https://github.com/folke/tokyonight.nvim",
     colorscheme = "tokyonight-night",

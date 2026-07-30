@@ -1,11 +1,13 @@
 local M = {}
 
 local Catalog = require "treramey.theme_catalog"
+local OmarchyTheme = require "treramey.omarchy_theme"
 
 M.default_slug = Catalog.default_slug
 M.state_file = vim.fn.stdpath "state" .. "/theme-switcher/theme"
 M.trigger_file = vim.fn.expand "~/.cache/nvim-theme-trigger"
 M.omarchy_theme_file = vim.fn.expand "~/.config/omarchy/current/theme.name"
+M.omarchy_theme_spec_file = vim.fn.expand "~/.config/omarchy/current/theme/neovim.lua"
 
 local function read_first_line(path)
   local f = io.open(path, "r")
@@ -30,6 +32,17 @@ local function hl(name)
 end
 
 function M.apply_highlights()
+  -- Let the terminal background show through the main editor surface while
+  -- preserving each theme's foreground and text attributes.
+  for _, group in ipairs { "Normal", "NormalNC", "EndOfBuffer" } do
+    local ok, current = pcall(hl, group)
+    if ok then
+      current.bg = nil
+      current.ctermbg = nil
+      vim.api.nvim_set_hl(0, group, current)
+    end
+  end
+
   local prompt = hl "DiagnosticFloatingInfo"
   local title = hl "FloatTitle"
   local normal_float = hl "NormalFloat"
@@ -117,11 +130,27 @@ function M.apply_highlights()
 end
 
 function M.resolve_theme(slug)
-  return Catalog.theme(slug)
+  if read_first_line(M.omarchy_theme_file) == slug then
+    local theme = OmarchyTheme.load(M.omarchy_theme_spec_file, slug)
+    if theme then
+      return theme
+    end
+  end
+
+  local result = Catalog.resolve(slug)
+  if result.ok then
+    return Catalog.theme(result.value.slug)
+  end
 end
 
 function M.slugs()
-  return Catalog.slugs()
+  local slugs = Catalog.slugs()
+  local omarchy_slug = read_first_line(M.omarchy_theme_file)
+  if omarchy_slug and not Catalog.resolve(omarchy_slug).ok and M.resolve_theme(omarchy_slug) then
+    table.insert(slugs, omarchy_slug)
+    table.sort(slugs)
+  end
+  return slugs
 end
 
 function M.pack_specs()
@@ -129,6 +158,14 @@ function M.pack_specs()
 end
 
 function M.current_slug()
+  local omarchy_slug = read_first_line(M.omarchy_theme_file)
+  if omarchy_slug then
+    local theme = M.resolve_theme(omarchy_slug)
+    if theme and theme.pack_specs then
+      return omarchy_slug
+    end
+  end
+
   for _, path in ipairs { M.trigger_file, M.omarchy_theme_file, M.state_file } do
     local result = Catalog.resolve(read_first_line(path))
     if result.ok then
@@ -141,7 +178,13 @@ end
 function M.apply_slug(slug, opts)
   opts = opts or {}
   local result = Catalog.resolve(slug)
-  if not result.ok then
+  local theme = M.resolve_theme(slug)
+  if result.ok and not (theme and theme.pack_specs) then
+    slug = result.value.slug
+    theme = Catalog.theme(slug)
+  end
+
+  if not theme then
     local msg = "Unknown Neovim theme: " .. tostring(slug)
     if opts.notify ~= false then
       vim.notify(msg, vim.log.levels.ERROR)
@@ -149,9 +192,24 @@ function M.apply_slug(slug, opts)
     return false, msg
   end
 
-  slug = result.value.slug
-  local theme = Catalog.theme(slug)
   vim.o.background = theme.background or "dark"
+
+  if theme.pack_specs then
+    local add_ok, add_error = pcall(vim.pack.add, theme.pack_specs)
+    if not add_ok then
+      if opts.notify ~= false then
+        vim.notify(add_error, vim.log.levels.ERROR)
+      end
+      return false, add_error
+    end
+    local setup_ok, setup_error = OmarchyTheme.setup(theme)
+    if not setup_ok then
+      if opts.notify ~= false then
+        vim.notify(setup_error, vim.log.levels.ERROR)
+      end
+      return false, setup_error
+    end
+  end
 
   if theme.setup then
     local ok, err = pcall(theme.setup)

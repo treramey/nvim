@@ -2,6 +2,14 @@ local is_running = false
 local last_log = {}
 local log_path = vim.fs.joinpath(vim.fn.stdpath "cache", "update-tools.log")
 
+local shell_command = function(cmd)
+  local parts = {}
+  for _, arg in ipairs(cmd) do
+    table.insert(parts, vim.fn.shellescape(arg))
+  end
+  return table.concat(parts, " ")
+end
+
 local append_text = function(text)
   if not text or text == "" then
     return
@@ -70,6 +78,21 @@ local dotnet_global_tools = {
   { "EasyDotnet" },
 }
 
+local restart_lsp = function()
+  if vim.fn.exists ":LspRestart" == 2 then
+    vim.cmd "LspRestart"
+    return
+  end
+
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    client:stop(true)
+  end
+
+  vim.defer_fn(function()
+    pcall(vim.cmd, "doautoall FileType")
+  end, 100)
+end
+
 local update_steps = function()
   local steps = {
     {
@@ -90,6 +113,7 @@ local update_steps = function()
     table.insert(steps, {
       label = "Updating " .. tool[1],
       cmd = vim.list_extend({ "dotnet", "tool", "update", "--global" }, tool),
+      allow_failure = true,
     })
   end
 
@@ -115,7 +139,8 @@ local finish_update = function(handle, failed)
   end
 
   if #failed == 0 then
-    vim.notify("Tool update complete. Restart Neovim or run :LspRestart.", vim.log.levels.INFO)
+    restart_lsp()
+    vim.notify("Tool update complete. LSP clients restarted.", vim.log.levels.INFO)
   else
     local message = string.format("Tool update finished; %d step(s) failed. Run :UpdateToolsLog for output.", #failed)
     vim.notify(message, vim.log.levels.ERROR)
@@ -137,7 +162,7 @@ run_step = function(steps, index, handle, failed)
   end
 
   table.insert(last_log, "")
-  table.insert(last_log, "$ " .. table.concat(step.cmd, " "))
+  table.insert(last_log, "$ " .. shell_command(step.cmd))
 
   vim.system(step.cmd, { text = true }, function(result)
     vim.schedule(function()
@@ -147,7 +172,11 @@ run_step = function(steps, index, handle, failed)
       if result.code ~= 0 then
         table.insert(last_log, "")
         table.insert(last_log, string.format("%s failed with code %d.", step.label, result.code))
-        table.insert(failed, step.label)
+        if step.allow_failure then
+          table.insert(last_log, "Continuing because this step is optional.")
+        else
+          table.insert(failed, step.label)
+        end
       end
 
       run_step(steps, index + 1, handle, failed)
@@ -158,6 +187,11 @@ end
 local open_tool_update = function()
   if is_running then
     vim.notify("Tool update is already running.", vim.log.levels.INFO)
+    return
+  end
+
+  if not vim.system then
+    vim.notify("UpdateTools requires vim.system.", vim.log.levels.ERROR)
     return
   end
 
@@ -181,6 +215,9 @@ local open_tool_update = function()
   run_step(update_steps(), 1, handle, {})
 end
 
+pcall(vim.api.nvim_del_user_command, "ToolUpdate")
+pcall(vim.api.nvim_del_user_command, "UpdateTools")
+pcall(vim.api.nvim_del_user_command, "UpdateToolsLog")
 vim.api.nvim_create_user_command("UpdateTools", open_tool_update, {
   desc = "Update mise-managed LSPs, formatters, and CLI tools",
 })

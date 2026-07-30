@@ -92,6 +92,7 @@ later(function()
     formatters_by_ft = {
       go = { "gofmt" },
       lua = { "stylua" },
+      rust = { "rustfmt" },
       sh = { "shfmt" },
       zsh = { "shfmt" },
       svg = { "xmlformat" },

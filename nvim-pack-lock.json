@@ -5,6 +5,10 @@
       "src": "https://github.com/bjarneo/aether.nvim",
       "version": "'v3'"
     },
+    "ashen.nvim": {
+      "rev": "bfb04bd50b69d863469b2deb9fb361cf0d945ba7",
+      "src": "https://github.com/ficcdaf/ashen.nvim"
+    },
     "bamboo.nvim": {
       "rev": "1309bc88bffcf1bedc3e84e7fa9004de93da774a",
       "src": "https://github.com/ribru17/bamboo.nvim"

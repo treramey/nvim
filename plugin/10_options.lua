@@ -10,6 +10,40 @@ vim.o.timeoutlen = 400 -- Faster key sequence timeout
 
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h" -- Limit ShaDa file (for startup)
 
+local function env_set(name)
+  return vim.env[name] ~= nil and vim.env[name] ~= ""
+end
+
+local function use_osc52_copy_clipboard()
+  local osc52 = require "vim.ui.clipboard.osc52"
+  local function paste_from_unnamed()
+    return { vim.split(vim.fn.getreg '"', "\n", { plain = true }), vim.fn.getregtype '"' }
+  end
+
+  vim.g.clipboard = {
+    name = "OSC 52 copy",
+    copy = {
+      ["+"] = osc52.copy "+",
+      ["*"] = osc52.copy "*",
+    },
+    paste = {
+      ["+"] = paste_from_unnamed,
+      ["*"] = paste_from_unnamed,
+    },
+  }
+end
+
+local has_display_clipboard = env_set "WAYLAND_DISPLAY" or env_set "DISPLAY"
+local should_use_osc52_clipboard = env_set "SSH_TTY"
+  or env_set "SSH_CONNECTION"
+  or env_set "MOSH_KEY"
+  or env_set "MOSH_CONNECTION"
+  or (env_set "TMUX" and not has_display_clipboard)
+
+if should_use_osc52_clipboard then
+  use_osc52_copy_clipboard()
+end
+
 -- Enable all filetype plugins and syntax (if not enabled, for better startup)
 vim.cmd "filetype plugin indent on"
 if vim.fn.exists "syntax_on" ~= 1 then
@@ -36,6 +70,7 @@ vim.o.pumheight = 10 -- Make popup menu smaller
 vim.o.pummaxwidth = 100 -- Make popup menu not too wide
 vim.o.ruler = false -- Don't show cursor coordinates
 vim.o.shortmess = "CFOSWacosI" -- Disable some built-in messages
+vim.o.messagesopt = "hit-enter,history:500,progress:" -- Let fidget render progress messages
 vim.o.showmode = false -- Don't show mode in command line
 vim.o.signcolumn = "yes" -- Always show signcolumn (less flicker)
 vim.o.splitbelow = true -- Horizontal splits will be below
