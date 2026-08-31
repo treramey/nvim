@@ -6,8 +6,10 @@ local OmarchyTheme = require "treramey.omarchy_theme"
 M.default_slug = Catalog.default_slug
 M.state_file = vim.fn.stdpath "state" .. "/theme-switcher/theme"
 M.trigger_file = vim.fn.expand "~/.cache/nvim-theme-trigger"
-M.omarchy_theme_file = vim.fn.expand "~/.config/omarchy/current/theme.name"
-M.omarchy_theme_spec_file = vim.fn.expand "~/.config/omarchy/current/theme/neovim.lua"
+local state_home = vim.env.XDG_STATE_HOME or vim.fn.expand "~/.local/state"
+local omarchy_current = state_home .. "/omarchy/current"
+M.omarchy_theme_file = omarchy_current .. "/theme.name"
+M.omarchy_theme_spec_file = omarchy_current .. "/theme/neovim.lua"
 
 local function read_first_line(path)
   local f = io.open(path, "r")
@@ -143,6 +145,16 @@ function M.resolve_theme(slug)
   end
 end
 
+local function theme_pack_specs(theme)
+  if theme.pack_specs then
+    return theme.pack_specs
+  end
+  if theme.src then
+    return { { src = theme.src, name = theme.name, version = theme.version } }
+  end
+  return nil
+end
+
 function M.slugs()
   local slugs = Catalog.slugs()
   local omarchy_slug = read_first_line(M.omarchy_theme_file)
@@ -157,33 +169,30 @@ function M.pack_specs()
   return Catalog.pack_specs()
 end
 
-function M.current_slug()
+function M.current_theme()
   local omarchy_slug = read_first_line(M.omarchy_theme_file)
   if omarchy_slug then
     local theme = M.resolve_theme(omarchy_slug)
     if theme and theme.pack_specs then
-      return omarchy_slug
+      return omarchy_slug, theme
     end
   end
 
   for _, path in ipairs { M.trigger_file, M.omarchy_theme_file, M.state_file } do
     local result = Catalog.resolve(read_first_line(path))
     if result.ok then
-      return result.value.slug
+      return result.value.slug, Catalog.theme(result.value.slug)
     end
   end
-  return M.default_slug
+  return M.default_slug, Catalog.theme(M.default_slug)
 end
 
-function M.apply_slug(slug, opts)
-  opts = opts or {}
-  local result = Catalog.resolve(slug)
-  local theme = M.resolve_theme(slug)
-  if result.ok and not (theme and theme.pack_specs) then
-    slug = result.value.slug
-    theme = Catalog.theme(slug)
-  end
+function M.current_slug()
+  return (M.current_theme())
+end
 
+local function apply_theme(slug, theme, opts)
+  opts = opts or {}
   if not theme then
     local msg = "Unknown Neovim theme: " .. tostring(slug)
     if opts.notify ~= false then
@@ -192,22 +201,29 @@ function M.apply_slug(slug, opts)
     return false, msg
   end
 
+  if slug == vim.g.colors_name_slug and opts.force ~= true then
+    return true
+  end
+
   vim.o.background = theme.background or "dark"
 
-  if theme.pack_specs then
-    local add_ok, add_error = pcall(vim.pack.add, theme.pack_specs)
+  local pack_specs = theme_pack_specs(theme)
+  if pack_specs then
+    local add_ok, add_error = pcall(vim.pack.add, pack_specs)
     if not add_ok then
       if opts.notify ~= false then
         vim.notify(add_error, vim.log.levels.ERROR)
       end
       return false, add_error
     end
-    local setup_ok, setup_error = OmarchyTheme.setup(theme)
-    if not setup_ok then
-      if opts.notify ~= false then
-        vim.notify(setup_error, vim.log.levels.ERROR)
+    if theme.plugins then
+      local setup_ok, setup_error = OmarchyTheme.setup(theme)
+      if not setup_ok then
+        if opts.notify ~= false then
+          vim.notify(setup_error, vim.log.levels.ERROR)
+        end
+        return false, setup_error
       end
-      return false, setup_error
     end
   end
 
@@ -238,6 +254,17 @@ function M.apply_slug(slug, opts)
   end
 
   return true
+end
+
+
+function M.apply_slug(slug, opts)
+  local result = Catalog.resolve(slug)
+  local theme = M.resolve_theme(slug)
+  if result.ok and not (theme and theme.pack_specs) then
+    slug = result.value.slug
+    theme = Catalog.theme(slug)
+  end
+  return apply_theme(slug, theme, opts)
 end
 
 function M.watch_file(path)
@@ -288,7 +315,19 @@ function M.watch_theme_changes()
 end
 
 function M.setup()
-  M.apply_slug(M.current_slug(), { notify = false, persist = false })
+  local highlight_group = vim.api.nvim_create_augroup("theme-switcher-highlights", { clear = true })
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    group = highlight_group,
+    desc = "Restore theme-switcher highlight overrides after colorscheme reloads",
+    callback = function()
+      -- Run after every ColorScheme listener. Aether's hot-reloader clears and
+      -- rebuilds all highlights before emitting this event.
+      vim.schedule(M.apply_highlights)
+    end,
+  })
+
+  local slug, theme = M.current_theme()
+  apply_theme(slug, theme, { notify = false, persist = false })
   M.watch_theme_changes()
 
   vim.api.nvim_create_user_command("ThemeSwitch", function(args)

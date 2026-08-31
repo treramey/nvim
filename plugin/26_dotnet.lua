@@ -36,28 +36,25 @@ local function setup_leader_group()
   end
 end
 
-local function setup_mini_files_integration()
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "MiniFilesBufferCreate",
+local function setup_oil_integration()
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "oil",
     callback = function(args)
       vim.keymap.set("n", "<leader>a", function()
-        local path = (MiniFiles.get_fs_entry() or {}).path
+        local oil = require "oil"
+        local path = oil.get_current_dir()
+        local entry = oil.get_cursor_entry()
         if path == nil then
-          vim.notify("[easy-dotnet] Cursor is not on a valid MiniFiles entry", vim.log.levels.WARN)
+          vim.notify("[easy-dotnet] Oil is not showing a local directory", vim.log.levels.WARN)
           return
         end
 
-        local default = vim.fn.fnamemodify(path, ":.") .. "/"
-        vim.ui.input({ prompt = "Create file ", default = default }, function(input)
-          if input == nil or input == "" then
-            return
-          end
+        if entry and entry.type == "directory" then
+          path = vim.fs.joinpath(path, entry.name)
+        end
 
-          require("easy-dotnet").create_item(input, function()
-            MiniFiles.synchronize()
-          end)
-        end)
-      end, { buf = args.data.buf_id, desc = "Create file from dotnet template" })
+        require("easy-dotnet").create_item(path)
+      end, { buffer = args.buf, desc = "Create file from dotnet template" })
     end,
   })
 end
@@ -80,5 +77,5 @@ later(function()
   dotnet.setup_easy_dotnet()
   dotnet.setup_dap_integration()
   setup_dotnet_keymaps()
-  setup_mini_files_integration()
+  setup_oil_integration()
 end)

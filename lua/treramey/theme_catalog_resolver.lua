@@ -17,8 +17,8 @@ if not input or vim.v.argv[separator + 2] then
   return
 end
 
-local config_home = vim.env.XDG_CONFIG_HOME or vim.fn.expand "~/.config"
-local current_root = config_home .. "/omarchy/current"
+local state_home = vim.env.XDG_STATE_HOME or vim.fn.expand "~/.local/state"
+local current_root = state_home .. "/omarchy/current"
 local name_file = io.open(current_root .. "/theme.name", "r")
 local current_name = name_file and name_file:read "*l" or nil
 if name_file then

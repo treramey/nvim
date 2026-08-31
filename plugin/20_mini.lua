@@ -29,6 +29,9 @@ end)
 now(function()
   local starter = require "mini.starter"
   local fortune = function()
+    if vim.fn.executable "fortune" ~= 1 then
+      return ""
+    end
     local ok, quote = pcall(function()
       local f = assert(io.popen("fortune -s", "r"))
       local s = assert(f:read "*a")
@@ -70,7 +73,7 @@ now(function()
     footer = fortune,
     items = {
       starter.sections.builtin_actions(),
-      { name = "Explore", action = "lua MiniFiles.open()", section = "Builtin actions" },
+      { name = "Explore", action = "lua require('oil').toggle_float()", section = "Builtin actions" },
       starter.sections.recent_files(10, true, shorten_path),
       starter.sections.sessions(5, true),
     },
@@ -138,81 +141,6 @@ now_if_args(function()
   Config.new_autocmd("LspAttach", nil, on_attach, "Set 'omnifunc'")
 
   vim.lsp.config("*", { capabilities = MiniCompletion.get_lsp_capabilities() })
-end)
-
-now_if_args(function()
-  require("mini.files").setup {
-    mappings = {
-      go_in = "",
-      go_in_plus = "l",
-      go_out = "",
-      go_out_plus = "h",
-    },
-    windows = { preview = true },
-  }
-
-  local center_mini_files_windows = function()
-    local ok, state = pcall(MiniFiles.get_explorer_state)
-    if not ok or not state then
-      return
-    end
-
-    local windows = vim.tbl_filter(function(window)
-      return vim.api.nvim_win_is_valid(window.win_id)
-    end, state.windows)
-    if vim.tbl_isempty(windows) then
-      return
-    end
-
-    local min_col, max_col = math.huge, 0
-    for _, window in ipairs(windows) do
-      local config = vim.api.nvim_win_get_config(window.win_id)
-      local col = tonumber(config.col) or 0
-      local has_border = config.border and config.border ~= "none" and config.border ~= ""
-      local outer_width = config.width + (has_border and 2 or 0)
-      min_col = math.min(min_col, col)
-      max_col = math.max(max_col, col + outer_width)
-    end
-
-    local total_width = max_col - min_col
-    local offset = math.max(0, math.floor((vim.o.columns - total_width) / 2))
-    for _, window in ipairs(windows) do
-      local config = vim.api.nvim_win_get_config(window.win_id)
-      local col = tonumber(config.col) or 0
-      local centered_col = col - min_col + offset
-      if config.col ~= centered_col then
-        config.col = centered_col
-        vim.api.nvim_win_set_config(window.win_id, config)
-      end
-    end
-  end
-
-  -- Height is fixed at 30% of the editor and the whole explorer is centered.
-  -- When the directory buffer has more lines than the window height,
-  -- a "cursor/total" footer is shown in the bottom-right corner of the border.
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "MiniFilesWindowUpdate",
-    callback = function(args)
-      local win_id = args.data.win_id
-      local config = vim.api.nvim_win_get_config(win_id)
-      config.height = math.floor(0.3 * vim.o.lines)
-      config.row = math.floor((vim.o.lines - config.height) / 2)
-
-      local has_border = config.border and config.border ~= "none" and config.border ~= ""
-      local buf_id = vim.api.nvim_win_get_buf(win_id)
-      local line_count = vim.api.nvim_buf_line_count(buf_id)
-      if has_border and line_count > config.height then
-        config.footer = string.format(" %d/%d ", vim.api.nvim_win_get_cursor(win_id)[1], line_count)
-        config.footer_pos = "right"
-      elseif has_border then
-        config.footer = ""
-        config.footer_pos = "right"
-      end
-
-      vim.api.nvim_win_set_config(win_id, config)
-      center_mini_files_windows()
-    end,
-  })
 end)
 
 now_if_args(function()

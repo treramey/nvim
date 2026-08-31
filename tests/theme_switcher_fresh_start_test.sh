@@ -22,4 +22,5 @@ fi
 
 nvim --headless \
   '+lua assert(vim.g.colors_name_slug == "rose-pine-dawn", vim.inspect(vim.g.colors_name_slug))' \
+  '+lua vim.api.nvim_set_hl(0, "StatusLine", { bg = 0x123456 }); vim.api.nvim_exec_autocmds("ColorScheme", { pattern = "aether", modeline = false }); vim.wait(100); assert(vim.api.nvim_get_hl(0, { name = "StatusLine", link = false }).bg == nil, "StatusLine background was not restored to transparent")' \
   '+qa'

@@ -112,9 +112,14 @@ now(function()
 end)
 
 now_if_args(function()
-  add { gh "neovim/nvim-lspconfig" }
+  add {
+    gh "neovim/nvim-lspconfig",
+    gh "mason-org/mason.nvim",
+    gh "mason-org/mason-lspconfig.nvim",
+    gh "WhoIsSethDaniel/mason-tool-installer.nvim",
+  }
 
-  vim.lsp.enable {
+  local servers = {
     "bashls",
     "biome",
     "copilot",
@@ -134,6 +139,58 @@ now_if_args(function()
     "vtsls",
     "yamlls",
   }
+  local mason_tools = vim.tbl_filter(function(server)
+    return server ~= "roslyn_ls"
+  end, servers)
+
+  require("mason").setup {
+    max_concurrent_installers = 10,
+    registries = {
+      "github:mason-org/mason-registry",
+      "github:Crashdummyy/mason-registry",
+    },
+    ui = {
+      border = "single",
+      icons = {
+        package_installed = "✓",
+        package_pending = "➜",
+        package_uninstalled = "",
+      },
+    },
+  }
+
+  require("mason-lspconfig").setup { automatic_enable = false }
+  require("mason-tool-installer").setup {
+    auto_update = true,
+    debounce_hours = 12,
+    ensure_installed = mason_tools,
+    run_on_start = true,
+    start_delay = 3000,
+  }
+
+  -- The latest Roslyn tool targets .NET 10. Keep its host runtime independent
+  -- from projects that pin an older SDK through mise.
+  local dotnet_10_root = vim.fn.expand "$HOME/.local/share/mise/installs/dotnet/10"
+  local roslyn_tool = vim.fn.expand "$HOME/.dotnet/tools/roslyn-language-server"
+  vim.lsp.config("roslyn_ls", {
+    cmd = {
+      "env",
+      "-u",
+      "__MISE_SHIM",
+      "DOTNET_ROOT=" .. dotnet_10_root,
+      "DOTNET_ROOT_X64=" .. dotnet_10_root,
+      "PATH=" .. dotnet_10_root .. ":" .. vim.env.PATH,
+      roslyn_tool,
+      "--stdio",
+    },
+    cmd_env = {
+      DOTNET_ROOT = dotnet_10_root,
+      DOTNET_ROOT_X64 = dotnet_10_root,
+      PATH = dotnet_10_root .. ":" .. vim.env.PATH,
+    },
+  })
+
+  vim.lsp.enable(servers)
 
   vim.lsp.inline_completion.enable()
 end)

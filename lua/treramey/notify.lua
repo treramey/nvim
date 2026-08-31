@@ -160,11 +160,37 @@ local function message_history_lines()
   return lines
 end
 
+local function mini_history_lines()
+  local items = MiniNotify.get_all()
+  if vim.tbl_isempty(items) then
+    return { "No MiniNotify history." }
+  end
+
+  table.sort(items, function(a, b)
+    return a.ts_update > b.ts_update
+  end)
+
+  local lines = {}
+  for index, item in ipairs(items) do
+    vim.list_extend(lines, vim.split(MiniNotify.default_format(item), "\n", { plain = true }))
+    if index < #items then
+      table.insert(lines, "")
+    end
+  end
+  return lines
+end
+
 local function combined_history_lines()
   local lines = {
-    "Fidget notifications",
-    string.rep("=", 20),
+    "Mini notifications",
+    string.rep("=", 18),
   }
+  vim.list_extend(lines, mini_history_lines())
+  vim.list_extend(lines, {
+    "",
+    "Fidget LSP notifications",
+    string.rep("=", 24),
+  })
   vim.list_extend(lines, history_lines(require("fidget.notification").get_history()))
   vim.list_extend(lines, {
     "",
@@ -176,6 +202,11 @@ local function combined_history_lines()
 end
 
 function M.setup()
+  require("mini.notify").setup {
+    lsp_progress = { enable = false },
+    window = { winblend = 0 },
+  }
+
   require("fidget").setup {
     progress = {
       clear_on_detach = false,
@@ -205,7 +236,7 @@ function M.setup()
         default = notification_config(),
         lsp_progress = lsp_progress_config(),
       },
-      override_vim_notify = true,
+      override_vim_notify = false,
       view = {
         group_separator = "",
       },

@@ -1,4 +1,5 @@
 local is_running = false
+local is_roslyn_tool_running = false
 local last_log = {}
 local log_path = vim.fs.joinpath(vim.fn.stdpath "cache", "update-tools.log")
 
@@ -73,10 +74,14 @@ local dotnet_install_jobs = "1"
 
 -- Extra args after the tool name are passed to `dotnet tool update`.
 local dotnet_global_tools = {
-  { "roslyn-language-server", "--prerelease" },
   { "dotnet-ef" },
   { "EasyDotnet" },
 }
+
+local roslyn_feed = "https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json"
+local roslyn_tool = "roslyn-language-server"
+local roslyn_dotnet_root = vim.fn.expand "$HOME/.local/share/mise/installs/dotnet/10"
+local roslyn_dotnet = vim.fs.joinpath(roslyn_dotnet_root, "dotnet")
 
 local restart_lsp = function()
   if vim.fn.exists ":LspRestart" == 2 then
@@ -91,6 +96,110 @@ local restart_lsp = function()
   vim.defer_fn(function()
     pcall(vim.cmd, "doautoall FileType")
   end, 100)
+end
+
+local roslyn_buffers = function()
+  local buffers = {}
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    if client.name == "roslyn_ls" or client.name == "roslyn" then
+      for buf in pairs(client.attached_buffers or {}) do
+        buffers[buf] = true
+      end
+    end
+  end
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "cs" then
+      buffers[buf] = true
+    end
+  end
+  return buffers
+end
+
+local stop_roslyn = function(restart)
+  local buffers = restart and roslyn_buffers() or nil
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    if client.name == "roslyn_ls" or client.name == "roslyn" then
+      client:stop(false)
+    end
+  end
+
+  if restart and next(buffers) then
+    vim.defer_fn(function()
+      for buf in pairs(buffers) do
+        if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
+          vim.api.nvim_buf_call(buf, function()
+            pcall(vim.cmd, "LspStart roslyn_ls")
+          end)
+        end
+      end
+    end, 500)
+  end
+end
+
+local manage_roslyn = function(opts)
+  if is_roslyn_tool_running then
+    vim.notify("A RoslynTool operation is already running.", vim.log.levels.INFO)
+    return
+  end
+
+  if vim.fn.executable(roslyn_dotnet) ~= 1 then
+    vim.notify("RoslynTool requires mise-managed .NET 10.", vim.log.levels.ERROR)
+    return
+  end
+
+  local action = opts.args ~= "" and opts.args or "status"
+  local commands = {
+    install = { roslyn_dotnet, "tool", "install", "--global", roslyn_tool, "--prerelease", "--source", roslyn_feed },
+    update = { roslyn_dotnet, "tool", "update", "--global", roslyn_tool, "--prerelease", "--source", roslyn_feed },
+    uninstall = { roslyn_dotnet, "tool", "uninstall", "--global", roslyn_tool },
+    status = { roslyn_dotnet, "tool", "list", "--global" },
+  }
+  local cmd = commands[action]
+  if not cmd then
+    vim.notify("Unknown RoslynTool action: " .. action, vim.log.levels.ERROR)
+    return
+  end
+
+  is_roslyn_tool_running = true
+  vim.notify("RoslynTool: " .. action .. "…", vim.log.levels.INFO)
+  vim.system(cmd, {
+    text = true,
+    env = vim.tbl_extend("force", vim.fn.environ(), {
+      DOTNET_ROOT = roslyn_dotnet_root,
+      DOTNET_ROOT_X64 = roslyn_dotnet_root,
+    }),
+  }, function(result)
+    vim.schedule(function()
+      is_roslyn_tool_running = false
+      local raw_output = vim.trim((result.stdout or "") .. (result.stderr or ""))
+
+      if result.code ~= 0 then
+        vim.notify(raw_output ~= "" and raw_output or "RoslynTool failed.", vim.log.levels.ERROR)
+        return
+      end
+
+      local output = raw_output
+      if action == "status" then
+        local lines = vim.split(output, "\n", { plain = true })
+        output = table.concat(
+          vim.tbl_filter(function(line)
+            return line:lower():find("roslyn", 1, true) or line:find("Package Id", 1, true)
+          end, lines),
+          "\n"
+        )
+        if not output:lower():find("roslyn", 1, true) then
+          output = "roslyn-language-server is not installed as a global dotnet tool."
+        end
+      end
+
+      if action == "install" or action == "update" then
+        stop_roslyn(true)
+      elseif action == "uninstall" then
+        stop_roslyn(false)
+      end
+      vim.notify(output ~= "" and output or ("RoslynTool " .. action .. " complete."), vim.log.levels.INFO)
+    end)
+  end)
 end
 
 local update_steps = function()
@@ -218,9 +327,17 @@ end
 pcall(vim.api.nvim_del_user_command, "ToolUpdate")
 pcall(vim.api.nvim_del_user_command, "UpdateTools")
 pcall(vim.api.nvim_del_user_command, "UpdateToolsLog")
+pcall(vim.api.nvim_del_user_command, "RoslynTool")
 vim.api.nvim_create_user_command("UpdateTools", open_tool_update, {
-  desc = "Update mise-managed LSPs, formatters, and CLI tools",
+  desc = "Update mise-managed formatters and CLI tools",
 })
 vim.api.nvim_create_user_command("UpdateToolsLog", open_log, {
   desc = "Open the latest UpdateTools output",
+})
+vim.api.nvim_create_user_command("RoslynTool", manage_roslyn, {
+  nargs = "?",
+  complete = function()
+    return { "install", "update", "uninstall", "status" }
+  end,
+  desc = "Install, update, uninstall, or inspect roslyn-language-server",
 })

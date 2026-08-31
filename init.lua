@@ -5,8 +5,8 @@ _G.Config = {}
 -- `old_lua/` is reference-only while the vim.pack config is being built.
 -- Do not add it to 'runtimepath'/'packpath'; Neovim only loads standard
 -- runtime dirs like `plugin/`, `after/`, and `lua/`.
-vim.opt.runtimepath:remove(vim.fn.stdpath("config") .. "/old_lua")
-vim.opt.packpath:remove(vim.fn.stdpath("config") .. "/old_lua")
+vim.opt.runtimepath:remove(vim.fn.stdpath "config" .. "/old_lua")
+vim.opt.packpath:remove(vim.fn.stdpath "config" .. "/old_lua")
 
 Config.gh = function(r)
   return "https://github.com/" .. r
