@@ -9,7 +9,7 @@ local function assert_equal(actual, expected)
   assert(actual == expected, ("expected %q, got %q"):format(expected, actual))
 end
 
-assert_equal(Switcher.current_slug(), "rose-pine-dawn")
+assert_equal(Switcher.current_slug(), "rose-pine-main")
 assert_equal(table.concat(Switcher.slugs(), ","), table.concat(Catalog.slugs(), ","))
 
 local catalog_specs = Catalog.pack_specs()

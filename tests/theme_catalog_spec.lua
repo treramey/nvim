@@ -53,6 +53,7 @@ local expected_slugs = {
   "ristretto",
   "rose-pine-dawn",
   "rose-pine-main",
+  "solitude",
   "thegreek",
   "tokyo-night",
   "vantablack",
@@ -65,7 +66,7 @@ for index, expected in ipairs(expected_slugs) do
 end
 
 local specs = Catalog.pack_specs()
-assert_equal(#specs, 19)
+assert_equal(#specs, 20)
 local specs_by_source = {}
 for _, spec in ipairs(specs) do
   specs_by_source[spec.src] = spec
