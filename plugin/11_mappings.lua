@@ -233,6 +233,20 @@ end
 
 local lsp_pick_opts = { source = { show = lsp_show_filename_first } }
 
+-- `MiniPick.default_choose()` only recognises existing paths. LSP can return
+-- a location in a loaded-but-deleted buffer, so open the quickfix item
+-- directly instead of printing its Lua table.
+local lsp_jump_to_list_item = function(item)
+  local bufnr = vim.fn.bufnr(item.filename)
+  if bufnr ~= -1 then
+    vim.api.nvim_win_set_buf(0, bufnr)
+  else
+    vim.cmd.edit(vim.fn.fnameescape(item.filename))
+  end
+
+  vim.api.nvim_win_set_cursor(0, { item.lnum or 1, math.max((item.col or 1) - 1, 0) })
+end
+
 local lsp_goto_or_pick = function(scope)
   return function()
     vim.lsp.buf[scope] {
@@ -241,8 +255,7 @@ local lsp_goto_or_pick = function(scope)
           return require("mini.extra").pickers.lsp({ scope = scope }, lsp_pick_opts)
         end
         local item = data.items[1]
-        item.path = item.filename
-        require("mini.pick").default_choose(item)
+        lsp_jump_to_list_item(item)
         vim.cmd "normal! zz"
       end,
     }
