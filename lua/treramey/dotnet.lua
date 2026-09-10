@@ -2,12 +2,12 @@ local M = {}
 local notify = require "treramey.notify"
 
 function M.setup_env()
-  -- Mise (isolated=false) keeps all .NET SDKs under a single DOTNET_ROOT.
-  local mise_dotnet_root = vim.fn.expand "~/.local/share/mise/dotnet-root"
+  -- easy-dotnet's Roslyn launcher requires .NET 10. Keep DOTNET_ROOT on that
+  -- runtime without overriding the mise-selected dotnet executable on PATH.
+  local roslyn_dotnet_root = vim.fn.expand "~/.local/share/mise/installs/dotnet/10"
   local dotnet_tools = vim.fn.expand "~/.dotnet/tools"
-  vim.env.DOTNET_ROOT = mise_dotnet_root
-  vim.env.DOTNET_ROOT_X64 = mise_dotnet_root
-  vim.env.PATH = mise_dotnet_root .. ":" .. vim.env.PATH
+  vim.env.DOTNET_ROOT = roslyn_dotnet_root
+  vim.env.DOTNET_ROOT_X64 = roslyn_dotnet_root
   if vim.fn.isdirectory(dotnet_tools) == 1 then
     vim.env.PATH = dotnet_tools .. ":" .. vim.env.PATH
   end
@@ -92,7 +92,7 @@ function M.easy_dotnet_options()
     server = { use_visual_studio = false, log_level = "Verbose" },
     projx_lsp = { enabled = true },
     lsp = {
-      enabled = false,
+      enabled = true,
       roslynator_enabled = false,
       easy_dotnet_analyzer_enabled = false,
       easy_dotnet_extension_enabled = false,

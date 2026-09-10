@@ -1,4 +1,4 @@
-local add, gh, later = vim.pack.add, Config.gh, Config.later
+local add, gh, now_if_args = vim.pack.add, Config.gh, Config.now_if_args
 
 local dotnet = require "treramey.dotnet"
 
@@ -63,7 +63,7 @@ if vim.fn.executable "dotnet" == 1 then
   setup_leader_group()
 end
 
-later(function()
+now_if_args(function()
   if vim.fn.executable "dotnet" ~= 1 then
     return
   end
