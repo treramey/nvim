@@ -93,6 +93,9 @@ function M.easy_dotnet_options()
     projx_lsp = { enabled = true },
     lsp = {
       enabled = true,
+      -- Wait for a C# buffer before starting Roslyn. Preloading from the
+      -- selected solution makes diagnostic requests race workspace setup.
+      preload_roslyn = false,
       roslynator_enabled = false,
       easy_dotnet_analyzer_enabled = false,
       easy_dotnet_extension_enabled = false,

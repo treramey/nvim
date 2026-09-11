@@ -5,6 +5,7 @@ assert(vim.fn.exists ":RoslynTool" == 0, "the old standalone Roslyn manager must
 
 local options = require("treramey.dotnet").easy_dotnet_options()
 assert(options.lsp.enabled, "easy-dotnet must own the Roslyn LSP")
+assert(not options.lsp.preload_roslyn, "Roslyn must start from a C# buffer")
 assert(vim.env.DOTNET_ROOT:match "/dotnet/10$", "easy-dotnet Roslyn must use the .NET 10 runtime")
 assert(vim.env.DOTNET_ROOT_X64 == vim.env.DOTNET_ROOT)
 
