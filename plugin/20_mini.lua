@@ -73,7 +73,7 @@ now(function()
     footer = fortune,
     items = {
       starter.sections.builtin_actions(),
-      { name = "Explore", action = "lua require('oil').toggle_float()", section = "Builtin actions" },
+      { name = "Explore", action = "lua MiniFiles.open()", section = "Builtin actions" },
       starter.sections.recent_files(10, true, shorten_path),
       starter.sections.sessions(5, true),
     },
@@ -141,6 +141,40 @@ now_if_args(function()
   Config.new_autocmd("LspAttach", nil, on_attach, "Set 'omnifunc'")
 
   vim.lsp.config("*", { capabilities = MiniCompletion.get_lsp_capabilities() })
+end)
+
+now_if_args(function()
+  require("mini.files").setup {
+    mappings = {
+      go_in = "",
+      go_in_plus = "l",
+      go_out = "",
+      go_out_plus = "h",
+    },
+    windows = { preview = true },
+  }
+
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "MiniFilesWindowUpdate",
+    callback = function(args)
+      local win_id = args.data.win_id
+      local config = vim.api.nvim_win_get_config(win_id)
+      config.height = math.floor(0.3 * vim.o.lines)
+
+      local has_border = config.border and config.border ~= "none" and config.border ~= ""
+      local buf_id = vim.api.nvim_win_get_buf(win_id)
+      local line_count = vim.api.nvim_buf_line_count(buf_id)
+      if has_border and line_count > config.height then
+        config.footer = string.format(" %d/%d ", vim.api.nvim_win_get_cursor(win_id)[1], line_count)
+        config.footer_pos = "right"
+      elseif has_border then
+        config.footer = ""
+        config.footer_pos = "right"
+      end
+
+      vim.api.nvim_win_set_config(win_id, config)
+    end,
+  })
 end)
 
 now_if_args(function()
@@ -404,6 +438,13 @@ later(function()
   }
 
   MiniSnippets.start_lsp_server()
+end)
+
+later(function()
+  local statuscolumn = require "mini.statuscolumn"
+  statuscolumn.setup {
+    content = statuscolumn.gen_content.main { { format = "s=l=", sep = " " }, { win = "inactive", sep = " " } },
+  }
 end)
 
 later(function()

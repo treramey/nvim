@@ -156,7 +156,7 @@ end
 -- =============================================================================
 
 local toggle_file_explorer = function()
-  require("oil").toggle_float()
+  MiniFiles.open()
 end
 
 local explore_quickfix = function()

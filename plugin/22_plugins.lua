@@ -107,6 +107,8 @@ now(function()
   end
   local ts_start = function(ev)
     vim.treesitter.start(ev.buf)
+    vim.wo.foldmethod = "expr"
+    vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
   end
   Config.new_autocmd("FileType", filetypes, ts_start, "Start tree-sitter")
 end)
