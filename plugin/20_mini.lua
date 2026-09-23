@@ -146,7 +146,7 @@ end)
 now_if_args(function()
   require("mini.files").setup {
     mappings = {
-      go_in = "",
+      go_in = "<CR>",
       go_in_plus = "l",
       go_out = "",
       go_out_plus = "h",
