@@ -1,15 +1,68 @@
 local M = {}
 local notify = require "treramey.notify"
+local is_windows = vim.fn.has "win32" == 1
+
+M.path_separator = is_windows and ";" or ":"
+M.executable_suffix = is_windows and ".exe" or ""
+
+function M.mise_data_dir()
+  if vim.env.MISE_DATA_DIR and vim.env.MISE_DATA_DIR ~= "" then
+    return vim.env.MISE_DATA_DIR
+  end
+
+  if is_windows then
+    return vim.fs.joinpath(vim.env.LOCALAPPDATA, "mise")
+  end
+
+  return vim.fn.expand "~/.local/share/mise"
+end
+
+function M.setup_easy_dotnet_diagnostic_handler()
+  if M._diagnostic_handler_installed then
+    return
+  end
+
+  local default_handler = vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_diagnostic]
+  vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_diagnostic] = function(err, result, ctx, config)
+    local client = ctx and vim.lsp.get_client_by_id(ctx.client_id)
+    local is_transient_easy_dotnet_error = client
+      and client.name == "easy_dotnet"
+      and err
+      and err.code == -30099
+      and err.message == "Failed to get language for textDocument/diagnostic"
+    if is_transient_easy_dotnet_error then
+      return
+    end
+
+    return default_handler(err, result, ctx, config)
+  end
+  M._diagnostic_handler_installed = true
+end
 
 function M.setup_env()
-  -- easy-dotnet's Roslyn launcher requires .NET 10. Keep DOTNET_ROOT on that
-  -- runtime without overriding the mise-selected dotnet executable on PATH.
-  local roslyn_dotnet_root = vim.fn.expand "~/.local/share/mise/installs/dotnet/10"
   local dotnet_tools = vim.fn.expand "~/.dotnet/tools"
-  vim.env.DOTNET_ROOT = roslyn_dotnet_root
-  vim.env.DOTNET_ROOT_X64 = roslyn_dotnet_root
+
+  if is_windows then
+    -- Prefer the native system host over the mise shim. The shim can resolve
+    -- without an active mise config but then reports that no SDKs are installed.
+    local windows_dotnet_root = vim.fs.joinpath(vim.env.ProgramFiles or "C:/Program Files", "dotnet")
+    local windows_dotnet = vim.fs.joinpath(windows_dotnet_root, "dotnet" .. M.executable_suffix)
+    if vim.fn.executable(windows_dotnet) == 1 then
+      vim.env.DOTNET_ROOT = windows_dotnet_root
+      vim.env.DOTNET_ROOT_X64 = windows_dotnet_root
+      vim.env.PATH = windows_dotnet_root .. M.path_separator .. vim.env.PATH
+    end
+  else
+    -- easy-dotnet's Roslyn launcher requires .NET 10. Keep DOTNET_ROOT on that
+    -- runtime without overriding the mise-selected dotnet executable on PATH.
+    local roslyn_dotnet_root = vim.fs.joinpath(M.mise_data_dir(), "installs", "dotnet", "10")
+    vim.env.DOTNET_ROOT = roslyn_dotnet_root
+    vim.env.DOTNET_ROOT_X64 = roslyn_dotnet_root
+    vim.env.PATH = roslyn_dotnet_root .. M.path_separator .. vim.env.PATH
+  end
+
   if vim.fn.isdirectory(dotnet_tools) == 1 then
-    vim.env.PATH = dotnet_tools .. ":" .. vim.env.PATH
+    vim.env.PATH = dotnet_tools .. M.path_separator .. vim.env.PATH
   end
   vim.env.TMPDIR = vim.env.TMPDIR and vim.fn.resolve(vim.env.TMPDIR) or nil
 end
@@ -62,7 +115,9 @@ function M.open_terminal(command, opts)
     vim.api.nvim_win_set_height(0, math.max(8, math.floor(vim.o.lines * (opts.height or 0.35))))
   end
 
-  vim.fn.jobstart({ "bash", "-lc", command }, { term = true })
+  local shell_command = is_windows and { "pwsh", "-NoLogo", "-NoProfile", "-Command", command }
+    or { "bash", "-lc", command }
+  vim.fn.jobstart(shell_command, { term = true })
   vim.cmd "startinsert"
 end
 
@@ -146,6 +201,7 @@ end
 
 function M.setup_easy_dotnet()
   M.setup_env()
+  M.setup_easy_dotnet_diagnostic_handler()
   require("easy-dotnet").setup(M.easy_dotnet_options())
   M.create_user_commands()
 end

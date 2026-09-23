@@ -342,7 +342,7 @@ local themes = {
     background = "dark",
   },
   ["ristretto"] = {
-    src = "https://github.com/gthelding/monokai-pro.nvim",
+    src = "https://github.com/loctvl842/monokai-pro.nvim",
     colorscheme = "monokai-pro",
     background = "dark",
     setup = function()

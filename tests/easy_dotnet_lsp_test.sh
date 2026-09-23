@@ -2,6 +2,22 @@
 set -euo pipefail
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../../.." && pwd)
+
+if [[ "$(uname -s)" == MINGW* || "$(uname -s)" == MSYS* || "$(uname -s)" == CYGWIN* ]]; then
+  # Windows: native nvim cannot exec sh stubs, so run the spec against the
+  # real system dotnet and the globally installed easy-dotnet tool.
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  touch "$tmp/test.cs"
+
+  nvim --headless \
+    --cmd 'lua package.loaded["mason-tool-installer"] = { setup = function(opts) _G.easy_dotnet_lsp_test_mason_opts = opts end }' \
+    "$tmp/test.cs" \
+    "+luafile $(cygpath -m "$repo_root/home/dot_config/nvim/tests/easy_dotnet_lsp_spec.lua")" \
+    '+qa'
+  exit 0
+fi
+
 data_home=${XDG_DATA_HOME:-$HOME/.local/share}
 host_mise_config=${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml
 tmp=$(mktemp -d)

@@ -34,14 +34,17 @@ local function hl(name)
 end
 
 function M.apply_highlights()
-  -- Let the terminal background show through the main editor surface while
-  -- preserving each theme's foreground and text attributes.
-  for _, group in ipairs { "Normal", "NormalNC", "EndOfBuffer" } do
-    local ok, current = pcall(hl, group)
-    if ok then
-      current.bg = nil
-      current.ctermbg = nil
-      vim.api.nvim_set_hl(0, group, current)
+  local transparent_surfaces = not vim.g.neovide
+  if transparent_surfaces then
+    -- Let the terminal background show through the main editor surface while
+    -- preserving each theme's foreground and text attributes.
+    for _, group in ipairs { "Normal", "NormalNC", "EndOfBuffer" } do
+      local ok, current = pcall(hl, group)
+      if ok then
+        current.bg = nil
+        current.ctermbg = nil
+        vim.api.nvim_set_hl(0, group, current)
+      end
     end
   end
 
@@ -82,51 +85,55 @@ function M.apply_highlights()
     bg = menu_bg,
   })
 
-  -- Keep the number/sign gutter transparent. Some colorschemes give LineNr
-  -- and diagnostic sign groups their own background, which shows up as a
-  -- block beside transparent terminal backgrounds/wallpapers.
-  for _, group in ipairs {
-    "LineNr",
-    "LineNrAbove",
-    "LineNrBelow",
-    "CursorLineNr",
-    "CursorLineSign",
-    "CursorLineFold",
-    "SignColumn",
-    "FoldColumn",
-    "DiagnosticSignError",
-    "DiagnosticSignWarn",
-    "DiagnosticSignInfo",
-    "DiagnosticSignHint",
-    "DiagnosticSignOk",
-    "MiniDiffSignAdd",
-    "MiniDiffSignChange",
-    "MiniDiffSignDelete",
-  } do
-    local ok, current = pcall(hl, group)
-    if ok then
-      current.bg = nil
-      current.ctermbg = nil
-      vim.api.nvim_set_hl(0, group, current)
+  if transparent_surfaces then
+    -- Keep the number/sign gutter transparent. Some colorschemes give LineNr
+    -- and diagnostic sign groups their own background, which shows up as a
+    -- block beside transparent terminal backgrounds/wallpapers.
+    for _, group in ipairs {
+      "LineNr",
+      "LineNrAbove",
+      "LineNrBelow",
+      "CursorLineNr",
+      "CursorLineSign",
+      "CursorLineFold",
+      "SignColumn",
+      "FoldColumn",
+      "DiagnosticSignError",
+      "DiagnosticSignWarn",
+      "DiagnosticSignInfo",
+      "DiagnosticSignHint",
+      "DiagnosticSignOk",
+      "MiniDiffSignAdd",
+      "MiniDiffSignChange",
+      "MiniDiffSignDelete",
+    } do
+      local ok, current = pcall(hl, group)
+      if ok then
+        current.bg = nil
+        current.ctermbg = nil
+        vim.api.nvim_set_hl(0, group, current)
+      end
     end
   end
 
-  -- Keep passive statusline sections transparent too. This removes the boxed
-  -- background behind git/diagnostic/filepath/fileinfo sections while leaving
-  -- the mode and cursor-position pills intact.
-  for _, group in ipairs {
-    "StatusLine",
-    "StatusLineNC",
-    "MiniStatuslineDevinfo",
-    "MiniStatuslineFilename",
-    "MiniStatuslineFileinfo",
-    "MiniStatuslineInactive",
-  } do
-    local ok, current = pcall(hl, group)
-    if ok then
-      current.bg = nil
-      current.ctermbg = nil
-      vim.api.nvim_set_hl(0, group, current)
+  if transparent_surfaces then
+    -- Keep passive statusline sections transparent too. This removes the boxed
+    -- background behind git/diagnostic/filepath/fileinfo sections while leaving
+    -- the mode and cursor-position pills intact.
+    for _, group in ipairs {
+      "StatusLine",
+      "StatusLineNC",
+      "MiniStatuslineDevinfo",
+      "MiniStatuslineFilename",
+      "MiniStatuslineFileinfo",
+      "MiniStatuslineInactive",
+    } do
+      local ok, current = pcall(hl, group)
+      if ok then
+        current.bg = nil
+        current.ctermbg = nil
+        vim.api.nvim_set_hl(0, group, current)
+      end
     end
   end
 end
@@ -255,7 +262,6 @@ local function apply_theme(slug, theme, opts)
 
   return true
 end
-
 
 function M.apply_slug(slug, opts)
   local result = Catalog.resolve(slug)

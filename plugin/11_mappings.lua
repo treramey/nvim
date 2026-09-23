@@ -339,7 +339,7 @@ nmap_leader("ld", function()
   vim.diagnostic.open_float { border = "rounded" }
 end, "diagnostic popup")
 nmap_leader("lD", copy_line_diagnostics_to_clipboard, "copy line diagnostics")
-nmap_leader("lf", function()
+nmap_leader("f", function()
   Config.format()
 end, "format")
 nmap_leader("li", lsp_goto_or_pick "implementation", "implementation")
@@ -518,7 +518,8 @@ nmap_leader("xR", "<Cmd>lua MiniSessions.restart()<CR>", "restart")
 -- <Leader>c  quickfix/location lists
 -- <Leader>e  explore, notifications
 -- <Leader>g  git
--- <Leader>l  language, LSP, diagnostics, format, typecheck
+-- <Leader>f  format
+-- <Leader>l  language, LSP, diagnostics, typecheck
 -- <Leader>m  minimap
 -- <Leader>n  notifications, clear search highlighting
 -- <Leader>o  other/toggles

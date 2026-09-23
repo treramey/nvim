@@ -81,6 +81,10 @@ vim.o.wrap = false -- Don't visually wrap lines (toggle with \w)
 
 vim.o.cursorlineopt = "screenline,number" -- Show cursor line per screen line
 
+if vim.g.neovide then
+  vim.o.guifont = "MonoLisaVariable_Nerd_Font:h11"
+end
+
 -- Special UI symbols
 vim.o.fillchars = "eob: ,fold:╌"
 vim.o.listchars = "extends:…,nbsp:␣,precedes:…,tab:> "

@@ -2,6 +2,21 @@ vim.loader.enable()
 
 _G.Config = {}
 
+-- tree-sitter-cli defaults to MSVC on Windows, but the standalone LLVM
+-- package does not include the Windows SDK headers. Prefer Scoop's MinGW GCC.
+if vim.fn.has "win32" == 1 and not vim.env.CC then
+  local gcc = vim.fn.exepath "gcc"
+  local gxx = vim.fn.exepath "g++"
+  if gcc == "" then
+    gcc = vim.fs.joinpath(vim.env.USERPROFILE, "scoop/apps/gcc/current/bin/gcc.exe")
+    gxx = vim.fs.joinpath(vim.env.USERPROFILE, "scoop/apps/gcc/current/bin/g++.exe")
+  end
+  if vim.fn.executable(gcc) == 1 then
+    vim.env.CC = gcc
+    vim.env.CXX = gxx
+  end
+end
+
 -- `old_lua/` is reference-only while the vim.pack config is being built.
 -- Do not add it to 'runtimepath'/'packpath'; Neovim only loads standard
 -- runtime dirs like `plugin/`, `after/`, and `lua/`.
