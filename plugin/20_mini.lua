@@ -155,6 +155,16 @@ now_if_args(function()
   }
 
   vim.api.nvim_create_autocmd("User", {
+    pattern = "MiniFilesBufferCreate",
+    callback = function(args)
+      vim.keymap.set("n", "<Leader>w", MiniFiles.synchronize, {
+        buffer = args.data.buf_id,
+        desc = "Synchronize files",
+      })
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("User", {
     pattern = "MiniFilesWindowUpdate",
     callback = function(args)
       local win_id = args.data.win_id

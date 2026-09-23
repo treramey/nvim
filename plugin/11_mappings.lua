@@ -155,8 +155,26 @@ end
 -- Shared mapping callbacks
 -- =============================================================================
 
-local toggle_file_explorer = function()
-  MiniFiles.open()
+local function valid_filesystem_path(path)
+  if path == "" or path:find("://", 1, true) then
+    return nil
+  end
+
+  local ok, stat = pcall(vim.uv.fs_stat, path)
+  if not ok or not stat then
+    return nil
+  end
+
+  return path
+end
+
+local explore_directory = function()
+  MiniFiles.open(vim.fn.getcwd())
+end
+
+local explore_at_file = function()
+  local path = vim.api.nvim_buf_get_name(0)
+  MiniFiles.open(valid_filesystem_path(path) or vim.fn.getcwd())
 end
 
 local explore_quickfix = function()
@@ -274,6 +292,7 @@ Config.leader_group_clues = {
   { mode = "n", keys = "<Leader>a", desc = "+agent" },
   { mode = "n", keys = "<Leader>b", desc = "+buffer" },
   { mode = "n", keys = "<Leader>c", desc = "+quickfix" },
+  { mode = "n", keys = "<Leader>e", desc = "+explore" },
   { mode = "n", keys = "<Leader>g", desc = "+git" },
   { mode = "n", keys = "<Leader>l", desc = "+language" },
   { mode = "n", keys = "<Leader>m", desc = "+map" },
@@ -456,7 +475,9 @@ nmap_leader("bq", function()
   end
 end, "delete others")
 
-nmap_leader("e", toggle_file_explorer, "file explorer")
+-- Explore ---------------------------------------------------------------------
+nmap_leader("ed", explore_directory, "directory")
+nmap_leader("ef", explore_at_file, "file directory")
 nmap_leader("nh", function()
   require("treramey.notify").show_history()
 end, "notifications")
