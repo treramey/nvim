@@ -16,8 +16,9 @@ end
 
 local function use_osc52_copy_clipboard()
   local osc52 = require "vim.ui.clipboard.osc52"
+  -- Herdr forwards OSC 52 writes but cannot answer clipboard-read queries.
   local function paste_from_unnamed()
-    return { vim.split(vim.fn.getreg '"', "\n", { plain = true }), vim.fn.getregtype '"' }
+    return { vim.fn.getreg('"', 1, true), vim.fn.getregtype '"' }
   end
 
   vim.g.clipboard = {
@@ -34,7 +35,8 @@ local function use_osc52_copy_clipboard()
 end
 
 local has_display_clipboard = env_set "WAYLAND_DISPLAY" or env_set "DISPLAY"
-local should_use_osc52_clipboard = env_set "SSH_TTY"
+local should_use_osc52_clipboard = vim.env.HERDR_ENV == "1"
+  or env_set "SSH_TTY"
   or env_set "SSH_CONNECTION"
   or env_set "MOSH_KEY"
   or env_set "MOSH_CONNECTION"

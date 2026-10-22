@@ -1,7 +1,7 @@
 -- Formatting via conform.nvim =================================================
 -- The Formatter Registry: one row per filetype in `formatters_by_ft`. Project
--- formatters (oxfmt/biome/prettierd) gate on project config and the first
--- available one wins; falls back to LSP when none applies.
+-- formatters (oxfmt/biome/prettierd) gate on project configuration or local
+-- binaries. The first available one wins; Biome also organizes imports.
 
 local add, gh, later = vim.pack.add, Config.gh, Config.later
 
@@ -81,6 +81,21 @@ end, { desc = "Re-enable autoformat-on-save" })
 later(function()
   add { gh "stevearc/conform.nvim" }
 
+  local conform = require "conform"
+  local oxfmt_command = require("conform.util").find_executable({
+    "node_modules/.bin/oxfmt",
+    "node_modules/.bin/vp",
+  }, "oxfmt")
+  local web_formatters = function(bufnr)
+    if conform.get_formatter_info("oxfmt", bufnr).available then
+      return { "oxfmt" }
+    end
+    if conform.get_formatter_info("biome", bufnr).available then
+      return { "biome", "biome-organize-imports" }
+    end
+    return { "prettierd" }
+  end
+
   require("conform").setup {
     notify_on_error = false,
     default_format_opts = {
@@ -97,11 +112,11 @@ later(function()
       zsh = { "shfmt" },
       svg = { "xmlformat" },
       xml = { "xmlformat" },
-      astro = { "oxfmt", "biome", "prettierd", stop_after_first = true },
-      javascript = { "oxfmt", "biome", "prettierd", stop_after_first = true },
-      javascriptreact = { "oxfmt", "biome", "prettierd", stop_after_first = true },
-      typescript = { "oxfmt", "biome", "prettierd", stop_after_first = true },
-      typescriptreact = { "oxfmt", "biome", "prettierd", stop_after_first = true },
+      astro = web_formatters,
+      javascript = web_formatters,
+      javascriptreact = web_formatters,
+      typescript = web_formatters,
+      typescriptreact = web_formatters,
       svelte = { "oxfmt", "prettierd", stop_after_first = true },
       json = { "biome", "prettierd", stop_after_first = true },
       jsonc = { "biome", "prettierd", stop_after_first = true },
@@ -112,14 +127,26 @@ later(function()
     formatters = {
       xmlformat = { args = { "--indent", "4", "--selfclose", "-" } },
       oxfmt = {
-        condition = function(_, ctx)
-          return H.has_config({ ".oxfmtrc.json", ".oxfmtrc.jsonc" }, ctx.filename)
+        command = oxfmt_command,
+        args = function(self, ctx)
+          local args = { "--stdin-filepath", "$FILENAME" }
+          if vim.fs.basename(oxfmt_command(self, ctx)) == "vp" then
+            table.insert(args, 1, "fmt")
+          end
+          return args
+        end,
+        condition = function(self, ctx)
+          return oxfmt_command(self, ctx) ~= "oxfmt"
+            or H.has_config({ ".oxfmtrc.json", ".oxfmtrc.jsonc", "oxfmt.config.ts" }, ctx.filename)
         end,
       },
       biome = {
         condition = function(_, ctx)
           return H.has_config({ "biome.json", "biome.jsonc" }, ctx.filename)
         end,
+      },
+      ["biome-organize-imports"] = {
+        require_cwd = true,
       },
       prettierd = {
         condition = function(_, ctx)

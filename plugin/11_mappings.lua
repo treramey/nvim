@@ -446,7 +446,7 @@ nmap("<C-h>", "<Cmd>lua require('smart-splits').move_cursor_left()<CR>", "naviga
 nmap("<C-j>", "<Cmd>lua require('smart-splits').move_cursor_down()<CR>", "navigate down")
 nmap("<C-k>", "<Cmd>lua require('smart-splits').move_cursor_up()<CR>", "navigate up")
 nmap("<C-l>", "<Cmd>lua require('smart-splits').move_cursor_right()<CR>", "navigate right")
-nmap("<C-\\>", "<Cmd>lua require('smart-splits').move_cursor_previous()<CR>", "navigate previous")
+nmap("<C-\\>", "<C-w>p", "navigate previous")
 
 -- Nordic keyboard remaps removed. Use the common Vim equivalents instead:
 --   marks leader: \

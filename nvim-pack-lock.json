@@ -73,9 +73,13 @@
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "smart-splits-backend-herdr": {
+      "rev": "da1e50ae7bec7a7c2781aaf5a531eff350bdab20",
+      "src": "https://github.com/adriankarlen/smart-splits-backend-herdr"
+    },
     "smart-splits.nvim": {
-      "rev": "0e5bc00d2a32e6c782cd279cb96ab6c7ae49cd94",
-      "src": "https://github.com/mrjones2014/smart-splits.nvim"
+      "rev": "69ab668d96b54fa15907ac3245548fd8a3ce2318",
+      "src": "https://github.com/smart-splits-nvim/smart-splits.nvim"
     },
     "ts-error-translator.nvim": {
       "rev": "558abff11b9e8f4cefc0de09df780c56841c7a4b",

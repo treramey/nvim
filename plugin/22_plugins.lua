@@ -1,5 +1,6 @@
 local add = vim.pack.add
-local gh, now, now_if_args, later = Config.gh, Config.now, Config.now_if_args, Config.later
+local gh, now, now_if_args, later, on_filetype =
+  Config.gh, Config.now, Config.now_if_args, Config.later, Config.on_filetype
 
 local delete_inactive_plugins = function()
   local inactive = vim.iter(vim.pack.get())
@@ -131,6 +132,7 @@ now_if_args(function()
     "gopls",
     "html",
     "marksman",
+    "jsonls",
     "oxfmt",
     "oxlint",
     "rust_analyzer",
@@ -182,16 +184,24 @@ end)
 -- sidekick.nvim removed
 -- colorful-winsep.nvim removed
 
-later(function()
+on_filetype("typescript,typescriptreact,svelte", function()
   add { gh "dmmulroy/ts-error-translator.nvim" }
   require("ts-error-translator").setup()
 end)
 
 later(function()
-  add { gh "mrjones2014/smart-splits.nvim" }
+  add {
+    gh "smart-splits-nvim/smart-splits.nvim",
+    gh "adriankarlen/smart-splits-backend-herdr",
+  }
+  local in_herdr = require("smart-splits-backend-herdr").detect()
+  require("smart-splits").setup {
+    mux = { backend = in_herdr and "smart-splits-backend-herdr" or nil },
+    move = { at_edge = in_herdr and "stop" or "wrap" },
+  }
 end)
 
-later(function()
+on_filetype("html,javascript,javascriptreact,typescript,typescriptreact,svelte,vue,astro,xml", function()
   add { gh "windwp/nvim-ts-autotag" }
   require("nvim-ts-autotag").setup()
 end)
