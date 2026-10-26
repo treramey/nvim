@@ -358,7 +358,7 @@ nmap_leader("ld", function()
   vim.diagnostic.open_float { border = "rounded" }
 end, "diagnostic popup")
 nmap_leader("lD", copy_line_diagnostics_to_clipboard, "copy line diagnostics")
-nmap_leader("lf", function()
+nmap_leader("f", function()
   Config.format()
 end, "format")
 nmap_leader("li", lsp_goto_or_pick "implementation", "implementation")
@@ -370,7 +370,7 @@ nmap_leader("lr", vim.lsp.buf.rename, "rename")
 nmap_leader("gr", lsp_pick_references, "references")
 nmap_leader("ls", lsp_goto_or_pick "definition", "source definition")
 nmap_leader("lt", vim.lsp.buf.type_definition, "type definition")
-nmap_leader("lc", "<Cmd>lua Config.tsc()<CR>", "typecheck project")
+nmap_leader("tc", "<Cmd>lua Config.tsc()<CR>", "typecheck project")
 
 -- Direct LSP ------------------------------------------------------------------
 nmap("gd", lsp_goto_or_pick "definition", "LSP: Go to definition")
@@ -519,7 +519,7 @@ nmap_leader("mt", "<Cmd>lua MiniMap.toggle()<CR>", "toggle")
 nmap_leader("or", "<Cmd>lua MiniMisc.resize_window()<CR>", "resize to default width")
 nmap_leader("ot", "<Cmd>lua MiniTrailspace.trim()<CR>", "trim trailspace")
 nmap_leader("oz", "<Cmd>lua MiniMisc.zoom()<CR>", "zoom toggle")
-nmap_leader("oR", ":RotateWindows<CR>", "rotate open windows")
+nmap_leader("rw", ":RotateWindows<CR>", "rotate open windows")
 
 -- Sessions --------------------------------------------------------------------
 local session_new = 'vim.ui.input({ prompt = "Session name: " }, MiniSessions.write)'
@@ -536,7 +536,7 @@ nmap_leader("xR", "<Cmd>lua MiniSessions.restart()<CR>", "restart")
 -- <Leader>c  quickfix/location lists
 -- <Leader>e  explore, notifications
 -- <Leader>g  git
--- <Leader>l  language, LSP, diagnostics, format, typecheck
+-- <Leader>l  language, LSP, diagnostics
 -- <Leader>m  minimap
 -- <Leader>n  notifications, clear search highlighting
 -- <Leader>o  other/toggles
