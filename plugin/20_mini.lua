@@ -127,6 +127,10 @@ now_if_args(function()
     return MiniCompletion.default_process_items(items, base, process_items_opts)
   end
   require("mini.completion").setup {
+    mappings = {
+      scroll_down = "<C-d>",
+      scroll_up = "<C-u>",
+    },
     lsp_completion = {
       source_func = "omnifunc",
       auto_setup = false,
@@ -318,7 +322,34 @@ end)
 
 later(function()
   require("mini.keymap").setup()
+  local pmenu_visible = function()
+    return vim.fn.pumvisible() == 1
+  end
+  MiniKeymap.map_multistep("i", "<C-j>", { "pmenu_next" })
+  MiniKeymap.map_multistep("i", "<C-k>", {
+    "pmenu_prev",
+    {
+      condition = function()
+        return true
+      end,
+      action = function()
+        return function()
+          vim.lsp.buf.signature_help { border = "rounded" }
+        end
+      end,
+    },
+  }, { desc = "Previous completion or LSP signature help" })
+  MiniKeymap.map_multistep("i", "<C-c>", {
+    {
+      condition = pmenu_visible,
+      action = function()
+        return "<C-e>"
+      end,
+    },
+  }, { desc = "Cancel completion" })
   MiniKeymap.map_multistep("i", "<Tab>", {
+    "minisnippets_next",
+    "pmenu_next",
     {
       condition = function()
         return vim.lsp.inline_completion.get() ~= nil
@@ -328,7 +359,18 @@ later(function()
       end,
     },
   })
-  MiniKeymap.map_multistep("i", "<CR>", { "minipairs_cr" })
+  MiniKeymap.map_multistep("i", "<S-Tab>", { "minisnippets_prev", "pmenu_prev" })
+  MiniKeymap.map_multistep("i", "<CR>", {
+    "pmenu_accept",
+    {
+      -- Match select-and-accept without changing the noselect completion setting.
+      condition = pmenu_visible,
+      action = function()
+        return "<C-n><C-y>"
+      end,
+    },
+    "minipairs_cr",
+  })
   MiniKeymap.map_multistep("i", "<BS>", { "minipairs_bs" })
 end)
 
@@ -441,6 +483,8 @@ later(function()
   local snippets = require "mini.snippets"
   local config_path = vim.fn.stdpath "config"
   snippets.setup {
+    -- Snippets are offered through LSP completion. Keep <C-j> for menu navigation.
+    mappings = { expand = "" },
     snippets = {
       snippets.gen_loader.from_file(config_path .. "/snippets/global.json"),
       snippets.gen_loader.from_lang { lang_patterns = lang_patterns },

@@ -379,9 +379,6 @@ nmap("gi", lsp_goto_or_pick "implementation", "LSP: Go to implementations")
 nmap("K", function()
   return vim.lsp.buf.hover { border = "rounded" }
 end, "LSP: Hover documentation")
-imap("<C-k>", function()
-  return vim.lsp.buf.signature_help { border = "rounded" }
-end, "LSP: Signature help")
 nmap("gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
 nmap("td", vim.lsp.buf.type_definition, "LSP: Type definition")
 
