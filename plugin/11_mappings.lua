@@ -295,7 +295,7 @@ Config.leader_group_clues = {
   { mode = "n", keys = "<Leader>e", desc = "+explore" },
   { mode = "n", keys = "<Leader>g", desc = "+git" },
   { mode = "n", keys = "<Leader>l", desc = "+language" },
-  { mode = "n", keys = "<Leader>m", desc = "+map" },
+  { mode = "n", keys = "<Leader>M", desc = "+map" },
   { mode = "n", keys = "<Leader>n", desc = "+notifications/noh" },
   { mode = "n", keys = "<Leader>o", desc = "+other" },
   { mode = "n", keys = "<Leader>s", desc = "+search" },
@@ -511,14 +511,14 @@ nmap_leader("gc", "<Cmd>Pick git_commits<CR>", "commits all")
 nmap_leader("gC", '<Cmd>Pick git_commits path="%"<CR>', "commits buffer")
 
 -- Map -------------------------------------------------------------------------
-nmap_leader("mf", "<Cmd>lua MiniMap.toggle_focus()<CR>", "focus toggle")
-nmap_leader("mr", "<Cmd>lua MiniMap.refresh()<CR>", "refresh")
-nmap_leader("mt", "<Cmd>lua MiniMap.toggle()<CR>", "toggle")
+nmap_leader("Mf", "<Cmd>lua MiniMap.toggle_focus()<CR>", "focus toggle")
+nmap_leader("Mr", "<Cmd>lua MiniMap.refresh()<CR>", "refresh")
+nmap_leader("Mt", "<Cmd>lua MiniMap.toggle()<CR>", "toggle")
 
 -- Other -----------------------------------------------------------------------
 nmap_leader("or", "<Cmd>lua MiniMisc.resize_window()<CR>", "resize to default width")
 nmap_leader("ot", "<Cmd>lua MiniTrailspace.trim()<CR>", "trim trailspace")
-nmap_leader("oz", "<Cmd>lua MiniMisc.zoom()<CR>", "zoom toggle")
+nmap_leader("m", "<Cmd>lua MiniMisc.zoom()<CR>", "zoom toggle")
 nmap_leader("rw", ":RotateWindows<CR>", "rotate open windows")
 
 -- Sessions --------------------------------------------------------------------
@@ -537,7 +537,8 @@ nmap_leader("xR", "<Cmd>lua MiniSessions.restart()<CR>", "restart")
 -- <Leader>e  explore, notifications
 -- <Leader>g  git
 -- <Leader>l  language, LSP, diagnostics
--- <Leader>m  minimap
+-- <Leader>m  zoom toggle
+-- <Leader>M  minimap
 -- <Leader>n  notifications, clear search highlighting
 -- <Leader>o  other/toggles
 -- <Leader>s  search/pickers
