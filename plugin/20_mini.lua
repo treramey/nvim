@@ -375,23 +375,6 @@ later(function()
 end)
 
 later(function()
-  local map = require "mini.map"
-  map.setup {
-    symbols = { encode = map.gen_encode_symbols.dot "4x2" },
-    integrations = {
-      map.gen_integration.builtin_search(),
-      map.gen_integration.diff(),
-      map.gen_integration.diagnostic(),
-    },
-  }
-
-  for _, key in ipairs { "n", "N", "*", "#" } do
-    local rhs = key .. "zv" .. "<Cmd>lua MiniMap.refresh({}, { lines = false, scrollbar = false })<CR>"
-    vim.keymap.set("n", key, rhs)
-  end
-end)
-
-later(function()
   require("mini.move").setup {
     mappings = {
       left = "<",
