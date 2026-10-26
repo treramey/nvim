@@ -357,7 +357,7 @@ nmap_leader("la", vim.lsp.buf.code_action, "actions")
 nmap_leader("ld", function()
   vim.diagnostic.open_float { border = "rounded" }
 end, "diagnostic popup")
-nmap_leader("lD", copy_line_diagnostics_to_clipboard, "copy line diagnostics")
+nmap_leader("cd", copy_line_diagnostics_to_clipboard, "copy line diagnostics")
 nmap_leader("f", function()
   Config.format()
 end, "format")
