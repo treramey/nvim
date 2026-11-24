@@ -60,6 +60,10 @@ local ok, err = xpcall(function()
   -- Removing Vite+ restores the Biome pipeline rather than running both.
   vim.fn.delete(tmp .. "/node_modules/.bin/vp")
   selected { "biome", "biome-organize-imports" }
+
+  vim.api.nvim_buf_set_name(buf, tmp .. "/App.svelte")
+  vim.bo[buf].filetype = "svelte"
+  selected { "biome", "biome-organize-imports" }
 end, debug.traceback)
 
 vim.api.nvim_buf_delete(buf, { force = true })

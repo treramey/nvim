@@ -133,7 +133,6 @@ now_if_args(function()
     "html",
     "marksman",
     "jsonls",
-    "oxfmt",
     "oxlint",
     "rust_analyzer",
     "svelte",
@@ -163,7 +162,7 @@ now_if_args(function()
   require("mason-tool-installer").setup {
     auto_update = true,
     debounce_hours = 12,
-    ensure_installed = servers,
+    ensure_installed = vim.list_extend({ "oxfmt" }, servers),
     run_on_start = true,
     start_delay = 3000,
   }

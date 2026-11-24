@@ -117,7 +117,7 @@ later(function()
       javascriptreact = web_formatters,
       typescript = web_formatters,
       typescriptreact = web_formatters,
-      svelte = { "oxfmt", "prettierd", stop_after_first = true },
+      svelte = web_formatters,
       json = { "biome", "prettierd", stop_after_first = true },
       jsonc = { "biome", "prettierd", stop_after_first = true },
       markdown = { "prettierd" },
